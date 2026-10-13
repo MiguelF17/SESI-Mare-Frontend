@@ -7,6 +7,7 @@ import MusicCard from "../components/musicCard";
 import PostCard from "../components/postCard";
 import { API_URL } from "../api";
 import logo from "../assets/logo.png";
+import { ArrowLeftIcon } from "@phosphor-icons/react";
 
 export default function Artista() {
   const { id } = useParams();
@@ -104,8 +105,24 @@ export default function Artista() {
         <div className="grid grid-cols-1 gap-10 xl:grid-cols-[minmax(0,1fr)_340px]">
           <main className="min-w-0">
             {/* BUSCA */}
-            <div className="sticky top-0 z-20 bg-[#080A10]">
-              <SearchBar />
+            <div className="sticky top-0 z-20 border-b border-[#242b3a] bg-[#080A10]/95 backdrop-blur-md">
+              <div className="py-3">
+                <SearchBar />
+              </div>
+
+              <div className="flex items-center gap-5 py-3">
+                <Link
+                  to="/home"
+                  aria-label="Voltar para a Home"
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[#d1d5db] transition hover:bg-[#202536] hover:text-white"
+                >
+                  <ArrowLeftIcon size={24} weight="bold" />
+                </Link>
+
+                <h1 className="text-base font-bold text-white">
+                  {artista.nome}
+                </h1>
+              </div>
             </div>
 
             {/* CABEÇALHO DO ARTISTA */}
@@ -140,8 +157,8 @@ export default function Artista() {
                 <p className="mt-3 text-[12px] text-[#aeb6c5]">
                   {artista.musicas?.length ?? 0}{" "}
                   {(artista.musicas?.length ?? 0) === 1
-                    ? "música cadastrada"
-                    : "músicas cadastradas"}
+                    ? "música"
+                    : "músicas"}
                 </p>
               </div>
             </div>
@@ -169,17 +186,11 @@ export default function Artista() {
                 </div>
               ) : (
                 <p className="text-[14px] text-[#697386]">
-                  Nenhuma música cadastrada para este artista.
+                  Nenhuma música deste artista.
                 </p>
               )}
             </section>
 
-            <Link
-              to="/artistas"
-              className="mt-10 inline-block text-sm text-[#58AAF0] transition hover:text-white"
-            >
-              ← Voltar para artistas
-            </Link>
           </main>
 
           {/* POSTS RELACIONADOS */}

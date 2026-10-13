@@ -93,6 +93,7 @@ export default function Salvos() {
                       tipo="post"
                       titulo={musica.titulo}
                       artista={musica.artista?.nome}
+                      artistaId={musica?.artista?.id}
                       capa={musica.capa}
                       nota={0}
                       avaliacoes={musica._count?.posts ?? 0}

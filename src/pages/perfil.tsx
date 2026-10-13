@@ -13,7 +13,7 @@ import PageContent from "../components/pageContent";
 import SearchBar from "../components/searchbar";
 import PostCard from "../components/postCard";
 import RecommendedMusic from "../components/recommendedMusic";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { API_URL } from "../api";
 import calcularTempo from "../calcularTempo";
 
@@ -50,6 +50,8 @@ export default function Perfil() {
   const [bioEditada, setBioEditada] = useState("");
   const [salvando, setSalvando] = useState(false);
   const [musicas, setMusicas] = useState<any[]>([]);
+  const fotoInputRef = useRef<HTMLInputElement>(null);
+  const capaInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     buscarPerfil();
@@ -376,13 +378,23 @@ export default function Perfil() {
                       : undefined
                   }
                 >
+
+                  <input
+                    ref={capaInputRef}
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp"
+                    className="hidden"
+                  />
+
                   <button
                     type="button"
-                    className="absolute cursor-pointer right-4 top-4 flex items-center gap-2 rounded-lg bg-[#111726]/80 px-3 py-2 font-serif text-[12px] text-gray-300 transition hover:text-blue-400"
+                    onClick={() => capaInputRef.current?.click()}
+                    className="absolute right-4 top-4 flex cursor-pointer items-center gap-2 rounded-lg bg-[#111726]/80 px-3 py-2 font-serif text-[12px] text-gray-300 transition hover:text-blue-400"
                   >
                     <CameraIcon size={18} />
                     Alterar capa
                   </button>
+
                 </div>
 
                 {/* INFORMAÇÕES */}
@@ -390,17 +402,39 @@ export default function Perfil() {
                   <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
                     {/* Avatar */}
                     <div className="flex items-end gap-4">
-                      <div className="-mt-4 z-50 flex h-[82px] w-[82px] shrink-0 items-center justify-center rounded-full border-4 border-[#0d121c] bg-[#1a2130]">
-                        {usuario.foto ? (
-                          <img
-                            src={usuario.foto}
-                            alt={usuario.nome}
-                            className="h-full w-full object-cover"
-                          />
-                        ) : (
-                          <UserIcon size={34} className="text-gray-400" />
-                        )}
+
+                      <div className="relative -mt-4 z-10 h-[82px] w-[82px] shrink-0">
+                        <input
+                          ref={fotoInputRef}
+                          type="file"
+                          accept="image/png,image/jpeg,image/webp"
+                          className="hidden"
+                        />
+
+                        <button
+                          type="button"
+                          onClick={() => fotoInputRef.current?.click()}
+                          aria-label="Alterar foto de perfil"
+                          className="group relative h-full w-full cursor-pointer overflow-hidden rounded-full border-4 border-[#0d121c] bg-[#1a2130]"
+                        >
+                          {usuario.foto ? (
+                            <img
+                              src={usuario.foto}
+                              alt={usuario.nome}
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center">
+                              <UserIcon size={34} className="text-gray-400" />
+                            </div>
+                          )}
+
+                          <span className="absolute inset-0 flex items-center justify-center bg-black/60 text-white opacity-0 transition group-hover:opacity-100">
+                            <CameraIcon size={22} />
+                          </span>
+                        </button>
                       </div>
+
 
                       <div className="pb-1">
                         <div className="flex items-baseline">
@@ -529,6 +563,7 @@ export default function Perfil() {
                           musicId={post.musica?.id}
                           musicTitle={post.musica.titulo}
                           artist={post.musica.artista.nome}
+                          artistId={post.musica?.artista?.id}
                           likes={post._count.curtidas}
                           comments={post._count.comentarios}
                         />

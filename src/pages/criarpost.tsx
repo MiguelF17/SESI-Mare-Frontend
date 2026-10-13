@@ -213,6 +213,7 @@ export default function CriarPost() {
                 Músicas recomendadas
               </h2>
 
+
               <div className="flex gap-3 overflow-x-auto pb-3">
                 {musicas.slice(0, 4).map((musica) => (
                   <div
@@ -221,7 +222,7 @@ export default function CriarPost() {
                       setMusicaSelecionada(musica);
                       setNota(0);
                     }}
-                    className="cursor-pointer"
+                    className="w-[160px] shrink-0 cursor-pointer"
                   >
                     <MusicCard
                       tipo="quadrado"
@@ -232,6 +233,7 @@ export default function CriarPost() {
                   </div>
                 ))}
               </div>
+
             </section>
 
             {/* ESCOLHER MÚSICA */}

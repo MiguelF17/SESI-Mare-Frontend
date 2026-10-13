@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, useParams } from "react-router-dom";
-import { PaperPlaneTiltIcon, ChatCircleIcon, TrashIcon } from "@phosphor-icons/react";
+import { ArrowLeftIcon, PaperPlaneTiltIcon, ChatCircleIcon, TrashIcon } from "@phosphor-icons/react";
 
 import PageLayout from "../components/pageLayout";
 import PageContent from "../components/pageContent";
@@ -228,7 +228,7 @@ export default function Post() {
 
                         <Link
                             to="/home"
-                            className="mt-4 inline-block text-sm text-[#a78bfa] hover:underline"
+                            className="mt-4 inline-block text-sm text-[#58AAF0] hover:underline"
                         >
                             Voltar para a Home
                         </Link>
@@ -246,27 +246,36 @@ export default function Post() {
                     {/* COLUNA PRINCIPAL */}
                     <section className="min-w-0">
                         {/* BUSCA FIXA */}
-                        <div className="sticky top-0 z-20 bg-[#080A10]">
-                            <div className="pt-6">
+
+                        {/* CABEÇALHO DA PUBLICAÇÃO */}
+                        <div className="sticky top-0 z-20 border-b border-[#242b3a] bg-[#080A10]/95 backdrop-blur-md">
+                            <div className="py-3">
                                 <SearchBar />
                             </div>
 
-                            <div className="border-b border-[#242b3a] pb-3 pt-4">
+                            <div className="flex items-center gap-5 py-3">
                                 <Link
                                     to="/home"
-                                    className="text-sm text-[#a78bfa] transition hover:text-white"
+                                    aria-label="Voltar para a Home"
+                                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[#d1d5db] transition hover:bg-[#202536] hover:text-white"
                                 >
-                                    ← Voltar
+                                    <ArrowLeftIcon size={24} weight="bold" />
                                 </Link>
 
-                                <h1 className="mt-2 font-serif text-xl text-white">
-                                    Publicação
-                                </h1>
+                                <div>
+                                    <h1 className="text-base font-bold text-white">
+                                        Publicação
+                                    </h1>
+                                    <p className="text-xs text-[#697386]">
+                                        {post._count?.comentarios ?? comentarios.length} respostas
+                                    </p>
+                                </div>
                             </div>
                         </div>
 
+
                         {/* PUBLICAÇÃO */}
-                        <div className="py-5">
+                        <div className="border-b border-[#242b3a] py-4">
                             <PostCard
                                 name={post.usuario?.nome || "Usuário"}
                                 username={post.usuario?.username || ""}
@@ -277,6 +286,7 @@ export default function Post() {
                                 musicId={post.musica?.id}
                                 musicTitle={post.musica?.titulo || ""}
                                 artist={post.musica?.artista?.nome || "Artista desconhecido"}
+                                artistId={post.musica?.artista?.id}
                                 musicCover={post.musica?.capa}
                                 duracaoSegundos={post.musica?.duracaoSegundos}
                                 likes={post._count?.curtidas ?? 0}
@@ -305,19 +315,19 @@ export default function Post() {
                                         }
                                         placeholder="Publique sua resposta"
                                         rows={2}
-                                        maxLength={1000}
-                                        className="w-full resize-none border-b border-[#354052] bg-transparent py-2 text-[15px] leading-6 text-white outline-none placeholder:text-[#697386] focus:border-[#8b5cf6]"
+                                        maxLength={500}
+                                        className="w-full resize-none border-b border-[#354052] bg-transparent py-2 text-[15px] leading-6 text-white outline-none placeholder:text-[#697386] focus:border-[#58AAF0]"
                                     />
 
                                     <div className="mt-3 flex items-center justify-between">
                                         <span className="text-xs text-[#697386]">
-                                            {textoComentario.length}/1000
+                                            {textoComentario.length}/500
                                         </span>
 
                                         <button
                                             type="submit"
                                             disabled={!textoComentario.trim() || enviando}
-                                            className="flex cursor-pointer items-center gap-2 rounded-full bg-[#8b5cf6] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#7c3aed] disabled:cursor-not-allowed disabled:opacity-40"
+                                            className="flex cursor-pointer items-center gap-2 rounded-full bg-[#58AAF0] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#438fd0] disabled:cursor-not-allowed disabled:opacity-40"
                                         >
                                             <PaperPlaneTiltIcon size={15} />
                                             {enviando ? "Enviando..." : "Responder"}
@@ -329,7 +339,7 @@ export default function Post() {
                             <div className="border-b border-[#354052] px-1 py-5 text-sm text-[#9ca3af]">
                                 <Link
                                     to="/login"
-                                    className="text-[#a78bfa] hover:underline"
+                                    className="text-[#58AAF0] hover:underline"
                                 >
                                     Entre na sua conta
                                 </Link>{" "}
@@ -343,7 +353,7 @@ export default function Post() {
 
                         {/* LISTA DE COMENTÁRIOS — ESTILO X */}
                         <section>
-                            <h2 className="border-b border-[#354052] px-1 py-4 text-sm font-semibold text-white">
+                            <h2 className="border-b border-[#242b3a] px-1 py-4 text-base font-bold text-white">
                                 Respostas
                             </h2>
 
@@ -351,7 +361,7 @@ export default function Post() {
                                 comentarios.map((comentario) => (
                                     <article
                                         key={comentario.id}
-                                        className="border-b border-[#242b3a] px-1 py-4 transition hover:bg-[#0c0f18]"
+                                        className="border-b border-[#242b3a] px-1 py-4 transition hover:bg-white/[0.02]"
                                     >
                                         <div className="flex items-start gap-3">
                                             <img

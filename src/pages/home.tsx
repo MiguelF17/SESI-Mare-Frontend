@@ -72,6 +72,7 @@ export default function Home() {
                     musicId={post.musica?.id}
                     musicTitle={post.musica?.titulo}
                     artist={post.musica?.artista?.nome}
+                    artistId={post.musica?.artista?.id}
                     musicCover={post.musica?.capa}
                     nota={post.musica?.nota}
                     avaliacoes={post.musica?.avaliacoes}

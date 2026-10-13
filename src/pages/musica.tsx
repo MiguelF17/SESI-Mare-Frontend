@@ -7,7 +7,7 @@ import OuvirCard from "../components/ouvirCard";
 import PostCard from "../components/postCard";
 import { API_URL } from "../api";
 
-import { StarIcon, PlusIcon, BookmarkSimpleIcon } from "@phosphor-icons/react";
+import { ArrowLeftIcon, StarIcon, PlusIcon, BookmarkSimpleIcon } from "@phosphor-icons/react";
 
 import MusicCard from "../components/musicCard";
 import logo from "../assets/logo.png";
@@ -198,8 +198,24 @@ export default function Musica() {
           <main className="min-w-0">
 
             {/* BUSCA */}
-            <div className="sticky top-0 z-20 bg-[#080A10]">
-              <SearchBar />
+            <div className="sticky top-0 z-20 border-b border-[#242b3a] bg-[#080A10]/95 backdrop-blur-md">
+              <div className="py-3">
+                <SearchBar />
+              </div>
+
+              <div className="flex items-center gap-5 py-3">
+                <Link
+                  to="/home"
+                  aria-label="Voltar para a Home"
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[#d1d5db] transition hover:bg-[#202536] hover:text-white"
+                >
+                  <ArrowLeftIcon size={24} weight="bold" />
+                </Link>
+
+                  <h1 className="text-base font-bold text-white">
+                    {musica.titulo}
+                  </h1>
+              </div>
             </div>
 
             {/* CAPA DA MÚSICA */}
