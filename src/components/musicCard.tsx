@@ -27,6 +27,7 @@ type MusicCardProps = {
   nota?: number;
   avaliacoes?: number;
   duracaoSegundos?: number;
+  larguraFixa?: boolean;
   onRemover?: () => void;
 };
 
@@ -40,6 +41,7 @@ export default function MusicCard({
   nota = 0,
   avaliacoes = 0,
   duracaoSegundos = 0,
+  larguraFixa = false,
   onRemover,
 }: MusicCardProps) {
   const navigate = useNavigate();
@@ -196,20 +198,7 @@ export default function MusicCard({
 
           <div className="absolute inset-0 bg-black/60" />
 
-          <div className="relative z-10 flex h-full w-full flex-col justify-between p-4">
-            <div className="flex justify-end">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (id) navigate(`/musica/${id}`);
-                }}
-                aria-label="Abrir música"
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-[#58AAF0] transition hover:bg-[#4a8bc2]"
-              >
-                <PlayIcon size={18} color="#FFFFFF" weight="fill" />
-              </button>
-            </div>
-
+          <div className="relative z-10 flex h-full w-full flex-col justify-end p-4">
             <div>
               <p className="truncate text-lg text-white">{titulo}</p>
               <p className="mt-1 truncate text-xs text-[#D0D0D5]">
@@ -254,7 +243,10 @@ export default function MusicCard({
     return (
       <div
         onClick={() => id && navigate(`/musica/${id}`)}
-        className="w-full min-w-0 cursor-pointer rounded-lg border border-[#354052] bg-[#111420] p-2 transition hover:bg-[#171C2A]"
+        className={`cursor-pointer rounded-lg border border-[#354052] bg-[#111420] p-2 transition hover:bg-[#171C2A] ${larguraFixa
+            ? "w-[180px] shrink-0"
+            : "w-full min-w-0"
+          }`}
       >
         <img
           src={capa || logo}
@@ -333,20 +325,9 @@ export default function MusicCard({
         </div>
 
         <div className="ml-2 flex shrink-0 items-center">
-          <span className="mr-2 text-[11px] text-[#687386]">
+          <span className="mr-2 text-[12px] text-[#687386]">
             {formatarDuracao(duracaoSegundos)}
           </span>
-
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              if (id) navigate(`/musica/${id}`);
-            }}
-            aria-label="Abrir música"
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-[#58AAF0] transition hover:bg-[#4a8bc2]"
-          >
-            <PlayIcon size={17} color="#FFFFFF" weight="fill" />
-          </button>
         </div>
       </div>
 
@@ -367,9 +348,8 @@ export default function MusicCard({
           />
 
           <span
-            className={`ml-1 text-[11px] ${
-              salva ? "text-[#58AAF0]" : "text-[#687386]"
-            }`}
+            className={`ml-1 text-[11px] ${salva ? "text-[#58AAF0]" : "text-[#687386]"
+              }`}
           >
             {salva ? "Salva" : "Salvar"}
           </span>
@@ -384,11 +364,10 @@ export default function MusicCard({
             }}
             aria-label="Mais opções da música"
             aria-expanded={menuAberto}
-            className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-full transition ${
-              menuAberto
-                ? "bg-[#273349] text-[#58AAF0]"
-                : "text-[#D0D0D5] hover:bg-[#202536]"
-            }`}
+            className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-full transition ${menuAberto
+              ? "bg-[#273349] text-[#58AAF0]"
+              : "text-[#D0D0D5] hover:bg-[#202536]"
+              }`}
           >
             <DotsThreeIcon size={22} weight="bold" />
           </button>

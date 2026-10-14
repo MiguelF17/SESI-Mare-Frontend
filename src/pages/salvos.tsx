@@ -95,7 +95,7 @@ export default function Salvos() {
                       artista={musica.artista?.nome}
                       artistaId={musica?.artista?.id}
                       capa={musica.capa}
-                      nota={0}
+                      nota={musica.nota}
                       avaliacoes={musica._count?.posts ?? 0}
                       duracaoSegundos={musica.duracaoSegundos}
                       onRemover={() => {

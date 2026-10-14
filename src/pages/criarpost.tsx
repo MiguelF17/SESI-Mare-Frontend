@@ -289,6 +289,7 @@ export default function CriarPost() {
                         setBusca("");
                       }}
                       className="
+                      cursor-pointer
                         flex
                         items-center
                         gap-3

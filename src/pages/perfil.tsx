@@ -16,6 +16,8 @@ import RecommendedMusic from "../components/recommendedMusic";
 import { useEffect, useState, useRef } from "react";
 import { API_URL } from "../api";
 import calcularTempo from "../calcularTempo";
+import MusicCard from "../components/musicCard";
+import ImageCropModal from "../components/imageCropModal";
 
 interface Usuario {
   id: number;
@@ -59,6 +61,24 @@ export default function Perfil() {
     buscarComentarios();
     buscarSalvos();
   }, []);
+
+  const [imagemParaRecortar, setImagemParaRecortar] = useState<{
+    url: string;
+    tipo: "foto" | "capa";
+  } | null>(null);
+
+  function abrirRecorte(arquivo: File, tipo: "foto" | "capa") {
+    const url = URL.createObjectURL(arquivo);
+    setImagemParaRecortar({ url, tipo });
+  }
+
+  function fecharRecorte() {
+    if (imagemParaRecortar) {
+      URL.revokeObjectURL(imagemParaRecortar.url);
+    }
+
+    setImagemParaRecortar(null);
+  }
 
   /* informacoes perfil */
   async function buscarPerfil() {
@@ -253,6 +273,55 @@ export default function Perfil() {
     }
   }
 
+  async function enviarImagem(
+    arquivo: File,
+    tipo: "foto" | "capa"
+  ) {
+    try {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        window.location.href = "/login";
+        return;
+      }
+
+      const formData = new FormData();
+
+      formData.append("imagem", arquivo);
+      formData.append("tipo", tipo);
+
+      const resposta = await fetch(`${API_URL}/usuarios/me/imagem`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      const dados = await resposta.json();
+
+      if (!resposta.ok) {
+        alert(dados.erro || "Erro ao atualizar imagem");
+        return;
+      }
+
+      setUsuario((usuarioAtual) => {
+        if (!usuarioAtual) {
+          return usuarioAtual;
+        }
+
+        return {
+          ...usuarioAtual,
+          foto: dados.foto,
+          capa: dados.capa,
+        };
+      });
+    } catch (error) {
+      console.error("Erro ao enviar imagem:", error);
+      alert("Erro ao atualizar imagem");
+    }
+  }
+
   if (carregando) {
     return <div className="text-white">Carregando perfil...</div>;
   }
@@ -343,6 +412,18 @@ export default function Perfil() {
         </div>
       )}
 
+      {imagemParaRecortar && (
+        <ImageCropModal
+          imagem={imagemParaRecortar.url}
+          tipo={imagemParaRecortar.tipo}
+          onCancelar={fecharRecorte}
+          onConfirmar={async (arquivoRecortado) => {
+            await enviarImagem(arquivoRecortado, imagemParaRecortar.tipo);
+            fecharRecorte();
+          }}
+        />
+      )}
+
       <PageLayout>
         <PageContent>
           {/* COLUNAS */}
@@ -384,12 +465,30 @@ export default function Perfil() {
                     type="file"
                     accept="image/png,image/jpeg,image/webp"
                     className="hidden"
+                    style={
+                      usuario.capa
+                        ? {
+                          backgroundImage: `url(${usuario.capa})`,
+                          backgroundSize: "cover",
+                          backgroundPosition: "center",
+                        }
+                        : undefined
+                    }
+                    onChange={(e) => {
+                      const arquivo = e.target.files?.[0];
+
+                      if (arquivo) {
+                        abrirRecorte(arquivo, "capa");
+                      }
+
+                      e.target.value = "";
+                    }}
                   />
 
                   <button
                     type="button"
                     onClick={() => capaInputRef.current?.click()}
-                    className="absolute right-4 top-4 flex cursor-pointer items-center gap-2 rounded-lg bg-[#111726]/80 px-3 py-2 font-serif text-[12px] text-gray-300 transition hover:text-blue-400"
+                    className="absolute right-4 top-4 flex cursor-pointer items-center gap-2 rounded-lg bg-[#111726]/20 px-3 py-2 font-serif text-[12px] text-gray-300 transition hover:text-blue-400"
                   >
                     <CameraIcon size={18} />
                     Alterar capa
@@ -409,6 +508,15 @@ export default function Perfil() {
                           type="file"
                           accept="image/png,image/jpeg,image/webp"
                           className="hidden"
+                          onChange={(e) => {
+                            const arquivo = e.target.files?.[0];
+
+                            if (arquivo) {
+                              abrirRecorte(arquivo, "foto");
+                            }
+
+                            e.target.value = "";
+                          }}
                         />
 
                         <button
@@ -551,23 +659,29 @@ export default function Perfil() {
                     </div>
 
                     {avaliacoes.length > 0 ? (
+
                       avaliacoes.map((post) => (
                         <PostCard
-                          postId={post.id}
                           key={post.id}
-                          name={post.usuario.nome}
-                          username={post.usuario.username}
+                          postId={post.id}
+                          name={post.usuario?.nome ?? "Usuário"}
+                          username={post.usuario?.username ?? ""}
+                          foto={post.usuario?.foto}
                           time={post.dataCriacao}
-                          content={post.texto}
+                          content={post.texto ?? ""}
                           nota={post.nota}
                           musicId={post.musica?.id}
-                          musicTitle={post.musica.titulo}
-                          artist={post.musica.artista.nome}
+                          musicTitle={post.musica?.titulo ?? "Música indisponível"}
+                          artist={post.musica?.artista?.nome ?? "Artista desconhecido"}
                           artistId={post.musica?.artista?.id}
-                          likes={post._count.curtidas}
-                          comments={post._count.comentarios}
+                          musicCover={post.musica?.capa}
+                          duracaoSegundos={post.musica?.duracaoSegundos}
+                          likes={post._count?.curtidas ?? 0}
+                          comments={post._count?.comentarios ?? 0}
+                          avaliacoes={post.musica?._count?.posts ?? 0}
                         />
                       ))
+
                     ) : (
                       <p className="py-8 text-center text-[14px] text-[#697386]">
                         Nenhuma avaliação feita.
@@ -631,44 +745,33 @@ export default function Perfil() {
                     </div>
 
                     {salvos.length > 0 ? (
-                      salvos.map((salvo) => (
-                        <div
-                          key={salvo.id}
-                          className="flex items-center justify-between rounded-lg border border-[#354052] bg-[#111420] p-4"
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-[#1a2130]">
-                              <MusicNoteIcon
-                                size={20}
-                                className="text-[#697386]"
-                              />
-                            </div>
 
-                            <div>
-                              <p className="text-[14px] text-[#d4d9e2]">
-                                {salvo.musica.titulo}
-                              </p>
+                      salvos.map((salvo) => {
+                        const musica = salvo.musica;
 
-                              <p className="mt-1 text-[12px] text-[#697386]">
-                                {salvo.musica.artista.nome}
-                              </p>
-                            </div>
-                          </div>
+                        return (
+                          <MusicCard
+                            key={musica.id}
+                            id={musica.id}
+                            tipo="post"
+                            titulo={musica.titulo}
+                            artista={musica.artista?.nome}
+                            artistaId={musica.artista?.id}
+                            capa={musica.capa}
+                            nota={musica.nota}
+                            avaliacoes={musica._count?.posts ?? 0}
+                            duracaoSegundos={musica.duracaoSegundos}
+                            onRemover={() => {
+                              setSalvos((atuais) =>
+                                atuais.filter(
+                                  (salvamento) => salvamento.musica?.id !== musica.id
+                                )
+                              );
+                            }}
+                          />
+                        );
+                      })
 
-                          <div className="text-right">
-                            <p className="text-[12px] text-[#697386]">
-                              {salvo.musica._count.posts}{" "}
-                              {salvo.musica._count.posts === 1
-                                ? "avaliação"
-                                : "avaliações"}
-                            </p>
-
-                            <p className="mt-1 text-[11px] text-[#697386]">
-                              salva há {calcularTempo(salvo.dataCriacao)}
-                            </p>
-                          </div>
-                        </div>
-                      ))
                     ) : (
                       <p className="py-8 text-center text-[14px] text-[#697386]">
                         Nenhuma música salva.
