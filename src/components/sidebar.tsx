@@ -9,12 +9,14 @@ import {
   GearIcon,
 } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
+import { API_URL } from "../api";
 
 interface Usuario {
   id: number;
   username: string;
   nome: string;
   email: string;
+  foto: string | null;
 }
 export default function Sidebar() {
   const [usuario, setUsuario] = useState<Usuario | null>(null);
@@ -37,11 +39,29 @@ export default function Sidebar() {
   }
 
   useEffect(() => {
-    const usuarioSalvo = localStorage.getItem("usuario");
+    async function buscarUsuario() {
+      const token = localStorage.getItem("token");
 
-    if (usuarioSalvo) {
-      setUsuario(JSON.parse(usuarioSalvo));
+      if (!token) return;
+
+      try {
+        const resposta = await fetch(`${API_URL}/usuarios/me`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!resposta.ok) return;
+
+        const dados = await resposta.json();
+        setUsuario(dados);
+      } catch (erro) {
+        console.error("Erro ao buscar usuário:", erro);
+      }
     }
+
+    buscarUsuario();
+
   }, []);
 
   return (
@@ -62,7 +82,11 @@ export default function Sidebar() {
         <nav className="mt-4 flex flex-col">
           <div className="px-8 mb-6 flex items-center gap-2">
             <div className="flex h-[80px] w-[80px] shrink-0 items-center justify-center rounded-full bg-[#1a2130]">
-              <UserIcon size={34} className="text-gray-400" />
+              <img
+                src={usuario?.foto || logo}
+                alt={usuario?.nome}
+                className="rounded-full object-cover"
+              />
             </div>
 
             <div>

@@ -18,6 +18,7 @@ import { API_URL } from "../api";
 import calcularTempo from "../calcularTempo";
 import MusicCard from "../components/musicCard";
 import ImageCropModal from "../components/imageCropModal";
+import toast from "react-hot-toast";
 
 interface Usuario {
   id: number;
@@ -316,9 +317,10 @@ export default function Perfil() {
           capa: dados.capa,
         };
       });
+      window.dispatchEvent(new Event("usuarioAtualizado"));
     } catch (error) {
       console.error("Erro ao enviar imagem:", error);
-      alert("Erro ao atualizar imagem");
+      toast.error("Erro ao atualizar imagem");
     }
   }
 
@@ -488,7 +490,7 @@ export default function Perfil() {
                   <button
                     type="button"
                     onClick={() => capaInputRef.current?.click()}
-                    className="absolute right-4 top-4 flex cursor-pointer items-center gap-2 rounded-lg bg-[#111726]/20 px-3 py-2 font-serif text-[12px] text-gray-300 transition hover:text-blue-400"
+                    className="absolute right-4 top-4 flex cursor-pointer items-center gap-2 rounded-lg bg-[#111726]/20 px-3 py-2 font-serif text-[12px] text-white transition hover:text-blue-400"
                   >
                     <CameraIcon size={18} />
                     Alterar capa

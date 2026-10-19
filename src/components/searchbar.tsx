@@ -205,7 +205,10 @@ export default function SearchBar() {
                       <button
                         type="button"
                         key={p.id}
-                        onClick={pesquisar}
+                        onClick={() => {
+                          setAberta(false);
+                          navigate(`/post/${p.id}`);
+                        }}
                         className="block cursor-pointer w-full rounded-lg p-2 text-left hover:bg-[#202536]"
                       >
                         <span className="block text-xs text-[#9CA3AF]">
