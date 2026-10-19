@@ -18,6 +18,7 @@ import Resultados from "./pages/resultados";
 import Artista from "./pages/artista";
 import ProtectedRoute from "./ProtectedRoute";
 import Post from "./pages/post";
+import EscolherMusica from "./pages/EscolherMusica";
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
         <Route element={<PublicRoute />}>
           <Route path="/login" element={<Login />} />
           <Route path="/cadastro" element={<Cadastro />} />
+          <Route path="/escolher-musica" element={<EscolherMusica />}/>
         </Route>
 
         {/* Saiba mais */}

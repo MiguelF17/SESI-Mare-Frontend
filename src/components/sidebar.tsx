@@ -92,7 +92,7 @@ export default function Sidebar() {
             <div>
               <p className="text-white text-[16px]"> {usuario?.nome || "Usuário"}</p>
 
-              <p className="text-[#697386] text-[12px]">{usuario?.username}</p>
+              <p className="text-[#697386] text-[12px]">@{usuario?.username}</p>
             </div>
           </div>
 

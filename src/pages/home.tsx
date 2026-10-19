@@ -1,3 +1,4 @@
+
 import PageLayout from "../components/pageLayout";
 import PageContent from "../components/pageContent";
 import SearchBar from "../components/searchbar";
@@ -10,15 +11,32 @@ import { API_URL } from "../api";
 export default function Home() {
   const [posts, setPosts] = useState<any[]>([]);
   const [musicas, setMusicas] = useState<any[]>([]);
-  const [abaAtiva, setAbaAtiva] = useState<"paraVoce" | "seguindo">("paraVoce");
+  const [generosFavoritos, setGenerosFavoritos] = useState<string[]>([]);
+  const [abaAtiva, setAbaAtiva] = useState<"paraVoce" | "seguindo">(
+    "paraVoce"
+  );
 
   useEffect(() => {
     async function buscarDados() {
       try {
-        const [respostaPosts, respostaMusicas] = await Promise.all([
-          fetch(`${API_URL}/posts`),
-          fetch(`${API_URL}/musicas`),
-        ]);
+        const token = localStorage.getItem("token");
+
+        const [respostaPosts, respostaMusicas, respostaGeneros] =
+          await Promise.all([
+            fetch(`${API_URL}/posts`, {
+              headers: token
+                ? { Authorization: `Bearer ${token}` }
+                : {},
+            }),
+            fetch(`${API_URL}/musicas`),
+            token
+              ? fetch(`${API_URL}/usuarios/me/generos`, {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                })
+              : Promise.resolve(null),
+          ]);
 
         if (!respostaPosts.ok || !respostaMusicas.ok) {
           throw new Error("Erro ao buscar dados");
@@ -29,6 +47,16 @@ export default function Home() {
 
         setPosts(dadosPosts);
         setMusicas(dadosMusicas);
+
+        if (respostaGeneros?.ok) {
+          const dadosGeneros = await respostaGeneros.json();
+
+          setGenerosFavoritos(
+            Array.isArray(dadosGeneros) ? dadosGeneros : []
+          );
+        } else {
+          setGenerosFavoritos([]);
+        }
       } catch (erro) {
         console.error("Erro ao buscar dados:", erro);
       }
@@ -37,33 +65,45 @@ export default function Home() {
     buscarDados();
   }, []);
 
+  const normalizarGenero = (genero: string) =>
+    genero.trim().toLocaleLowerCase("pt-BR");
+
+  const musicasRecomendadas =
+    generosFavoritos.length > 0
+      ? musicas.filter((musica) =>
+          generosFavoritos.some(
+            (genero) =>
+              typeof musica.genero === "string" &&
+              normalizarGenero(musica.genero) ===
+                normalizarGenero(genero)
+          )
+        )
+      : musicas;
+
   return (
     <PageLayout>
       <PageContent>
-        {/* COLUNAS */}
         <div className="grid grid-cols-1 gap-10 xl:grid-cols-[minmax(0,1fr)_340px]">
-          {/* COLUNA PRINCIPAL */}
           <section className="min-w-0">
-            {/* ÁREA FIXA */}
             <div className="sticky top-0 z-20 bg-[#080A10]">
-              {/* BUSCA */}
               <div className="pt-6">
                 <SearchBar />
               </div>
 
-              {/* FEED TABS */}
               <div className="flex justify-center pb-2 pt-4">
-                <FeedTabs abaAtiva={abaAtiva} setAbaAtiva={setAbaAtiva} />
+                <FeedTabs
+                  abaAtiva={abaAtiva}
+                  setAbaAtiva={setAbaAtiva}
+                />
               </div>
             </div>
 
-            {/* POSTS */}
             <div className="flex flex-col gap-6 pt-4">
               {posts.length > 0 ? (
                 posts.map((post) => (
                   <PostCard
-                    postId={post.id}
                     key={post.id}
+                    postId={post.id}
                     name={post.usuario?.nome}
                     username={post.usuario?.username}
                     foto={post.usuario?.foto}
@@ -74,10 +114,11 @@ export default function Home() {
                     artist={post.musica?.artista?.nome}
                     artistId={post.musica?.artista?.id}
                     musicCover={post.musica?.capa}
-                    nota={post.musica?.nota}
+                    nota={post.nota}
                     avaliacoes={post.musica?.avaliacoes}
                     likes={post._count?.curtidas}
                     comments={post._count?.comentarios}
+                    curtidoPorMim={post.curtidoPorMim}
                     duracaoSegundos={post.musica?.duracaoSegundos}
                   />
                 ))
@@ -89,29 +130,26 @@ export default function Home() {
             </div>
           </section>
 
-          {/* RECOMENDAÇÕES */}
           <aside className="hidden xl:block">
-            <div className="fixed top-2/5 -translate-y-2/5 w-[340px]">
+            <div className="fixed top-2/5 w-[340px] -translate-y-2/5">
               <h2 className="mb-5 font-serif text-[16px] text-white">
                 Músicas recomendadas
               </h2>
 
               <div className="flex flex-col gap-3">
-                {musicas.length > 0 ? (
-                  musicas
-                    .slice(0, 5)
-                    .map((musica) => (
-                      <RecommendedMusic
-                        id={musica.id}
-                        key={musica.id}
-                        titulo={musica.titulo}
-                        artist={musica.artista.nome}
-                        capa={musica.capa}
-                      />
-                    ))
+                {musicasRecomendadas.length > 0 ? (
+                  musicasRecomendadas.slice(0, 5).map((musica) => (
+                    <RecommendedMusic
+                      id={musica.id}
+                      key={musica.id}
+                      titulo={musica.titulo}
+                      artist={musica.artista?.nome}
+                      capa={musica.capa}
+                    />
+                  ))
                 ) : (
                   <p className="py-8 text-center text-[14px] text-[#697386]">
-                    Nenhuma música recomendada.
+                    Nenhuma música encontrada para seus gêneros favoritos.
                   </p>
                 )}
               </div>

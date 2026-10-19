@@ -129,7 +129,7 @@ function Navbar() {
             }`
           }
         >
-          {usuario && <p>Olá, {usuario.nome}</p>}
+          {usuario && <p>Olá, {usuario.username}</p>}
 
           <UserIcon size={24} strokeWidth={1.5} />
         </NavLink>

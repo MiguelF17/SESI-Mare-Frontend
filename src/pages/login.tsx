@@ -53,7 +53,7 @@ function Login() {
       toast.success("Login realizado com sucesso!");
 
       setTimeout(() => {
-        navigate("/home");
+        navigate("/escolher-musica");
       }, 1000);
     } catch (error) {
       console.error("Erro ao conectar com a API:", error);
