@@ -1,5 +1,5 @@
 import { UserIcon } from "@phosphor-icons/react";
-import { Link, NavLink} from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import logo from "../assets/logo.png";
 
@@ -9,31 +9,59 @@ interface Usuario {
   username: string;
 }
 
+function tokenExpirado(token: string | null): boolean {
+  if (!token) return true;
+
+  try {
+    const payload = token.split(".")[1];
+    const dados = JSON.parse(
+      atob(payload.replace(/-/g, "+").replace(/_/g, "/"))
+    );
+
+    return !dados.exp || dados.exp * 1000 <= Date.now();
+  } catch {
+    return true;
+  }
+}
+
 function Navbar() {
+  const navigate = useNavigate();
+
   const [showNavbar, setShowNavbar] = useState(true);
   const [usuario, setUsuario] = useState<Usuario | null>(null);
 
   useEffect(() => {
-    let lastScrollY = window.scrollY;
+    const verificarSessao = () => {
+      const token = localStorage.getItem("token");
+      const usuarioSalvo = localStorage.getItem("usuario");
 
-    function handleScroll() {
-      const currentScrollY = window.scrollY;
-
-      if (currentScrollY > lastScrollY && currentScrollY > 100) {
-        // descendo
-        setShowNavbar(false);
-      } else {
-        // subindo
-        setShowNavbar(true);
+      if (!token || tokenExpirado(token) || !usuarioSalvo) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("usuario");
+        setUsuario(null);
+        return;
       }
 
-      lastScrollY = currentScrollY;
-    }
+      try {
+        setUsuario(JSON.parse(usuarioSalvo));
+      } catch {
+        localStorage.removeItem("token");
+        localStorage.removeItem("usuario");
+        setUsuario(null);
+      }
+    };
 
-    window.addEventListener("scroll", handleScroll);
+    verificarSessao();
+
+    // Atualiza também quando outra aba altera a sessão.
+    window.addEventListener("storage", verificarSessao);
+
+    // Confere novamente quando o usuário volta para a aba.
+    window.addEventListener("focus", verificarSessao);
 
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("storage", verificarSessao);
+      window.removeEventListener("focus", verificarSessao);
     };
   }, []);
 
@@ -122,6 +150,19 @@ function Navbar() {
 
         <NavLink
           to="/perfil"
+          onClick={(e) => {
+            const token = localStorage.getItem("token");
+
+            if (tokenExpirado(token)) {
+              e.preventDefault();
+
+              localStorage.removeItem("token");
+              localStorage.removeItem("usuario");
+              setUsuario(null);
+
+              navigate("/login", { replace: true });
+            }
+          }}
           className={({ isActive }) =>
             `flex gap-4 transition duration-300 ${isActive
               ? "text-[#58AAF0]"
@@ -131,7 +172,7 @@ function Navbar() {
         >
           {usuario && <p>Olá, {usuario.username}</p>}
 
-          <UserIcon size={24} strokeWidth={1.5} />
+          <UserIcon size={24} weight="regular" />
         </NavLink>
       </nav>
     </header>

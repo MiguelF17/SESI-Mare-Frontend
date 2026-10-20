@@ -40,20 +40,21 @@ function Login() {
         return;
       }
 
-      // SALVA O TOKEN
-
       localStorage.setItem("token", dados.token);
-
-      // SALVA OS DADOS DO USUÁRIO
-
       localStorage.setItem("usuario", JSON.stringify(dados.usuario));
+
+      if (!dados.usuario.preferenciasConcluidas) {
+        navigate("/filtrar");
+      } else {
+        navigate("/");
+      }
 
       // AVISO DE SUCESSO
 
       toast.success("Login realizado com sucesso!");
 
       setTimeout(() => {
-        navigate("/escolher-musica");
+        navigate("/filtrar");
       }, 1000);
     } catch (error) {
       console.error("Erro ao conectar com a API:", error);

@@ -3,3 +3,26 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&display=swap');
 
 @import "tailwindcss";
+
+/* Barra de rolagem da Maré */
+.scrollbar-mare {
+  scrollbar-width: thin;
+  scrollbar-color: #355675 transparent;
+}
+
+.scrollbar-mare::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-mare::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-mare::-webkit-scrollbar-thumb {
+  background-color: #355675;
+  border-radius: 999px;
+}
+
+.scrollbar-mare::-webkit-scrollbar-thumb:hover {
+  background-color: #58aaf0;
+}

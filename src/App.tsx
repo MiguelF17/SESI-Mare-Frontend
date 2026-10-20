@@ -18,7 +18,7 @@ import Resultados from "./pages/resultados";
 import Artista from "./pages/artista";
 import ProtectedRoute from "./ProtectedRoute";
 import Post from "./pages/post";
-import EscolherMusica from "./pages/EscolherMusica";
+import Filtrar from "./pages/filtrar";
 
 function App() {
   return (
@@ -26,26 +26,25 @@ function App() {
       <Toaster position="bottom-right" />
 
       <Routes>
-        {/* Página não cadastrado */}
-        <Route path="/" element={<Hero />} />
 
-        {/* Cadastro */}
+        {/* Inicial */}
         <Route element={<PublicRoute />}>
           <Route path="/login" element={<Login />} />
           <Route path="/cadastro" element={<Cadastro />} />
-          <Route path="/escolher-musica" element={<EscolherMusica />}/>
+          <Route path="/" element={<Hero />} />
+          <Route path="/sobre" element={<Sobre />} />
         </Route>
 
-        {/* Saiba mais */}
+        {/* Páginas públicas */}
         <Route path="/contato" element={<Contato />} />
         <Route path="/faq" element={<Faq />} />
-        <Route path="/sobre" element={<Sobre />} />
 
 
         <Route element={<ProtectedRoute />}>
           <Route path="/home" element={<Home />} />
           <Route path="/explorar" element={<Explorar />} />
           <Route path="/perfil" element={<Perfil />} />
+          <Route path="/filtrar" element={<Filtrar />} />
           <Route path="/salvos" element={<Salvos />} />
           <Route path="/criarpost" element={<Criarpost />} />
           <Route path="/musica" element={<Musica />} />
