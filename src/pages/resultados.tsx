@@ -7,7 +7,10 @@ import SearchBar from "../components/searchbar";
 import MusicCard from "../components/musicCard";
 import PostCard from "../components/postCard";
 import RecommendedMusic from "../components/recommendedMusic";
-import { API_URL } from "../api";
+
+import { buscarArtistas, type Artista } from "../services/artistaService";
+import { buscarMusicas, type Musica } from "../services/musicaService";
+import { buscarPosts, type Post } from "../services/postService";
 
 function normalizar(valor: unknown) {
   return String(valor ?? "")
@@ -21,41 +24,42 @@ export default function Resultados() {
   const termo = params.get("q") || "";
   const q = normalizar(termo.trim());
 
-  const [musicas, setMusicas] = useState<any[]>([]);
-  const [artistas, setArtistas] = useState<any[]>([]);
-  const [posts, setPosts] = useState<any[]>([]);
+  const [musicas, setMusicas] = useState<Musica[]>([]);
+  const [artistas, setArtistas] = useState<Artista[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
   const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState(false);
 
   useEffect(() => {
     let ativo = true;
 
     async function carregar() {
       setCarregando(true);
+      setErro(false);
 
       try {
-        const respostas = await Promise.all([
-          fetch(`${API_URL}/musicas`),
-          fetch(`${API_URL}/artistas`),
-          fetch(`${API_URL}/posts`),
-        ]);
-
-        if (respostas.some((r) => !r.ok)) {
-          throw new Error("Erro ao buscar resultados");
-        }
-
-        const [m, a, p] = await Promise.all(
-          respostas.map((r) => r.json())
-        );
+        const [musicasDados, artistasDados, postsDados] =
+          await Promise.all([
+            buscarMusicas(),
+            buscarArtistas(),
+            buscarPosts(),
+          ]);
 
         if (ativo) {
-          setMusicas(m);
-          setArtistas(a);
-          setPosts(p);
+          setMusicas(musicasDados);
+          setArtistas(artistasDados);
+          setPosts(postsDados);
         }
       } catch (erro) {
         console.error("Erro ao buscar resultados:", erro);
+
+        if (ativo) {
+          setErro(true);
+        }
       } finally {
-        if (ativo) setCarregando(false);
+        if (ativo) {
+          setCarregando(false);
+        }
       }
     }
 
@@ -67,32 +71,31 @@ export default function Resultados() {
   }, []);
 
   const musicasFiltradas = musicas.filter(
-    (m) =>
-      normalizar(m.titulo).includes(q) ||
-      normalizar(m.artista?.nome).includes(q)
+    (musica) =>
+      normalizar(musica.titulo).includes(q) ||
+      normalizar(musica.artista?.nome).includes(q)
   );
 
-  const artistasFiltrados = artistas.filter((a) =>
-    normalizar(a.nome).includes(q)
+  const artistasFiltrados = artistas.filter((artista) =>
+    normalizar(artista.nome).includes(q)
   );
 
   const postsFiltrados = posts.filter(
-    (p) =>
-      normalizar(p.texto).includes(q) ||
-      normalizar(p.usuario?.nome).includes(q) ||
-      normalizar(p.usuario?.username).includes(q) ||
-      normalizar(p.musica?.titulo).includes(q) ||
-      normalizar(p.musica?.artista?.nome).includes(q)
+    (post) =>
+      post.musica?.id != null &&
+      (normalizar(post.texto).includes(q) ||
+        normalizar(post.usuario?.nome).includes(q) ||
+        normalizar(post.usuario?.username).includes(q) ||
+        normalizar(post.musica?.titulo).includes(q) ||
+        normalizar(post.musica?.artista?.nome).includes(q))
   );
 
   return (
     <PageLayout>
       <PageContent>
         <div className="grid grid-cols-1 gap-10 xl:grid-cols-[minmax(0,1fr)_340px]">
-
           {/* COLUNA PRINCIPAL */}
           <section className="min-w-0">
-
             {/* BUSCA FIXA */}
             <div className="sticky top-0 z-20 bg-[#080A10]">
               <div className="pt-6">
@@ -114,13 +117,16 @@ export default function Resultados() {
               <p className="py-10 text-center text-sm text-[#697386]">
                 Buscando resultados...
               </p>
+            ) : erro ? (
+              <p className="py-10 text-center text-sm text-red-400">
+                Não foi possível carregar os resultados. Tente novamente.
+              </p>
             ) : !q ? (
               <p className="py-10 text-center text-sm text-[#697386]">
                 Digite algo na barra de pesquisa.
               </p>
             ) : (
-              <div className="flex flex-col gap-10 pt-6 mb-5">
-
+              <div className="mb-5 flex flex-col gap-10 pt-6">
                 {/* MÚSICAS */}
                 <section>
                   <h2 className="mb-5 font-serif text-lg text-white">
@@ -132,16 +138,16 @@ export default function Resultados() {
 
                   {musicasFiltradas.length > 0 ? (
                     <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-                      {musicasFiltradas.map((m) => (
+                      {musicasFiltradas.map((musica) => (
                         <MusicCard
-                          key={m.id}
-                          id={m.id}
+                          key={musica.id}
+                          id={musica.id}
                           tipo="quadrado"
-                          titulo={m.titulo}
-                          artista={m.artista?.nome}
-                          capa={m.capa}
-                          nota={m.nota}
-                          avaliacoes={m.avaliacoes}
+                          titulo={musica.titulo}
+                          artista={musica.artista?.nome}
+                          capa={musica.capa ?? undefined}
+                          nota={musica.nota}
+                          avaliacoes={musica.avaliacoes}
                         />
                       ))}
                     </div>
@@ -163,20 +169,20 @@ export default function Resultados() {
 
                   {artistasFiltrados.length > 0 ? (
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                      {artistasFiltrados.map((a) => (
+                      {artistasFiltrados.map((artista) => (
                         <Link
-                          key={a.id}
-                          to={`/artistas/${a.id}`}
+                          key={artista.id}
+                          to={`/artistas/${artista.id}`}
                           className="flex items-center gap-3 rounded-xl border border-[#273349] bg-[#111420] p-3 transition hover:border-[#58AAF0]/50 hover:bg-[#171C2A]"
                         >
                           <img
-                            src={a.fotoURL || "/logo.png"}
+                            src={artista.fotoURL || "/logo.png"}
                             alt=""
                             className="h-12 w-12 shrink-0 rounded-full bg-[#202536] object-cover"
                           />
 
                           <span className="text-sm font-medium text-white">
-                            {a.nome}
+                            {artista.nome}
                           </span>
                         </Link>
                       ))}
@@ -199,25 +205,26 @@ export default function Resultados() {
 
                   {postsFiltrados.length > 0 ? (
                     <div className="flex flex-col gap-6">
-                      {postsFiltrados.map((p) => (
+                      {postsFiltrados.map((post) => (
                         <PostCard
-                          key={p.id}
-                          postId={p.id}
-                          name={p.usuario?.nome}
-                          username={p.usuario?.username}
-                          foto={p.usuario?.foto}
-                          time={p.dataCriacao}
-                          content={p.texto}
-                          musicId={p.musica?.id}
-                          musicTitle={p.musica?.titulo}
-                          artist={p.musica?.artista?.nome}
-                          musicCover={p.musica?.capa}
-                          nota={p.musica?.nota}
-                          avaliacoes={p.musica?.avaliacoes}
-                          likes={p._count?.curtidas ?? 0}
-                          comments={p._count?.comentarios}
-                          duracaoSegundos={p.musica?.duracaoSegundos}
-                          curtidoPorMim={p.curtidoPorMim ?? false}
+                          key={post.id}
+                          postId={post.id}
+                          name={post.usuario?.nome ?? "Usuário"}
+                          username={post.usuario?.username ?? ""}
+                          foto={post.usuario?.foto ?? undefined}
+                          time={post.dataCriacao}
+                          content={post.texto ?? ""}
+                          musicId={post.musica!.id}
+                          musicTitle={post.musica?.titulo ?? ""}
+                          artist={post.musica?.artista?.nome ?? ""}
+                          artistId={post.musica?.artista?.id}
+                          musicCover={post.musica?.capa ?? undefined}
+                          nota={post.nota}
+                          avaliacoes={post.musica?.avaliacoes}
+                          likes={post._count?.curtidas ?? 0}
+                          comments={post._count?.comentarios ?? 0}
+                          duracaoSegundos={post.musica?.duracaoSegundos}
+                          curtidoPorMim={post.curtidoPorMim ?? false}
                         />
                       ))}
                     </div>
@@ -227,7 +234,6 @@ export default function Resultados() {
                     </p>
                   )}
                 </section>
-
               </div>
             )}
           </section>
@@ -247,7 +253,7 @@ export default function Resultados() {
                       key={musica.id}
                       titulo={musica.titulo}
                       artist={musica.artista?.nome}
-                      capa={musica.capa}
+                      capa={musica.capa ?? undefined}
                     />
                   ))
                 ) : (
@@ -258,7 +264,6 @@ export default function Resultados() {
               </div>
             </div>
           </aside>
-
         </div>
       </PageContent>
     </PageLayout>

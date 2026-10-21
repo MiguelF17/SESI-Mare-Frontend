@@ -19,6 +19,8 @@ import Artista from "./pages/artista";
 import ProtectedRoute from "./ProtectedRoute";
 import Post from "./pages/post";
 import Filtrar from "./pages/filtrar";
+import PerfilPublico from "./pages/perfilPublico";
+import ListaSeguidores from "./pages/listaSeguidores";
 
 function App() {
   return (
@@ -44,6 +46,7 @@ function App() {
           <Route path="/home" element={<Home />} />
           <Route path="/explorar" element={<Explorar />} />
           <Route path="/perfil" element={<Perfil />} />
+          <Route path="/u/:username" element={<PerfilPublico />} />
           <Route path="/filtrar" element={<Filtrar />} />
           <Route path="/salvos" element={<Salvos />} />
           <Route path="/criarpost" element={<Criarpost />} />
@@ -53,6 +56,7 @@ function App() {
           <Route path="/post/:id" element={<Post />} />
           <Route path="/configuracoes" element={<Configuracoes />} />
           <Route path="/buscar" element={<Resultados />} />
+          <Route path="/usuarios/:id/:tipo" element={<ListaSeguidores />} />
         </Route>
 
       </Routes>

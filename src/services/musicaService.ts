@@ -13,6 +13,11 @@ export interface Musica {
         nome: string;
         fotoURL?: string | null;
     };
+
+    _count?: {
+        posts?: number;
+    };
+
     spotifyUrl?: string | null;
     appleMusicUrl?: string | null;
     amazonMusicUrl?: string | null;
@@ -30,5 +35,9 @@ export async function buscarMusicas(): Promise<Musica[]> {
 }
 
 export async function buscarMusicaPorId(id: number): Promise<Musica> {
+    if (!Number.isInteger(id) || id <= 0) {
+        throw new Error("ID de música inválido.");
+    }
+
     return apiRequest<Musica>(`/musicas/${id}`);
 }

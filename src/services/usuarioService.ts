@@ -1,4 +1,5 @@
 import { apiRequest } from "../api";
+import type { Post } from "./postService";
 
 export interface MeuPerfil {
   id: number;
@@ -9,6 +10,30 @@ export interface MeuPerfil {
   capa?: string | null;
   bio?: string | null;
   preferenciasConcluidas?: boolean;
+
+  _count: {
+    seguidores: number;
+    seguindo: number;
+    posts: number;
+    comentarios: number;
+    salvamentos: number;
+  };
+}
+
+export interface PerfilPublico {
+  id: number;
+  nome: string;
+  username: string;
+  foto: string | null;
+  capa: string | null;
+  bio: string | null;
+  seguindoPorMim: boolean;
+  _count: {
+    seguidores: number;
+    seguindo: number;
+    posts: number;
+  };
+  posts: Post[];
 }
 
 export async function buscarMeuPerfil(): Promise<MeuPerfil> {
@@ -23,4 +48,24 @@ export async function buscarGenerosFavoritos(): Promise<string[]> {
   }
 
   return dados as string[];
+}
+
+export async function buscarPerfilPublico(
+  username: string,
+): Promise<PerfilPublico> {
+  return apiRequest<PerfilPublico>(
+    `/usuarios/publico/${encodeURIComponent(username)}`,
+  );
+}
+
+export async function seguirUsuario(id: number) {
+  return apiRequest(`/usuarios/${id}/seguir`, {
+    method: "POST",
+  });
+}
+
+export async function deixarDeSeguirUsuario(id: number) {
+  return apiRequest(`/usuarios/${id}/seguir`, {
+    method: "DELETE",
+  });
 }

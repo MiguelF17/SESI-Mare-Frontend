@@ -1,7 +1,6 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
-    ArrowLeftIcon,
     PaperPlaneTiltIcon,
     ChatCircleIcon,
     TrashIcon,
@@ -12,28 +11,44 @@ import PageContent from "../components/pageContent";
 import SearchBar from "../components/searchbar";
 import RecommendedMusic from "../components/recommendedMusic";
 import PostCard from "../components/postCard";
+import BotaoVoltar from "../components/botaoVoltar";
 
-import { API_URL } from "../api";
+import { apiRequest } from "../api";
+import {
+    buscarPostPorId,
+    type Post as TipoPost,
+} from "../services/postService";
+import {
+    buscarComentarios,
+    criarComentario,
+    excluirComentario,
+    type Comentario,
+} from "../services/comentarioService";
+
 import calcularTempo from "../calcularTempo";
 import fotoPadrao from "../assets/logo.png";
 
-interface Comentario {
+interface MusicaRecomendada {
     id: number;
-    texto: string;
-    dataCriacao: string;
-    usuario: {
-        id: number;
+    titulo: string;
+    capa: string | null;
+    artista?: {
         nome: string;
-        foto?: string | null;
     };
+}
+
+interface UsuarioLogado {
+    id: number;
 }
 
 export default function Post() {
     const { id } = useParams();
 
-    const [post, setPost] = useState<any>(null);
+    const [post, setPost] = useState<TipoPost | null>(null);
     const [comentarios, setComentarios] = useState<Comentario[]>([]);
-    const [musicas, setMusicas] = useState<any[]>([]);
+    const [musicas, setMusicas] = useState<MusicaRecomendada[]>([]);
+    const [usuarioLogadoId, setUsuarioLogadoId] = useState<number | null>(null);
+
     const [textoComentario, setTextoComentario] = useState("");
     const [carregando, setCarregando] = useState(true);
     const [enviando, setEnviando] = useState(false);
@@ -45,7 +60,8 @@ export default function Post() {
         let ativo = true;
 
         async function carregarDados() {
-            if (!id) {
+            if (!id || !Number.isInteger(Number(id)) || Number(id) <= 0) {
+                setErro("Publicação não encontrada.");
                 setCarregando(false);
                 return;
             }
@@ -54,40 +70,24 @@ export default function Post() {
             setErro("");
 
             try {
-                const [respostaPost, respostaComentarios] = await Promise.all([
-                    fetch(`${API_URL}/posts/${id}`, {
-                        headers: token
-                            ? { Authorization: `Bearer ${token}` }
-                            : {},
-                    }),
-                    fetch(`${API_URL}/posts/${id}/comentarios`),
-                ]);
-
-                if (!respostaPost.ok) {
-                    throw new Error("Não foi possível encontrar este post.");
-                }
-
-                if (!respostaComentarios.ok) {
-                    throw new Error("Não foi possível carregar os comentários.");
-                }
-
                 const [dadosPost, dadosComentarios] = await Promise.all([
-                    respostaPost.json(),
-                    respostaComentarios.json(),
+                    buscarPostPorId(Number(id)),
+                    buscarComentarios(Number(id)),
                 ]);
 
-                if (ativo) {
-                    setPost(dadosPost);
-                    setComentarios(dadosComentarios);
-                }
+                if (!ativo) return;
+
+                setPost(dadosPost);
+                setComentarios(dadosComentarios);
             } catch (error) {
-                if (ativo) {
-                    setErro(
-                        error instanceof Error
-                            ? error.message
-                            : "Erro ao carregar o post."
-                    );
-                }
+                if (!ativo) return;
+
+                setErro(
+                    error instanceof Error
+                        ? error.message
+                        : "Não foi possível carregar a publicação."
+                );
+                setPost(null);
             } finally {
                 if (ativo) setCarregando(false);
             }
@@ -95,20 +95,38 @@ export default function Post() {
 
         async function carregarMusicas() {
             try {
-                const resposta = await fetch(`${API_URL}/musicas`);
+                const dados = await apiRequest<MusicaRecomendada[]>("/musicas");
 
-                if (!resposta.ok) return;
-
-                const dados = await resposta.json();
-
-                if (ativo) setMusicas(dados);
+                if (ativo && Array.isArray(dados)) {
+                    setMusicas(dados);
+                }
             } catch (error) {
-                console.error("Erro ao buscar músicas recomendadas:", error);
+                console.error("Erro ao carregar músicas recomendadas:", error);
+            }
+        }
+
+        async function carregarUsuarioLogado() {
+            if (!token) {
+                setUsuarioLogadoId(null);
+                return;
+            }
+
+            try {
+                const usuario = await apiRequest<UsuarioLogado>("/usuarios/me");
+
+                if (ativo) {
+                    setUsuarioLogadoId(usuario.id);
+                }
+            } catch {
+                if (ativo) {
+                    setUsuarioLogadoId(null);
+                }
             }
         }
 
         carregarDados();
         carregarMusicas();
+        carregarUsuarioLogado();
 
         return () => {
             ativo = false;
@@ -130,7 +148,7 @@ export default function Post() {
         });
 
         campo.focus();
-    }, [carregando, id, token]);
+    }, [carregando, id]);
 
     async function enviarComentario(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -148,41 +166,28 @@ export default function Post() {
         setErro("");
 
         try {
-            const resposta = await fetch(
-                `${API_URL}/posts/${id}/comentarios`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
+            const novoComentario = await criarComentario(Number(id), { texto });
+
+            setComentarios((atuais) => [...atuais, novoComentario]);
+
+            setPost((atual) => {
+                if (!atual) return atual;
+
+                return {
+                    ...atual,
+                    _count: {
+                        curtidas: atual._count?.curtidas ?? 0,
+                        comentarios: (atual._count?.comentarios ?? comentarios.length) + 1,
                     },
-                    body: JSON.stringify({ texto }),
-                }
-            );
+                };
+            });
 
-            const dados = await resposta.json();
-
-            if (!resposta.ok) {
-                throw new Error(
-                    dados.error || "Não foi possível enviar o comentário."
-                );
-            }
-
-            setComentarios((atuais) => [...atuais, dados]);
             setTextoComentario("");
-
-            setPost((atual: any) => ({
-                ...atual,
-                _count: {
-                    ...atual._count,
-                    comentarios: (atual._count?.comentarios ?? 0) + 1,
-                },
-            }));
         } catch (error) {
             setErro(
                 error instanceof Error
                     ? error.message
-                    : "Erro ao enviar comentário."
+                    : "Não foi possível enviar o comentário."
             );
         } finally {
             setEnviando(false);
@@ -190,48 +195,41 @@ export default function Post() {
     }
 
     async function excluirComentario(comentarioId: number) {
-        if (!token) return;
+        if (!token) {
+            setErro("Entre na sua conta para excluir comentários.");
+            return;
+        }
 
         if (!window.confirm("Deseja excluir este comentário?")) return;
 
+        setErro("");
+
         try {
-            const resposta = await fetch(
-                `${API_URL}/comentarios/${comentarioId}`,
-                {
-                    method: "DELETE",
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
-
-            const dados = await resposta.json().catch(() => null);
-
-            if (!resposta.ok) {
-                throw new Error(
-                    dados?.error || "Não foi possível excluir."
-                );
-            }
+            await excluirComentarioServico(comentarioId);
 
             setComentarios((atuais) =>
                 atuais.filter((comentario) => comentario.id !== comentarioId)
             );
 
-            setPost((atual: any) => ({
-                ...atual,
-                _count: {
-                    ...atual._count,
-                    comentarios: Math.max(
-                        0,
-                        (atual._count?.comentarios ?? 1) - 1
-                    ),
-                },
-            }));
+            setPost((atual) => {
+                if (!atual) return atual;
+
+                return {
+                    ...atual,
+                    _count: {
+                        curtidas: atual._count?.curtidas ?? 0,
+                        comentarios: Math.max(
+                            0,
+                            (atual._count?.comentarios ?? comentarios.length) - 1
+                        ),
+                    },
+                };
+            });
         } catch (error) {
             setErro(
                 error instanceof Error
                     ? error.message
-                    : "Erro ao excluir comentário."
+                    : "Não foi possível excluir o comentário."
             );
         }
     }
@@ -257,17 +255,15 @@ export default function Post() {
                             {erro || "Publicação não encontrada."}
                         </p>
 
-                        <Link
-                            to="/home"
-                            className="mt-4 inline-block text-sm text-[#58AAF0] hover:underline"
-                        >
-                            Voltar para a Home
-                        </Link>
+                        <BotaoVoltar fallback="/explorar" />
                     </div>
                 </PageContent>
             </PageLayout>
         );
     }
+
+    const totalComentarios =
+        post._count?.comentarios ?? comentarios.length;
 
     return (
         <PageLayout>
@@ -280,20 +276,15 @@ export default function Post() {
                             </div>
 
                             <div className="flex items-center gap-5 py-3">
-                                <Link
-                                    to="/home"
-                                    aria-label="Voltar para a Home"
-                                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[#d1d5db] transition hover:bg-[#202536] hover:text-white"
-                                >
-                                    <ArrowLeftIcon size={24} weight="bold" />
-                                </Link>
+                                <BotaoVoltar fallback="/explorar" />
 
                                 <div>
                                     <h1 className="text-base font-bold text-white">
                                         Publicação
                                     </h1>
+
                                     <p className="text-xs text-[#697386]">
-                                        {post._count?.comentarios ?? comentarios.length} respostas
+                                        {totalComentarios} respostas
                                     </p>
                                 </div>
                             </div>
@@ -308,14 +299,14 @@ export default function Post() {
                                 time={post.dataCriacao}
                                 content={post.texto}
                                 nota={post.nota}
-                                musicId={post.musica?.id}
+                                musicId={post.musica?.id ?? 0}
                                 musicTitle={post.musica?.titulo || ""}
                                 artist={post.musica?.artista?.nome || "Artista desconhecido"}
                                 artistId={post.musica?.artista?.id}
                                 musicCover={post.musica?.capa}
                                 duracaoSegundos={post.musica?.duracaoSegundos}
                                 likes={post._count?.curtidas ?? 0}
-                                comments={post._count?.comentarios ?? comentarios.length}
+                                comments={totalComentarios}
                                 avaliacoes={post.musica?.avaliacoes}
                                 curtidoPorMim={post.curtidoPorMim ?? false}
                             />
@@ -419,19 +410,20 @@ export default function Post() {
                                                 <div className="mt-3 flex items-center gap-2 text-[#697386]">
                                                     <ChatCircleIcon size={15} />
 
-                                                    {token && (
-                                                        <button
-                                                            type="button"
-                                                            onClick={() =>
-                                                                excluirComentario(comentario.id)
-                                                            }
-                                                            title="Excluir comentário"
-                                                            aria-label="Excluir comentário"
-                                                            className="ml-auto cursor-pointer rounded-full p-2 transition hover:bg-red-500/10 hover:text-red-400"
-                                                        >
-                                                            <TrashIcon size={15} />
-                                                        </button>
-                                                    )}
+                                                    {token &&
+                                                        usuarioLogadoId === comentario.usuario.id && (
+                                                            <button
+                                                                type="button"
+                                                                onClick={() =>
+                                                                    excluirComentario(comentario.id)
+                                                                }
+                                                                title="Excluir comentário"
+                                                                aria-label="Excluir comentário"
+                                                                className="ml-auto cursor-pointer rounded-full p-2 transition hover:bg-red-500/10 hover:text-red-400"
+                                                            >
+                                                                <TrashIcon size={15} />
+                                                            </button>
+                                                        )}
                                                 </div>
                                             </div>
                                         </div>
@@ -480,4 +472,9 @@ export default function Post() {
             </PageContent>
         </PageLayout>
     );
+}
+
+// Evita conflito entre o nome da função e o serviço importado.
+async function excluirComentarioServico(comentarioId: number) {
+    await excluirComentario(comentarioId);
 }

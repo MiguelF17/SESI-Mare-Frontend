@@ -26,13 +26,13 @@ import {
 } from "../services/salvarMusicaService";
 
 import {
-  ArrowLeftIcon,
   StarIcon,
   PlusIcon,
   BookmarkSimpleIcon,
 } from "@phosphor-icons/react";
 
 import logo from "../assets/logo.png";
+import BotaoVoltar from "../components/botaoVoltar";
 
 export default function Musica() {
   const { id } = useParams();
@@ -257,12 +257,7 @@ export default function Musica() {
           <div className="flex min-h-[400px] flex-col items-center justify-center gap-4 text-[#697386]">
             <p>Música não encontrada.</p>
 
-            <Link
-              to="/home"
-              className="text-[#58AAF0] transition hover:text-white"
-            >
-              Voltar para a Home
-            </Link>
+            <BotaoVoltar fallback="/explorar" />
           </div>
         </PageContent>
       </PageLayout>
@@ -280,16 +275,10 @@ export default function Musica() {
                 <SearchBar />
               </div>
 
-              <div className="flex items-center gap-5 py-3">
-                <Link
-                  to="/home"
-                  aria-label="Voltar para a Home"
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[#d1d5db] transition hover:bg-[#202536] hover:text-white"
-                >
-                  <ArrowLeftIcon size={24} weight="bold" />
-                </Link>
+              <div className="flex items-center gap-4 py-3">
+                <BotaoVoltar fallback="/explorar" />
 
-                <h1 className="text-base font-bold text-white">
+                <h1 className="truncate text-base font-bold text-white">
                   {musica.titulo}
                 </h1>
               </div>

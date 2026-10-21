@@ -8,66 +8,101 @@ import {
   UserIcon,
 } from "@phosphor-icons/react";
 
+import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
+
 import PageLayout from "../components/pageLayout";
 import PageContent from "../components/pageContent";
 import SearchBar from "../components/searchbar";
 import PostCard from "../components/postCard";
 import RecommendedMusic from "../components/recommendedMusic";
-import { useEffect, useState, useRef } from "react";
-import { API_URL } from "../api";
-import calcularTempo from "../calcularTempo";
 import MusicCard from "../components/musicCard";
 import ImageCropModal from "../components/imageCropModal";
-import toast from "react-hot-toast";
-import { buscarPosts } from "../services/postService";
 
-interface Usuario {
+import calcularTempo from "../calcularTempo";
+import { apiRequest } from "../api";
+import { buscarPosts, type Post } from "../services/postService";
+import {
+  buscarMeuPerfil,
+  type MeuPerfil,
+} from "../services/usuarioService";
+import {
+  buscarMusicas,
+  type Musica,
+} from "../services/musicaService";
+
+type ComentarioPerfil = {
   id: number;
-  nome: string;
-  username: string;
-  email: string;
-  foto: string | null;
-  capa: string | null;
-  bio: string | null;
-
-  _count: {
-    seguidores: number;
-    seguindo: number;
-    posts: number;
-    comentarios: number;
-    salvamentos: number;
+  texto: string;
+  dataCriacao: string;
+  post?: {
+    musica?: {
+      titulo?: string;
+      artista?: {
+        nome?: string;
+      };
+    };
   };
-}
+};
+
+type MusicaSalva = {
+  musica: Musica;
+};
 
 export default function Perfil() {
-  const [usuario, setUsuario] = useState<Usuario | null>(null);
-  const [aba, setAba] = useState("avaliacoes");
-  const [carregando, setCarregando] = useState(true);
-  const [avaliacoes, setAvaliacoes] = useState<any[]>([]);
-  const [comentarios, setComentarios] = useState<any[]>([]);
-  const [salvos, setSalvos] = useState<any[]>([]);
+  const [usuario, setUsuario] = useState<MeuPerfil | null>(null);
 
-  /* editar */
+  const [aba, setAba] = useState<
+    "avaliacoes" | "comentarios" | "salvos"
+  >("avaliacoes");
+
+  const [carregando, setCarregando] = useState(true);
+  const [avaliacoes, setAvaliacoes] = useState<Post[]>([]);
+  const [comentarios, setComentarios] = useState<ComentarioPerfil[]>([]);
+  const [salvos, setSalvos] = useState<MusicaSalva[]>([]);
+  const [musicas, setMusicas] = useState<Musica[]>([]);
+
   const [editando, setEditando] = useState(false);
   const [nomeEditado, setNomeEditado] = useState("");
   const [usernameEditado, setUsernameEditado] = useState("");
   const [bioEditada, setBioEditada] = useState("");
   const [salvando, setSalvando] = useState(false);
-  const [musicas, setMusicas] = useState<any[]>([]);
+
   const fotoInputRef = useRef<HTMLInputElement>(null);
   const capaInputRef = useRef<HTMLInputElement>(null);
+
+  const [imagemParaRecortar, setImagemParaRecortar] = useState<{
+    url: string;
+    tipo: "foto" | "capa";
+  } | null>(null);
+  const [usuarioLogadoId, setUsuarioLogadoId] = useState<number | null>(
+    null
+  );
+
+  useEffect(() => {
+    async function buscarUsuarioLogado() {
+      try {
+        const usuario = await apiRequest<{ id: number }>("/usuarios/me");
+        setUsuarioLogadoId(usuario.id);
+      } catch (error) {
+        console.error("Erro ao buscar usuário logado:", error);
+      }
+    }
+
+    if (localStorage.getItem("token")) {
+      buscarUsuarioLogado();
+    }
+  }, []);
+
 
   useEffect(() => {
     buscarPerfil();
     buscarAvaliacoes();
     buscarComentarios();
     buscarSalvos();
+    carregarMusicas();
   }, []);
-
-  const [imagemParaRecortar, setImagemParaRecortar] = useState<{
-    url: string;
-    tipo: "foto" | "capa";
-  } | null>(null);
 
   function abrirRecorte(arquivo: File, tipo: "foto" | "capa") {
     const url = URL.createObjectURL(arquivo);
@@ -82,108 +117,84 @@ export default function Perfil() {
     setImagemParaRecortar(null);
   }
 
-  /* informacoes perfil */
   async function buscarPerfil() {
     try {
-      const token = localStorage.getItem("token");
-
-      if (!token) {
+      if (!localStorage.getItem("token")) {
         window.location.href = "/login";
         return;
       }
 
-      const resposta = await fetch(`${API_URL}/usuarios/me`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (resposta.status === 401) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("usuario");
-
-        window.location.href = "/login";
-        return;
-      }
-
-      if (!resposta.ok) {
-        throw new Error("Erro ao buscar perfil");
-      }
-
-      const dados = await resposta.json();
-
+      const dados = await buscarMeuPerfil();
       setUsuario(dados);
     } catch (error) {
-      console.error(error);
+      console.error("Erro ao buscar perfil:", error);
+      toast.error("Não foi possível carregar seu perfil.");
     } finally {
       setCarregando(false);
     }
   }
 
-  /* buscar avaliacoes */
   async function buscarAvaliacoes() {
-  try {
-    const dados = await buscarPosts({
-      rota: "/usuarios/me/posts",
-    });
+    try {
+      const dados = await buscarPosts({
+        rota: "/usuarios/me/posts",
+      });
 
-    setAvaliacoes(dados);
-  } catch (error) {
-    console.error("Erro ao buscar avaliações:", error);
+      setAvaliacoes(dados);
+    } catch (error) {
+      console.error("Erro ao buscar avaliações:", error);
+      toast.error("Não foi possível carregar suas avaliações.");
+    }
   }
-}
 
   async function buscarComentarios() {
     try {
-      const token = localStorage.getItem("token");
-
-      const resposta = await fetch(`${API_URL}/usuarios/me/comentarios`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!resposta.ok) {
-        throw new Error("Erro ao buscar comentários");
-      }
-
-      const dados = await resposta.json();
+      const dados = await apiRequest<ComentarioPerfil[]>(
+        "/usuarios/me/comentarios"
+      );
 
       setComentarios(dados);
     } catch (error) {
-      console.error(error);
+      console.error("Erro ao buscar comentários:", error);
+      toast.error("Não foi possível carregar seus comentários.");
     }
   }
 
   async function buscarSalvos() {
     try {
-      const token = localStorage.getItem("token");
-
-      const resposta = await fetch(`${API_URL}/usuarios/me/salvos`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!resposta.ok) {
-        throw new Error("Erro ao buscar músicas salvas");
-      }
-
-      const dados = await resposta.json();
+      const dados = await apiRequest<MusicaSalva[]>(
+        "/usuarios/me/salvos"
+      );
 
       setSalvos(dados);
     } catch (error) {
-      console.error(error);
+      console.error("Erro ao buscar músicas salvas:", error);
+      toast.error("Não foi possível carregar suas músicas salvas.");
+    }
+  }
+
+  async function carregarMusicas() {
+    try {
+      const dados = await buscarMusicas();
+      setMusicas(dados);
+    } catch (error) {
+      console.error("Erro ao buscar músicas recomendadas:", error);
     }
   }
 
   async function compartilharPerfil() {
-    if (!usuario) {
-      return;
-    }
+    if (!usuario) return;
+
+    const url = `${window.location.origin}/u/${encodeURIComponent(usuario.username)}`;
 
     if (!navigator.share) {
-      alert("O compartilhamento não está disponível neste navegador.");
+      try {
+        await navigator.clipboard.writeText(url);
+        toast.success("Link do perfil copiado!");
+      } catch {
+        toast.error("Não foi possível copiar o link do perfil.");
+      }
+
       return;
     }
 
@@ -191,22 +202,21 @@ export default function Perfil() {
       await navigator.share({
         title: `Perfil de ${usuario.nome}`,
         text: `Confira o perfil de @${usuario.username} no Maré`,
-        url: window.location.href,
+        url,
       });
     } catch (error) {
-      console.error(error);
+      if (error instanceof Error && error.name !== "AbortError") {
+        console.error("Erro ao compartilhar perfil:", error);
+      }
     }
   }
 
   function abrirEdicao() {
-    if (!usuario) {
-      return;
-    }
+    if (!usuario) return;
 
     setNomeEditado(usuario.nome);
     setUsernameEditado(usuario.username);
     setBioEditada(usuario.bio || "");
-
     setEditando(true);
   }
 
@@ -214,109 +224,113 @@ export default function Perfil() {
     try {
       setSalvando(true);
 
-      const token = localStorage.getItem("token");
-
-      const resposta = await fetch(`${API_URL}/usuarios/me`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          nome: nomeEditado,
-          username: usernameEditado,
-          bio: bioEditada,
-        }),
-      });
-
-      if (!resposta.ok) {
-        const erro = await resposta.json();
-
-        toast.error(erro.error || "Erro ao editar perfil");
-        return;
-      }
-
-      const dados = await resposta.json();
-
-      setUsuario((usuarioAtual) => {
-        if (!usuarioAtual) {
-          return usuarioAtual;
+      const dados = await apiRequest<Partial<MeuPerfil>>(
+        "/usuarios/me",
+        {
+          method: "PUT",
+          body: JSON.stringify({
+            nome: nomeEditado.trim(),
+            username: usernameEditado.trim(),
+            bio: bioEditada.trim(),
+          }),
         }
+      );
+
+      setUsuario((atual) => {
+        if (!atual) return atual;
 
         return {
-          ...usuarioAtual,
+          ...atual,
           ...dados,
+          nome: dados.nome ?? nomeEditado.trim(),
+          username: dados.username ?? usernameEditado.trim(),
+          bio: dados.bio ?? bioEditada.trim(),
         };
       });
 
       setEditando(false);
+      window.dispatchEvent(new Event("usuarioAtualizado"));
+      toast.success("Perfil atualizado com sucesso!");
     } catch (error) {
-      console.error(error);
-      toast.error("Erro ao editar perfil");
+      console.error("Erro ao editar perfil:", error);
+
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Erro ao editar perfil."
+      );
     } finally {
       setSalvando(false);
     }
-
-    toast.success("Perfil atualizado com sucesso!")
   }
 
   async function enviarImagem(
     arquivo: File,
     tipo: "foto" | "capa"
   ) {
+    if (!localStorage.getItem("token")) {
+      window.location.href = "/login";
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("imagem", arquivo);
+    formData.append("tipo", tipo);
+
     try {
-      const token = localStorage.getItem("token");
-
-      if (!token) {
-        window.location.href = "/login";
-        return;
-      }
-
-      const formData = new FormData();
-
-      formData.append("imagem", arquivo);
-      formData.append("tipo", tipo);
-
-      const resposta = await fetch(`${API_URL}/usuarios/me/imagem`, {
+      const dados = await apiRequest<{
+        foto: string | null;
+        capa: string | null;
+      }>("/usuarios/me/imagem", {
         method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
         body: formData,
       });
 
-      const dados = await resposta.json();
-
-      if (!resposta.ok) {
-        toast.error(dados.erro || "Erro ao atualizar imagem");
-        return;
-      }
-
-      setUsuario((usuarioAtual) => {
-        if (!usuarioAtual) {
-          return usuarioAtual;
-        }
+      setUsuario((atual) => {
+        if (!atual) return atual;
 
         return {
-          ...usuarioAtual,
-          foto: dados.foto,
-          capa: dados.capa,
+          ...atual,
+          foto: dados.foto ?? atual.foto,
+          capa: dados.capa ?? atual.capa,
         };
       });
+
       window.dispatchEvent(new Event("usuarioAtualizado"));
+      toast.success("Imagem atualizada com sucesso!");
     } catch (error) {
       console.error("Erro ao enviar imagem:", error);
-      toast.error("Erro ao atualizar imagem");
+
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Erro ao atualizar imagem."
+      );
     }
-    toast.success("Imagem atualizada com sucesso!")
   }
 
   if (carregando) {
-    return <div className="text-white">Carregando perfil...</div>;
+    return (
+      <PageLayout>
+        <PageContent>
+          <p className="py-10 text-center text-sm text-[#697386]">
+            Carregando perfil...
+          </p>
+        </PageContent>
+      </PageLayout>
+    );
   }
 
   if (!usuario) {
-    return <div className="text-white">Perfil não encontrado.</div>;
+    return (
+      <PageLayout>
+        <PageContent>
+          <p className="py-10 text-center text-sm text-[#697386]">
+            Perfil não encontrado.
+          </p>
+        </PageContent>
+      </PageLayout>
+    );
   }
 
   return (
@@ -332,7 +346,7 @@ export default function Perfil() {
               <button
                 type="button"
                 onClick={() => setEditando(false)}
-                className="text-gray-500 transition cursor-pointer hover:text-white"
+                className="cursor-pointer text-gray-500 transition hover:text-white"
               >
                 ✕
               </button>
@@ -383,7 +397,7 @@ export default function Perfil() {
               <button
                 type="button"
                 onClick={() => setEditando(false)}
-                className="rounded-lg border cursor-pointer border-[#252d38] px-4 py-2 font-serif text-[12px] text-gray-300 transition hover:border-gray-500"
+                className="cursor-pointer rounded-lg border border-[#252d38] px-4 py-2 font-serif text-[12px] text-gray-300 transition hover:border-gray-500"
               >
                 Cancelar
               </button>
@@ -392,7 +406,7 @@ export default function Perfil() {
                 type="button"
                 onClick={salvarPerfil}
                 disabled={salvando}
-                className="rounded-lg cursor-pointer bg-[#5ea3ee] px-4 py-2 font-serif text-[12px] text-white transition hover:bg-[#7ab4f2] disabled:opacity-50"
+                className="cursor-pointer rounded-lg bg-[#5ea3ee] px-4 py-2 font-serif text-[12px] text-white transition hover:bg-[#7ab4f2] disabled:opacity-50"
               >
                 {salvando ? "Salvando..." : "Salvar alterações"}
               </button>
@@ -407,7 +421,11 @@ export default function Perfil() {
           tipo={imagemParaRecortar.tipo}
           onCancelar={fecharRecorte}
           onConfirmar={async (arquivoRecortado) => {
-            await enviarImagem(arquivoRecortado, imagemParaRecortar.tipo);
+            await enviarImagem(
+              arquivoRecortado,
+              imagemParaRecortar.tipo
+            );
+
             fecharRecorte();
           }}
         />
@@ -415,60 +433,43 @@ export default function Perfil() {
 
       <PageLayout>
         <PageContent>
-          {/* COLUNAS */}
           <div className="grid grid-cols-1 gap-10 xl:grid-cols-[minmax(0,1fr)_340px]">
-            {/* COLUNA PRINCIPAL */}
             <section className="min-w-0">
-              {/* ÁREA FIXA */}
               <div className="sticky top-0 z-20 bg-[#080A10]">
-                <div className="w-full max-w-[800px] pt-6 pb-6">
+                <div className="w-full max-w-[800px] pb-6 pt-6">
                   <SearchBar />
                 </div>
               </div>
 
-              {/* TÍTULO */}
               <div className="mb-6">
-                <h1 className="font-serif text-[26px] text-gray-100">Perfil</h1>
+                <h1 className="font-serif text-[26px] text-gray-100">
+                  Perfil
+                </h1>
 
                 <p className="mt-1 font-serif text-[13px] text-[#697386]">
                   Suas músicas e publicações
                 </p>
               </div>
 
-              {/* PERFIL */}
               <section className="w-full overflow-hidden rounded-xl border border-[#252d38] bg-[#0d121c]">
                 {/* CAPA */}
                 <div
-                  className="relative h-[140px] bg-[#141a28]"
+                  className="relative h-[140px] bg-[#141a28] bg-cover bg-center"
                   style={
                     usuario.capa
-                      ? {
-                        backgroundImage: `url(${usuario.capa})`,
-                      }
+                      ? { backgroundImage: `url(${usuario.capa})` }
                       : undefined
                   }
                 >
-
                   <input
                     ref={capaInputRef}
                     type="file"
                     accept="image/png,image/jpeg,image/webp"
                     className="hidden"
-                    style={
-                      usuario.capa
-                        ? {
-                          backgroundImage: `url(${usuario.capa})`,
-                          backgroundSize: "cover",
-                          backgroundPosition: "center",
-                        }
-                        : undefined
-                    }
                     onChange={(e) => {
                       const arquivo = e.target.files?.[0];
 
-                      if (arquivo) {
-                        abrirRecorte(arquivo, "capa");
-                      }
+                      if (arquivo) abrirRecorte(arquivo, "capa");
 
                       e.target.value = "";
                     }}
@@ -477,21 +478,18 @@ export default function Perfil() {
                   <button
                     type="button"
                     onClick={() => capaInputRef.current?.click()}
-                    className="absolute right-4 top-4 flex cursor-pointer items-center gap-2 rounded-lg bg-[#111726]/20 px-3 py-2 font-serif text-[12px] text-white transition hover:text-blue-400"
+                    className="absolute right-4 top-4 flex cursor-pointer items-center gap-2 rounded-lg bg-[#111726]/70 px-3 py-2 font-serif text-[12px] text-white transition hover:text-blue-400"
                   >
                     <CameraIcon size={18} />
                     Alterar capa
                   </button>
-
                 </div>
 
                 {/* INFORMAÇÕES */}
                 <div className="px-6 pb-6">
                   <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
-                    {/* Avatar */}
                     <div className="flex items-end gap-4">
-
-                      <div className="relative -mt-4 z-10 h-[82px] w-[82px] shrink-0">
+                      <div className="relative z-10 -mt-4 h-[82px] w-[82px] shrink-0">
                         <input
                           ref={fotoInputRef}
                           type="file"
@@ -500,9 +498,7 @@ export default function Perfil() {
                           onChange={(e) => {
                             const arquivo = e.target.files?.[0];
 
-                            if (arquivo) {
-                              abrirRecorte(arquivo, "foto");
-                            }
+                            if (arquivo) abrirRecorte(arquivo, "foto");
 
                             e.target.value = "";
                           }}
@@ -522,7 +518,10 @@ export default function Perfil() {
                             />
                           ) : (
                             <div className="flex h-full w-full items-center justify-center">
-                              <UserIcon size={34} className="text-gray-400" />
+                              <UserIcon
+                                size={34}
+                                className="text-gray-400"
+                              />
                             </div>
                           )}
 
@@ -532,9 +531,8 @@ export default function Perfil() {
                         </button>
                       </div>
 
-
                       <div className="pb-1">
-                        <div className="flex items-baseline">
+                        <div className="flex flex-wrap items-baseline">
                           <h2 className="font-serif text-[18px] text-gray-100">
                             {usuario.nome}
                           </h2>
@@ -550,8 +548,7 @@ export default function Perfil() {
                       </div>
                     </div>
 
-                    {/* Ações */}
-                    <div className="flex items-center gap-3">
+                    <div className="flex flex-wrap items-center gap-3">
                       <button
                         type="button"
                         onClick={compartilharPerfil}
@@ -564,7 +561,7 @@ export default function Perfil() {
                       <button
                         type="button"
                         onClick={abrirEdicao}
-                        className="flex items-center gap-2 rounded-lg bg-[#5ea3ee] px-4 py-2 font-serif text-[12px] cursor-pointer text-white transition hover:bg-[#7ab4f2]"
+                        className="flex cursor-pointer items-center gap-2 rounded-lg bg-[#5ea3ee] px-4 py-2 font-serif text-[12px] text-white transition hover:bg-[#7ab4f2]"
                       >
                         <PencilSimpleIcon size={18} />
                         Editar perfil
@@ -572,38 +569,37 @@ export default function Perfil() {
                     </div>
                   </div>
 
-                  {/* SEGUIDORES */}
-                  <div className="mt-5 flex gap-6 font-serif text-[14px] text-gray-400">
-                    <span>
-                      <strong
-                        className="text-gray-200"
-                        style={{ fontFamily: "inter, sans-serif" }}
-                      >
-                        {usuario._count.seguidores}
+                  <div className="mt-5 flex flex-wrap gap-6 font-serif text-[14px] text-gray-400">
+                    <Link
+                      to={`/usuarios/${usuario.id}/seguidores`}
+                      className="transition-colors hover:text-[#58AAF0]"
+                    >
+                      <strong className="text-gray-200">
+                        {usuario._count?.seguidores ?? 0}
                       </strong>{" "}
                       Seguidores
-                    </span>
+                    </Link>
 
-                    <span>
-                      <strong
-                        className="text-gray-200"
-                        style={{ fontFamily: "inter, sans-serif" }}
-                      >
-                        {usuario._count.seguindo}
+                    <Link
+                      to={`/usuarios/${usuario.id}/seguindo`}
+                      className="transition-colors hover:text-[#58AAF0]"
+                    >
+                      <strong className="text-gray-200">
+                        {usuario._count?.seguindo ?? 0}
                       </strong>{" "}
                       Seguindo
-                    </span>
+                    </Link>
                   </div>
                 </div>
               </section>
 
-              {/* Abas */}
+              {/* ABAS */}
               <div className="mt-8 border-b border-[#252d38]">
-                <div className="flex gap-8">
+                <div className="flex gap-8 overflow-x-auto">
                   <button
                     type="button"
                     onClick={() => setAba("avaliacoes")}
-                    className={`border-b-2 px-1 pb-3 font-serif text-[14px] transition cursor-pointer ${aba === "avaliacoes"
+                    className={`shrink-0 cursor-pointer border-b-2 px-1 pb-3 font-serif text-[14px] transition ${aba === "avaliacoes"
                       ? "border-blue-400 text-white"
                       : "border-transparent text-gray-500 hover:text-blue-400"
                       }`}
@@ -614,7 +610,7 @@ export default function Perfil() {
                   <button
                     type="button"
                     onClick={() => setAba("comentarios")}
-                    className={`border-b-2 px-1 pb-3 font-serif text-[14px] transition cursor-pointer ${aba === "comentarios"
+                    className={`shrink-0 cursor-pointer border-b-2 px-1 pb-3 font-serif text-[14px] transition ${aba === "comentarios"
                       ? "border-blue-400 text-white"
                       : "border-transparent text-gray-500 hover:text-blue-400"
                       }`}
@@ -625,7 +621,7 @@ export default function Perfil() {
                   <button
                     type="button"
                     onClick={() => setAba("salvos")}
-                    className={`border-b-2 px-1 pb-3 font-serif text-[14px] transition cursor-pointer ${aba === "salvos"
+                    className={`shrink-0 cursor-pointer border-b-2 px-1 pb-3 font-serif text-[14px] transition ${aba === "salvos"
                       ? "border-blue-400 text-white"
                       : "border-transparent text-gray-500 hover:text-blue-400"
                       }`}
@@ -635,43 +631,53 @@ export default function Perfil() {
                 </div>
               </div>
 
-              {/* Avaliações */}
               <div className="flex flex-col gap-6 pt-6">
+                {/* AVALIAÇÕES */}
                 {aba === "avaliacoes" && (
                   <>
                     <div className="flex items-center gap-2">
-                      <MusicNoteIcon size={18} className="text-blue-400" />
+                      <MusicNoteIcon
+                        size={18}
+                        className="text-blue-400"
+                      />
 
                       <h2 className="font-serif text-[18px] text-gray-100">
                         Últimas avaliações
                       </h2>
                     </div>
 
-                    {avaliacoes.length > 0 ? (
+                    {avaliacoes.filter((post) => post.musica?.id != null)
+                      .length > 0 ? (
+                      avaliacoes
+                        .filter((post) => post.musica?.id != null)
+                        .map((post) => (
+                          <PostCard
+                            key={post.id}
+                            postId={post.id}
+                            name={post.usuario?.nome ?? usuario.nome}
+                            username={post.usuario?.username ?? usuario.username}
+                            foto={post.usuario?.foto ?? undefined}
+                            time={post.dataCriacao}
+                            content={post.texto ?? ""}
+                            nota={post.nota}
+                            musicId={post.musica!.id}
+                            musicTitle={post.musica?.titulo ?? "Música indisponível"}
+                            artist={post.musica?.artista?.nome ?? "Artista desconhecido"}
+                            artistId={post.musica?.artista?.id}
+                            musicCover={post.musica?.capa ?? undefined}
+                            duracaoSegundos={post.musica?.duracaoSegundos}
+                            likes={post._count?.curtidas ?? 0}
+                            comments={post._count?.comentarios ?? 0}
+                            avaliacoes={post.musica?._count?.posts ?? 0}
+                            curtidoPorMim={post.curtidoPorMim ?? false}
 
-                      avaliacoes.map((post) => (
-                        <PostCard
-                          key={post.id}
-                          postId={post.id}
-                          name={post.usuario?.nome ?? "Usuário"}
-                          username={post.usuario?.username ?? ""}
-                          foto={post.usuario?.foto}
-                          time={post.dataCriacao}
-                          content={post.texto ?? ""}
-                          nota={post.nota}
-                          musicId={post.musica?.id}
-                          musicTitle={post.musica?.titulo ?? "Música indisponível"}
-                          artist={post.musica?.artista?.nome ?? "Artista desconhecido"}
-                          artistId={post.musica?.artista?.id}
-                          musicCover={post.musica?.capa}
-                          duracaoSegundos={post.musica?.duracaoSegundos}
-                          likes={post._count?.curtidas ?? 0}
-                          comments={post._count?.comentarios ?? 0}
-                          avaliacoes={post.musica?._count?.posts ?? 0}
-                          curtidoPorMim={post.curtidoPorMim ?? false}
-                        />
-                      ))
 
+                            ehMeuPost={
+                              usuarioLogadoId !== null &&
+                              post.usuario?.id === usuarioLogadoId
+                            }
+                          />
+                        ))
                     ) : (
                       <p className="py-8 text-center text-[14px] text-[#697386]">
                         Nenhuma avaliação feita.
@@ -680,10 +686,14 @@ export default function Perfil() {
                   </>
                 )}
 
+                {/* COMENTÁRIOS */}
                 {aba === "comentarios" && (
                   <>
                     <div className="flex items-center gap-2">
-                      <ChatCircleIcon size={18} className="text-blue-400" />
+                      <ChatCircleIcon
+                        size={18}
+                        className="text-blue-400"
+                      />
 
                       <h2 className="font-serif text-[18px] text-gray-100">
                         Comentários
@@ -703,11 +713,9 @@ export default function Perfil() {
                           <div className="mt-3">
                             <p className="text-[12px] text-[#697386]">
                               Em{" "}
-                              <span className="text-[#d4d9e2]">
-                                {comentario.post.musica.titulo}
-                              </span>
+                              {comentario.post?.musica?.titulo ?? "música indisponível"}
                               {" — "}
-                              {comentario.post.musica.artista.nome}
+                              {comentario.post?.musica?.artista?.nome ?? "artista desconhecido"}
                             </p>
 
                             <p className="mt-1 text-[12px] text-[#697386]">
@@ -724,10 +732,14 @@ export default function Perfil() {
                   </>
                 )}
 
+                {/* MÚSICAS SALVAS */}
                 {aba === "salvos" && (
                   <>
                     <div className="flex items-center gap-2">
-                      <BookmarkSimpleIcon size={18} className="text-blue-400" />
+                      <BookmarkSimpleIcon
+                        size={18}
+                        className="text-blue-400"
+                      />
 
                       <h2 className="font-serif text-[18px] text-gray-100">
                         Músicas salvas
@@ -735,9 +747,10 @@ export default function Perfil() {
                     </div>
 
                     {salvos.length > 0 ? (
-
                       salvos.map((salvo) => {
                         const musica = salvo.musica;
+
+                        if (!musica) return null;
 
                         return (
                           <MusicCard
@@ -747,21 +760,20 @@ export default function Perfil() {
                             titulo={musica.titulo}
                             artista={musica.artista?.nome}
                             artistaId={musica.artista?.id}
-                            capa={musica.capa}
+                            capa={musica.capa ?? undefined}
                             nota={musica.nota}
-                            avaliacoes={musica._count?.posts ?? 0}
+                            avaliacoes={musica._count?.posts ?? musica.avaliacoes ?? 0}
                             duracaoSegundos={musica.duracaoSegundos}
                             onRemover={() => {
                               setSalvos((atuais) =>
                                 atuais.filter(
-                                  (salvamento) => salvamento.musica?.id !== musica.id
+                                  (item) => item.musica?.id !== musica.id
                                 )
                               );
                             }}
                           />
                         );
                       })
-
                     ) : (
                       <p className="py-8 text-center text-[14px] text-[#697386]">
                         Nenhuma música salva.
@@ -774,24 +786,22 @@ export default function Perfil() {
 
             {/* RECOMENDAÇÕES */}
             <aside className="hidden xl:block">
-              <div className="fixed top-2/5 -translate-y-2/5 w-[340px]">
+              <div className="fixed top-2/5 w-[340px] -translate-y-2/5">
                 <h2 className="mb-5 font-serif text-[16px] text-white">
                   Músicas recomendadas
                 </h2>
 
                 <div className="flex flex-col gap-3">
                   {musicas.length > 0 ? (
-                    musicas
-                      .slice(0, 5)
-                      .map((musica) => (
-                        <RecommendedMusic
-                          id={musica.id}
-                          key={musica.id}
-                          titulo={musica.titulo}
-                          artist={musica.artista.nome}
-                          capa={musica.capa}
-                        />
-                      ))
+                    musicas.slice(0, 5).map((musica) => (
+                      <RecommendedMusic
+                        id={musica.id}
+                        key={musica.id}
+                        titulo={musica.titulo}
+                        artist={musica.artista?.nome ?? "Artista desconhecido"}
+                        capa={musica.capa ?? undefined}
+                      />
+                    ))
                   ) : (
                     <p className="py-8 text-center text-[14px] text-[#697386]">
                       Nenhuma música recomendada.

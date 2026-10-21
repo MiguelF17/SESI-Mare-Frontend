@@ -258,9 +258,6 @@ export default function Explorar() {
             {titulo}
           </h2>
 
-          <span className="ml-1 text-xs text-[#697386]">
-            {lista.length}
-          </span>
         </div>
 
         {lista.length > 0 ? (
@@ -289,9 +286,6 @@ export default function Explorar() {
             Artistas
           </h2>
 
-          <span className="ml-1 text-xs text-[#697386]">
-            {artistas.length}
-          </span>
         </div>
 
         {artistas.length === 0 ? (
@@ -303,10 +297,10 @@ export default function Explorar() {
             {artistas.map((artista) => (
               <div
                 key={artista.id}
-                className="w-40 shrink-0 snap-start transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02]"
+                className="w-36 shrink-0 snap-start transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02]"
               >
                 <div className="flex cursor-pointer flex-col items-center transition-colors py-4 duration-300">
-                  <div className="mb-3 flex h-30 w-30 items-center justify-center overflow-hidden rounded-full bg-[#202737]">
+                  <div className="mb-3 flex h-36 w-36 items-center justify-center overflow-hidden rounded-full bg-[#202737]">
                     {artista.fotoURL ? (
                       <img
                         src={artista.fotoURL}
