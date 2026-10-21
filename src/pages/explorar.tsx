@@ -4,7 +4,10 @@ import PageLayout from "../components/pageLayout";
 import PageContent from "../components/pageContent";
 import SearchBar from "../components/searchbar";
 import MusicCard from "../components/musicCard";
-import { API_URL } from "../api";
+import { buscarMusicas, type Musica } from "../services/musicaService";
+import { buscarPosts } from "../services/postService";
+import { buscarArtistas, type Artista } from "../services/artistaService";
+import { UserCircleIcon } from "@phosphor-icons/react";
 
 import {
   TrendUpIcon,
@@ -15,33 +18,18 @@ import {
   CaretRightIcon,
 } from "@phosphor-icons/react";
 
-type Musica = {
-  id: number;
-  titulo: string;
-  artista?: {
-    id?: number;
-    nome: string;
-  };
+type MusicaExplorar = Musica & {
   artistaId?: number;
-  capa?: string | null;
-  nota?: number;
-  avaliacoes?: number;
-  duracaoSegundos?: number;
   quantidadePosts?: number;
 };
 
-function Carrossel({
-  children,
-}: {
-  children: ReactNode;
-}) {
+function Carrossel({ children }: { children: ReactNode }) {
   const trilhoRef = useRef<HTMLDivElement>(null);
   const [podeVoltar, setPodeVoltar] = useState(false);
   const [podeAvancar, setPodeAvancar] = useState(false);
 
   function atualizarSetas() {
     const trilho = trilhoRef.current;
-
     if (!trilho) return;
 
     const maxScroll = trilho.scrollWidth - trilho.clientWidth;
@@ -52,7 +40,6 @@ function Carrossel({
 
   useEffect(() => {
     const trilho = trilhoRef.current;
-
     if (!trilho) return;
 
     atualizarSetas();
@@ -72,7 +59,6 @@ function Carrossel({
 
   function mover(direcao: number) {
     const trilho = trilhoRef.current;
-
     if (!trilho) return;
 
     trilho.scrollBy({
@@ -88,7 +74,7 @@ function Carrossel({
           type="button"
           aria-label="Voltar músicas"
           onClick={() => mover(-1)}
-          className="absolute cursor-pointer -left-4 top-1/2 z-20 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-[#354052] bg-[#111420]/95 text-white shadow-lg transition-all duration-300 hover:scale-105 hover:bg-[#273349] group-hover/carrossel:flex"
+          className="absolute -left-4 top-1/2 z-20 hidden h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-[#354052] bg-[#111420]/95 text-white shadow-lg transition-all duration-300 hover:scale-105 hover:bg-[#273349] group-hover/carrossel:flex"
         >
           <CaretLeftIcon size={20} weight="bold" />
         </button>
@@ -97,6 +83,7 @@ function Carrossel({
       <div
         ref={trilhoRef}
         className="flex snap-x snap-proximity gap-4 overflow-x-auto scroll-smooth pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        style={{ scrollBehavior: "smooth" }}
       >
         {children}
       </div>
@@ -106,7 +93,7 @@ function Carrossel({
           type="button"
           aria-label="Avançar músicas"
           onClick={() => mover(1)}
-          className="absolute cursor-pointer -right-4 top-1/2 z-20 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-[#354052] bg-[#111420]/95 text-white shadow-lg transition-all duration-300 hover:scale-105 hover:bg-[#273349] group-hover/carrossel:flex"
+          className="absolute -right-4 top-1/2 z-20 hidden h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-[#354052] bg-[#111420]/95 text-white shadow-lg transition-all duration-300 hover:scale-105 hover:bg-[#273349] group-hover/carrossel:flex"
         >
           <CaretRightIcon size={20} weight="bold" />
         </button>
@@ -115,65 +102,60 @@ function Carrossel({
   );
 }
 
-
 export default function Explorar() {
-  const [musicas, setMusicas] = useState<Musica[]>([]);
+  const [musicas, setMusicas] = useState<MusicaExplorar[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState(false);
-
+  const [artistas, setArtistas] = useState<Artista[]>([]);
 
   useEffect(() => {
     let ativo = true;
 
     async function buscarDados() {
       try {
-        const [respostaMusicas, respostaPosts] = await Promise.all([
-          fetch(`${API_URL}/musicas`),
-          fetch(`${API_URL}/posts`),
+        const [dadosMusicas, dadosArtistas] = await Promise.all([
+          buscarMusicas(),
+          buscarArtistas(),
         ]);
 
-        if (!respostaMusicas.ok) {
-          throw new Error("Erro ao buscar músicas");
+        if (ativo) {
+          setArtistas(dadosArtistas);
         }
 
-        const dadosMusicas = await respostaMusicas.json();
+        let dadosPosts: Awaited<ReturnType<typeof buscarPosts>> = [];
 
-        // Os posts são complementares: se falharem, o catálogo ainda funciona.
-        let dadosPosts: any[] = [];
-
-        if (respostaPosts.ok) {
-          const resultadoPosts = await respostaPosts.json();
-
-          if (Array.isArray(resultadoPosts)) {
-            dadosPosts = resultadoPosts;
-          }
+        try {
+          dadosPosts = await buscarPosts();
+        } catch (erroPosts) {
+          console.error("Erro ao buscar posts:", erroPosts);
         }
 
         const quantidadePosts = new Map<number, number>();
 
-        dadosPosts.forEach((post: any) => {
-          const musicaId = post.musica?.id ?? post.musicaId;
+        dadosPosts.forEach((post) => {
+          const musicaId = post.musica?.id;
 
           if (musicaId != null) {
             quantidadePosts.set(
-              Number(musicaId),
-              (quantidadePosts.get(Number(musicaId)) ?? 0) + 1
+              musicaId,
+              (quantidadePosts.get(musicaId) ?? 0) + 1
             );
           }
         });
 
-        const catalogoComPosts = (
-          Array.isArray(dadosMusicas) ? dadosMusicas : []
-        ).map((musica: Musica) => ({
-          ...musica,
-          quantidadePosts: quantidadePosts.get(musica.id) ?? 0,
-        }));
+        const catalogoComPosts: MusicaExplorar[] = dadosMusicas.map(
+          (musica) => ({
+            ...musica,
+            quantidadePosts: quantidadePosts.get(musica.id) ?? 0,
+          })
+        );
 
         if (ativo) {
           setMusicas(catalogoComPosts);
+          setErro(false);
         }
       } catch (erro) {
-        console.error("Erro ao buscar dados:", erro);
+        console.error("Erro ao buscar músicas:", erro);
 
         if (ativo) {
           setErro(true);
@@ -192,10 +174,9 @@ export default function Explorar() {
     };
   }, []);
 
-
   // Evita duplicatas caso a API retorne alguma música repetida.
   const catalogo = useMemo(() => {
-    const unicas = new Map<number, Musica>();
+    const unicas = new Map<number, MusicaExplorar>();
 
     musicas.forEach((musica) => {
       unicas.set(musica.id, musica);
@@ -203,8 +184,6 @@ export default function Explorar() {
 
     return Array.from(unicas.values());
   }, [musicas]);
-
-
 
   // Em alta: músicas que aparecem em mais posts.
   const musicasEmAlta = [...catalogo]
@@ -214,7 +193,7 @@ export default function Explorar() {
     )
     .slice(0, 8);
 
-  // Mais bem avaliadas: classificação independente.
+  // Mais bem avaliadas.
   const musicasMaisBemAvaliadas = [...catalogo]
     .filter((musica) => (musica.avaliacoes ?? 0) > 0)
     .sort((a, b) => {
@@ -227,7 +206,6 @@ export default function Explorar() {
     .slice(0, 8);
 
   // Descubra: prioriza músicas que ainda não apareceram em "Em alta".
-  // Se não houver músicas suficientes, usa o catálogo completo.
   const idsEmAlta = new Set(
     musicasEmAlta.map((musica) => musica.id)
   );
@@ -240,12 +218,14 @@ export default function Explorar() {
     musicasRestantes.length > 0 ? musicasRestantes : catalogo
   ).slice(0, 8);
 
-
-  function renderizarCard(musica: Musica, tipo: "banner" | "quadrado") {
+  function renderizarCard(
+    musica: MusicaExplorar,
+    tipo: "banner" | "quadrado"
+  ) {
     return (
       <div
         key={musica.id}
-        className="shrink-0 snap-start"
+        className="shrink-0 snap-start transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02]"
       >
         <MusicCard
           id={musica.id}
@@ -266,7 +246,7 @@ export default function Explorar() {
   function renderizarSecao(
     titulo: string,
     icone: ReactNode,
-    lista: Musica[],
+    lista: MusicaExplorar[],
     tipo: "banner" | "quadrado"
   ) {
     return (
@@ -298,6 +278,67 @@ export default function Explorar() {
     );
   }
 
+
+  function renderizarArtistas() {
+    return (
+      <section className="mb-12 min-w-0">
+        <div className="mb-5 flex items-center gap-2">
+          <UserCircleIcon size={20} className="text-[#58A9E8]" />
+
+          <h2 className="font-serif text-[17px] text-white">
+            Artistas
+          </h2>
+
+          <span className="ml-1 text-xs text-[#697386]">
+            {artistas.length}
+          </span>
+        </div>
+
+        {artistas.length === 0 ? (
+          <p className="py-4 text-sm text-[#697386]">
+            Nenhum artista encontrado.
+          </p>
+        ) : (
+          <Carrossel>
+            {artistas.map((artista) => (
+              <div
+                key={artista.id}
+                className="w-40 shrink-0 snap-start transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02]"
+              >
+                <div className="flex cursor-pointer flex-col items-center transition-colors py-4 duration-300">
+                  <div className="mb-3 flex h-30 w-30 items-center justify-center overflow-hidden rounded-full bg-[#202737]">
+                    {artista.fotoURL ? (
+                      <img
+                        src={artista.fotoURL}
+                        alt={artista.nome}
+                        loading="lazy"
+                        className="h-full w-full object-cover transition-transform duration-500 hover:scale-110"
+                      />
+                    ) : (
+                      <UserCircleIcon
+                        size={48}
+                        className="text-[#697386]"
+                      />
+                    )}
+                  </div>
+
+                  <h3 className="w-full truncate text-center text-sm font-medium text-white">
+                    {artista.nome}
+                  </h3>
+
+                  <p className="mt-1 text-xs text-[#697386]">
+                    Artista
+                  </p>
+                </div>
+              </div>
+            ))}
+          </Carrossel>
+        )}
+      </section>
+    );
+  }
+
+
   return (
     <PageLayout>
       <PageContent>
@@ -324,6 +365,8 @@ export default function Explorar() {
             Não foi possível carregar as músicas. Tente atualizar a página.
           </p>
         )}
+
+        {renderizarArtistas()}
 
         {renderizarSecao(
           "Em alta",

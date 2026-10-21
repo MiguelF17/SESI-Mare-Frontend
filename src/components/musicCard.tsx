@@ -1,6 +1,5 @@
 
 import {
-  PlayIcon,
   BookmarkSimpleIcon,
   DotsThreeIcon,
   Star,
@@ -11,11 +10,16 @@ import {
   CheckIcon,
 } from "@phosphor-icons/react";
 
-import logo from "../assets/logo.png";
-import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import type { MouseEvent } from "react";
-import { API_URL } from "../api";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+
+import logo from "../assets/logo.png";
+import {
+  verificarMusicaSalva,
+  alternarMusicaSalva,
+} from "../services/salvarMusicaService";
 
 type MusicCardProps = {
   id?: number;
@@ -58,38 +62,23 @@ export default function MusicCard({
     return `${minutos}:${segundosRestantes.toString().padStart(2, "0")}`;
   }
 
+  // Verificar se a música está salva
   useEffect(() => {
-    if (!id) return;
-
     let ativo = true;
 
     async function verificarSalvamento() {
+      setSalva(false);
+
+      if (!id || !localStorage.getItem("token")) {
+        return;
+      }
+
       try {
-        const token = localStorage.getItem("token");
+        const estaSalva = await verificarMusicaSalva(id);
 
-        if (!token) {
-          if (ativo) setSalva(false);
-          return;
+        if (ativo) {
+          setSalva(estaSalva);
         }
-
-        const resposta = await fetch(
-          `${API_URL}/usuarios/me/salvos`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (!resposta.ok) return;
-
-        const salvos = await resposta.json();
-
-        const estaSalva = salvos.some(
-          (item: any) => item.musica?.id === id
-        );
-
-        if (ativo) setSalva(estaSalva);
       } catch (error) {
         console.error("Erro ao verificar música salva:", error);
       }
@@ -102,12 +91,11 @@ export default function MusicCard({
     };
   }, [id]);
 
+  // Salvar ou remover música dos salvos
   async function alternarSalvamento() {
     if (!id || salvando) return;
 
-    const token = localStorage.getItem("token");
-
-    if (!token) {
+    if (!localStorage.getItem("token")) {
       setMenuAberto(false);
       navigate("/login");
       return;
@@ -116,22 +104,9 @@ export default function MusicCard({
     try {
       setSalvando(true);
 
-      const resposta = await fetch(
-        `${API_URL}/musicas/${id}/salvar`,
-        {
-          method: salva ? "DELETE" : "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (!resposta.ok) {
-        throw new Error("Erro ao alterar salvamento");
-      }
+      await alternarMusicaSalva(id, salva);
 
       const estavaSalva = salva;
-
       setSalva(!estavaSalva);
       setMenuAberto(false);
 
@@ -140,6 +115,12 @@ export default function MusicCard({
       }
     } catch (error) {
       console.error("Erro ao salvar/remover música:", error);
+
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Erro ao atualizar música salva."
+      );
     } finally {
       setSalvando(false);
     }
@@ -149,14 +130,16 @@ export default function MusicCard({
     e.stopPropagation();
     setMenuAberto(false);
 
-    if (id) navigate(`/musica/${id}`);
+    if (id) {
+      navigate(`/musica/${id}`);
+    }
   }
 
   function abrirArtista(e: MouseEvent<HTMLButtonElement>) {
     e.stopPropagation();
     setMenuAberto(false);
 
-    if (artistaId) {
+    if (artistaId != null) {
       navigate(`/artista/${artistaId}`);
     }
   }
@@ -179,6 +162,7 @@ export default function MusicCard({
       }, 2000);
     } catch (error) {
       console.error("Não foi possível copiar o link:", error);
+      toast.error("Não foi possível copiar o link.");
     }
   }
 
@@ -201,6 +185,7 @@ export default function MusicCard({
           <div className="relative z-10 flex h-full w-full flex-col justify-end p-4">
             <div>
               <p className="truncate text-lg text-white">{titulo}</p>
+
               <p className="mt-1 truncate text-xs text-[#D0D0D5]">
                 {artista}
               </p>
@@ -213,9 +198,11 @@ export default function MusicCard({
                       weight="fill"
                       className="text-[#58AAF0]"
                     />
+
                     <span className="ml-1 text-[11px] text-white">
-                      {nota.toFixed(1)}
+                      {Number(nota).toFixed(1)}
                     </span>
+
                     <span className="ml-1 text-[11px] text-[#b5bbca]">
                       ({avaliacoes}{" "}
                       {avaliacoes === 1 ? "avaliação" : "avaliações"})
@@ -243,10 +230,9 @@ export default function MusicCard({
     return (
       <div
         onClick={() => id && navigate(`/musica/${id}`)}
-        className={`cursor-pointer rounded-lg border border-[#354052] bg-[#111420] p-2 transition hover:bg-[#171C2A] ${larguraFixa
-            ? "w-[180px] shrink-0"
-            : "w-full min-w-0"
-          }`}
+        className={`cursor-pointer rounded-lg border border-[#354052] bg-[#111420] p-2 transition hover:bg-[#171C2A] ${
+          larguraFixa ? "w-[180px] shrink-0" : "w-full min-w-0"
+        }`}
       >
         <img
           src={capa || logo}
@@ -255,6 +241,7 @@ export default function MusicCard({
         />
 
         <p className="mt-2 truncate text-xs text-white">{titulo}</p>
+
         <p className="mt-1 truncate text-[11px] text-[#8B93A3]">
           {artista}
         </p>
@@ -267,8 +254,9 @@ export default function MusicCard({
                 weight="fill"
                 className="text-[#58AAF0]"
               />
+
               <span className="ml-1 text-[10px] text-[#D0D0D5]">
-                {nota.toFixed(1)}
+                {Number(nota).toFixed(1)}
               </span>
             </>
           ) : (
@@ -296,6 +284,7 @@ export default function MusicCard({
 
         <div className="ml-3 min-w-0 flex-1">
           <p className="truncate text-sm text-white">{titulo}</p>
+
           <p className="mt-1 truncate text-xs text-[#8B93A3]">
             {artista}
           </p>
@@ -308,9 +297,11 @@ export default function MusicCard({
                   weight="fill"
                   className="shrink-0 text-[#58AAF0]"
                 />
+
                 <span className="ml-1 text-[11px] text-white">
-                  {nota.toFixed(1)}
+                  {Number(nota).toFixed(1)}
                 </span>
+
                 <span className="ml-1 truncate text-[11px] text-[#687386]">
                   ({avaliacoes}{" "}
                   {avaliacoes === 1 ? "avaliação" : "avaliações"})
@@ -333,6 +324,7 @@ export default function MusicCard({
 
       <div className="mt-3 flex items-center justify-between border-t border-[#354052] pt-3">
         <button
+          type="button"
           onClick={(e) => {
             e.stopPropagation();
             alternarSalvamento();
@@ -348,34 +340,37 @@ export default function MusicCard({
           />
 
           <span
-            className={`ml-1 text-[11px] ${salva ? "text-[#58AAF0]" : "text-[#687386]"
-              }`}
+            className={`ml-1 text-[11px] ${
+              salva ? "text-[#58AAF0]" : "text-[#687386]"
+            }`}
           >
-            {salva ? "Salva" : "Salvar"}
+            {salvando ? "Salvando..." : salva ? "Salva" : "Salvar"}
           </span>
         </button>
 
         {/* MENU DOS TRÊS PONTINHOS */}
         <div className="relative">
           <button
+            type="button"
             onClick={(e) => {
               e.stopPropagation();
               setMenuAberto(!menuAberto);
             }}
             aria-label="Mais opções da música"
             aria-expanded={menuAberto}
-            className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-full transition ${menuAberto
-              ? "bg-[#273349] text-[#58AAF0]"
-              : "text-[#D0D0D5] hover:bg-[#202536]"
-              }`}
+            className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-full transition ${
+              menuAberto
+                ? "bg-[#273349] text-[#58AAF0]"
+                : "text-[#D0D0D5] hover:bg-[#202536]"
+            }`}
           >
             <DotsThreeIcon size={22} weight="bold" />
           </button>
 
           {menuAberto && (
             <>
-              {/* Camada para fechar ao clicar fora */}
               <button
+                type="button"
                 aria-label="Fechar menu"
                 onClick={(e) => {
                   e.stopPropagation();
@@ -389,7 +384,8 @@ export default function MusicCard({
                 className="absolute bottom-10 right-0 z-40 w-56 overflow-hidden rounded-xl border border-[#354052] bg-[#111420] p-1.5 shadow-xl"
               >
                 <button
-                  onClick={() => alternarSalvamento()}
+                  type="button"
+                  onClick={alternarSalvamento}
                   disabled={salvando}
                   className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm text-[#D0D0D5] transition hover:bg-[#202536] hover:text-white disabled:opacity-50"
                 >
@@ -398,6 +394,7 @@ export default function MusicCard({
                     weight={salva ? "fill" : "regular"}
                     className={salva ? "text-[#58AAF0]" : ""}
                   />
+
                   <span className="flex-1">
                     {salvando
                       ? "Aguarde..."
@@ -408,6 +405,7 @@ export default function MusicCard({
                 </button>
 
                 <button
+                  type="button"
                   onClick={abrirMusica}
                   className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm text-[#D0D0D5] transition hover:bg-[#202536] hover:text-white"
                 >
@@ -417,6 +415,7 @@ export default function MusicCard({
 
                 {artistaId != null && (
                   <button
+                    type="button"
                     onClick={abrirArtista}
                     className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm text-[#D0D0D5] transition hover:bg-[#202536] hover:text-white"
                   >
@@ -428,14 +427,19 @@ export default function MusicCard({
                 <div className="my-1 border-t border-[#273349]" />
 
                 <button
+                  type="button"
                   onClick={compartilharMusica}
-                  className="flex cursor-pointer w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm text-[#D0D0D5] transition hover:bg-[#202536] hover:text-white"
+                  className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm text-[#D0D0D5] transition hover:bg-[#202536] hover:text-white"
                 >
                   {copiado ? (
-                    <CheckIcon size={18} className="text-[#58AAF0]" />
+                    <CheckIcon
+                      size={18}
+                      className="text-[#58AAF0]"
+                    />
                   ) : (
                     <ShareNetworkIcon size={18} />
                   )}
+
                   <span>
                     {copiado ? "Link copiado!" : "Compartilhar música"}
                   </span>

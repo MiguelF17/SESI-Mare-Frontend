@@ -1,76 +1,76 @@
+import toast from "react-hot-toast";
 import { BsAppleMusic } from "react-icons/bs";
 import { FaAmazon, FaSpotify } from "react-icons/fa";
 import { SiYoutubemusic } from "react-icons/si";
+import {
+  abrirPlataforma,
+  type PlataformaMusical,
+} from "../services/ouvirService";
 
 interface OuvirCardProps {
   spotifyURL?: string | null;
+  appleMusicURL?: string | null;
+  amazonMusicURL?: string | null;
+  youtubeMusicURL?: string | null;
 }
 
-export default function OuvirCard({ spotifyURL }: OuvirCardProps) {
-  function abrirSpotify() {
-    if (!spotifyURL) {
-      alert("Essa música não possui um link do Spotify.");
+export default function OuvirCard({
+  spotifyURL,
+  appleMusicURL,
+  amazonMusicURL,
+  youtubeMusicURL,
+}: OuvirCardProps) {
+  function abrir(
+    plataforma: PlataformaMusical,
+    url: string | null | undefined,
+    nome: string
+  ) {
+    if (!url) {
+      toast.error(`Essa música não possui um link do ${nome}.`);
       return;
     }
 
-    window.open(spotifyURL, "_blank");
+    if (!abrirPlataforma(plataforma, url)) {
+      toast.error(`O link do ${nome} é inválido.`);
+    }
   }
 
   return (
     <section className="mt-5 rounded-xl border border-[#273349] bg-[#182131] p-3">
-      <h2 className="text-[24px] font-medium text-white">
-        Ouvir
-      </h2>
+      <h2 className="text-[24px] font-medium text-white">Ouvir</h2>
 
       <p className="mb-3 mt-1 text-[12px] text-[#8d96a6]">
-        Conecte a plataforma que você usa para ouvir.
+        Escolha a plataforma que você usa para ouvir.
       </p>
 
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         <button
-          onClick={abrirSpotify}
-          className="
-            flex h-[40px] cursor-pointer items-center gap-2
-            rounded-md border border-[#293449] bg-[#111824]
-            px-2 text-[12px] text-white transition
-            hover:bg-[#172131]
-          "
+          onClick={() => abrir("spotify", spotifyURL, "Spotify")}
+          className="flex h-[40px] cursor-pointer items-center gap-2 rounded-md border border-[#293449] bg-[#111824] px-2 text-[12px] text-white transition hover:bg-[#172131]"
         >
           <FaSpotify size={24} className="text-[#1DB954]" />
           Spotify
         </button>
 
         <button
-          className="
-            flex h-[40px] cursor-pointer items-center gap-2
-            rounded-md border border-[#293449] bg-[#111824]
-            px-2 text-[12px] text-white transition
-            hover:bg-[#172131]
-          "
+          onClick={() => abrir("youtubeMusic", youtubeMusicURL, "YouTube Music")}
+          className="flex h-[40px] cursor-pointer items-center gap-2 rounded-md border border-[#293449] bg-[#111824] px-2 text-[12px] text-white transition hover:bg-[#172131]"
         >
           <SiYoutubemusic size={24} className="text-[#FF0033]" />
           YouTube Music
         </button>
 
         <button
-          className="
-            flex h-[40px] cursor-pointer items-center gap-2
-            rounded-md border border-[#293449] bg-[#111824]
-            px-2 text-[12px] text-white transition
-            hover:bg-[#172131]
-          "
+          onClick={() => abrir("amazonMusic", amazonMusicURL, "Amazon Music")}
+          className="flex h-[40px] cursor-pointer items-center gap-2 rounded-md border border-[#293449] bg-[#111824] px-2 text-[12px] text-white transition hover:bg-[#172131]"
         >
           <FaAmazon size={24} className="text-[#25B7D3]" />
           Amazon Music
         </button>
 
         <button
-          className="
-            flex h-[40px] cursor-pointer items-center gap-2
-            rounded-md border border-[#293449] bg-[#111824]
-            px-2 text-[12px] text-white transition
-            hover:bg-[#172131]
-          "
+          onClick={() => abrir("appleMusic", appleMusicURL, "Apple Music")}
+          className="flex h-[40px] cursor-pointer items-center gap-2 rounded-md border border-[#293449] bg-[#111824] px-2 text-[12px] text-white transition hover:bg-[#172131]"
         >
           <BsAppleMusic size={24} className="text-[#FF4E6B]" />
           Apple Music

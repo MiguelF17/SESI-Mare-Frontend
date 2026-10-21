@@ -19,6 +19,7 @@ import calcularTempo from "../calcularTempo";
 import MusicCard from "../components/musicCard";
 import ImageCropModal from "../components/imageCropModal";
 import toast from "react-hot-toast";
+import { buscarPosts } from "../services/postService";
 
 interface Usuario {
   id: number;
@@ -121,33 +122,16 @@ export default function Perfil() {
 
   /* buscar avaliacoes */
   async function buscarAvaliacoes() {
-    try {
-      const token = localStorage.getItem("token");
+  try {
+    const dados = await buscarPosts({
+      rota: "/usuarios/me/posts",
+    });
 
-      const resposta = await fetch(`${API_URL}/usuarios/me/posts`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (resposta.status === 401) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("usuario");
-        window.location.href = "/login";
-        return;
-      }
-
-      if (!resposta.ok) {
-        throw new Error("Erro ao buscar avaliações");
-      }
-
-      const dados = await resposta.json();
-
-      setAvaliacoes(dados);
-    } catch (error) {
-      console.error(error);
-    }
+    setAvaliacoes(dados);
+  } catch (error) {
+    console.error("Erro ao buscar avaliações:", error);
   }
+}
 
   async function buscarComentarios() {
     try {
@@ -248,7 +232,7 @@ export default function Perfil() {
       if (!resposta.ok) {
         const erro = await resposta.json();
 
-        alert(erro.error || "Erro ao editar perfil");
+        toast.error(erro.error || "Erro ao editar perfil");
         return;
       }
 
@@ -268,10 +252,12 @@ export default function Perfil() {
       setEditando(false);
     } catch (error) {
       console.error(error);
-      alert("Erro ao editar perfil");
+      toast.error("Erro ao editar perfil");
     } finally {
       setSalvando(false);
     }
+
+    toast.success("Perfil atualizado com sucesso!")
   }
 
   async function enviarImagem(
@@ -302,7 +288,7 @@ export default function Perfil() {
       const dados = await resposta.json();
 
       if (!resposta.ok) {
-        alert(dados.erro || "Erro ao atualizar imagem");
+        toast.error(dados.erro || "Erro ao atualizar imagem");
         return;
       }
 
@@ -322,6 +308,7 @@ export default function Perfil() {
       console.error("Erro ao enviar imagem:", error);
       toast.error("Erro ao atualizar imagem");
     }
+    toast.success("Imagem atualizada com sucesso!")
   }
 
   if (carregando) {
@@ -681,6 +668,7 @@ export default function Perfil() {
                           likes={post._count?.curtidas ?? 0}
                           comments={post._count?.comentarios ?? 0}
                           avaliacoes={post.musica?._count?.posts ?? 0}
+                          curtidoPorMim={post.curtidoPorMim ?? false}
                         />
                       ))
 

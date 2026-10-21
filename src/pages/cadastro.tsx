@@ -2,13 +2,14 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { toast } from "react-hot-toast";
-import { API_URL } from "../api";
+import { useAuth } from "../hooks/useAuth";
 
 import fundoCadastro from "../assets/fundoLogin.png";
 import logo from "../assets/mare.png";
 
 function Cadastro() {
   const navigate = useNavigate();
+  const { cadastrar, carregando } = useAuth();
 
   const [formData, setFormData] = useState({
     username: "",
@@ -35,50 +36,11 @@ function Cadastro() {
   ) => {
     e.preventDefault();
 
-    // VERIFICA SENHAS
-    if (formData.senha !== formData.confirmarSenha) {
-      toast.error("As senhas não são iguais.");
-      return;
-    }
-
-    // VERIFICA TAMANHO DA SENHA
-    if (formData.senha.length < 6) {
-      toast.error(
-        "A senha deve ter pelo menos 6 caracteres."
-      );
-      return;
-    }
-
     try {
-      const resposta = await fetch(
-        `${API_URL}/usuarios`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            username: formData.username,
-            email: formData.email,
-            senha: formData.senha,
-          }),
-        }
-      );
+      await cadastrar(formData);
 
-      const dados = await resposta.json();
-
-      // ERRO NO CADASTRO
-      if (!resposta.ok) {
-        toast.error(
-          dados.error || "Erro ao criar a conta."
-        );
-        return;
-      }
-
-      // SUCESSO
       toast.success("Conta criada com sucesso!");
 
-      // LIMPA O FORMULÁRIO
       setFormData({
         username: "",
         email: "",
@@ -86,19 +48,16 @@ function Cadastro() {
         confirmarSenha: "",
       });
 
-      // VAI PARA O LOGIN
       setTimeout(() => {
         navigate("/login");
       }, 1000);
-
     } catch (error) {
-      console.error(
-        "Erro ao conectar com a API:",
-        error
-      );
+      console.error("Erro ao cadastrar:", error);
 
       toast.error(
-        "Não foi possível conectar ao servidor."
+        error instanceof Error
+          ? error.message
+          : "Não foi possível conectar ao servidor."
       );
     }
   };
@@ -480,23 +439,17 @@ function Cadastro() {
             {/* BOTÃO */}
             <button
               type="submit"
+              disabled={carregando}
               className="
-                                w-full
-                                h-12
-                                bg-[#58AAF0]
-                                hover:bg-[#3F95D8]
-                                text-[#080A10]
-                                font-semibold
-                                rounded-lg
-                                transition
-                                duration-200
-                                cursor-pointer
-                                shadow-lg
-                                hover:shadow-[#58AAF0]/20
-                                hover:scale-[1.01]
-                            "
+    w-full h-12
+    bg-[#58AAF0] hover:bg-[#3F95D8]
+    text-[#080A10] font-semibold
+    rounded-lg transition duration-200
+    cursor-pointer disabled:opacity-60
+    disabled:cursor-not-allowed
+  "
             >
-              Criar conta
+              {carregando ? "Criando conta..." : "Criar conta"}
             </button>
 
             {/* LOGIN */}

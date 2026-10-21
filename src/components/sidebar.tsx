@@ -8,8 +8,7 @@ import {
   UserIcon,
   GearIcon,
 } from "@phosphor-icons/react";
-import { useEffect, useState } from "react";
-import { API_URL } from "../api";
+import { useMeuPerfil } from "../hooks/useMeuPerfil";
 
 interface Usuario {
   id: number;
@@ -19,15 +18,12 @@ interface Usuario {
   foto: string | null;
 }
 export default function Sidebar() {
-  const [usuario, setUsuario] = useState<Usuario | null>(null);
-
-  const loggedUser: Usuario | null = JSON.parse(
-    sessionStorage.getItem("user") || "null",
-  );
-
-  /* função de logout */
+  const { usuario } = useMeuPerfil();
   const navigate = useNavigate();
+
   function handleLogout() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("usuario");
     sessionStorage.removeItem("user");
     sessionStorage.removeItem("token");
 
@@ -37,32 +33,6 @@ export default function Sidebar() {
   function Post() {
     navigate("/criarpost");
   }
-
-  useEffect(() => {
-    async function buscarUsuario() {
-      const token = localStorage.getItem("token");
-
-      if (!token) return;
-
-      try {
-        const resposta = await fetch(`${API_URL}/usuarios/me`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!resposta.ok) return;
-
-        const dados = await resposta.json();
-        setUsuario(dados);
-      } catch (erro) {
-        console.error("Erro ao buscar usuário:", erro);
-      }
-    }
-
-    buscarUsuario();
-
-  }, []);
 
   return (
     <aside
@@ -82,11 +52,17 @@ export default function Sidebar() {
         <nav className="mt-4 flex flex-col">
           <div className="px-8 mb-6 flex items-center gap-2">
             <div className="flex h-[80px] w-[80px] shrink-0 items-center justify-center rounded-full bg-[#1a2130]">
-              <img
-                src={usuario?.foto || logo}
-                alt={usuario?.nome}
-                className="rounded-full object-cover"
-              />
+              {usuario?.foto ? (
+                <img
+                  src={usuario.foto}
+                  alt={usuario.nome}
+                  className="rounded-full object-cover"
+                />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center">
+                  <UserIcon size={34} className="text-gray-400" />
+                </div>
+              )}
             </div>
 
             <div>

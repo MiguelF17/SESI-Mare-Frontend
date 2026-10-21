@@ -1,6 +1,11 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeftIcon, PaperPlaneTiltIcon, ChatCircleIcon, TrashIcon } from "@phosphor-icons/react";
+import {
+    ArrowLeftIcon,
+    PaperPlaneTiltIcon,
+    ChatCircleIcon,
+    TrashIcon,
+} from "@phosphor-icons/react";
 
 import PageLayout from "../components/pageLayout";
 import PageContent from "../components/pageContent";
@@ -40,14 +45,21 @@ export default function Post() {
         let ativo = true;
 
         async function carregarDados() {
-            if (!id) return;
+            if (!id) {
+                setCarregando(false);
+                return;
+            }
 
             setCarregando(true);
             setErro("");
 
             try {
                 const [respostaPost, respostaComentarios] = await Promise.all([
-                    fetch(`${API_URL}/posts/${id}`),
+                    fetch(`${API_URL}/posts/${id}`, {
+                        headers: token
+                            ? { Authorization: `Bearer ${token}` }
+                            : {},
+                    }),
                     fetch(`${API_URL}/posts/${id}/comentarios`),
                 ]);
 
@@ -101,7 +113,24 @@ export default function Post() {
         return () => {
             ativo = false;
         };
-    }, [id]);
+    }, [id, token]);
+
+    useEffect(() => {
+        if (carregando || window.location.hash !== "#comentar") return;
+
+        const campo = document.getElementById(
+            "campo-comentario"
+        ) as HTMLTextAreaElement | null;
+
+        if (!campo) return;
+
+        campo.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+        });
+
+        campo.focus();
+    }, [carregando, id, token]);
 
     async function enviarComentario(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -176,10 +205,12 @@ export default function Post() {
                 }
             );
 
-            const dados = await resposta.json();
+            const dados = await resposta.json().catch(() => null);
 
             if (!resposta.ok) {
-                throw new Error(dados.error || "Não foi possível excluir.");
+                throw new Error(
+                    dados?.error || "Não foi possível excluir."
+                );
             }
 
             setComentarios((atuais) =>
@@ -242,12 +273,7 @@ export default function Post() {
         <PageLayout>
             <PageContent>
                 <div className="grid grid-cols-1 gap-10 xl:grid-cols-[minmax(0,1fr)_340px]">
-
-                    {/* COLUNA PRINCIPAL */}
                     <section className="min-w-0">
-                        {/* BUSCA FIXA */}
-
-                        {/* CABEÇALHO DA PUBLICAÇÃO */}
                         <div className="sticky top-0 z-20 border-b border-[#242b3a] bg-[#080A10]/95 backdrop-blur-md">
                             <div className="py-3">
                                 <SearchBar />
@@ -273,10 +299,9 @@ export default function Post() {
                             </div>
                         </div>
 
-
-                        {/* PUBLICAÇÃO */}
                         <div className="border-b border-[#242b3a] py-4">
                             <PostCard
+                                postId={post.id}
                                 name={post.usuario?.nome || "Usuário"}
                                 username={post.usuario?.username || ""}
                                 foto={post.usuario?.foto}
@@ -292,12 +317,13 @@ export default function Post() {
                                 likes={post._count?.curtidas ?? 0}
                                 comments={post._count?.comentarios ?? comentarios.length}
                                 avaliacoes={post.musica?.avaliacoes}
+                                curtidoPorMim={post.curtidoPorMim ?? false}
                             />
                         </div>
 
-                        {/* CAMPO DE COMENTÁRIO */}
                         {token ? (
                             <form
+                                id="comentar"
                                 onSubmit={enviarComentario}
                                 className="flex gap-3 border-b border-[#354052] px-1 py-5"
                             >
@@ -309,6 +335,7 @@ export default function Post() {
 
                                 <div className="min-w-0 flex-1">
                                     <textarea
+                                        id="campo-comentario"
                                         value={textoComentario}
                                         onChange={(event) =>
                                             setTextoComentario(event.target.value)
@@ -336,7 +363,10 @@ export default function Post() {
                                 </div>
                             </form>
                         ) : (
-                            <div className="border-b border-[#354052] px-1 py-5 text-sm text-[#9ca3af]">
+                            <div
+                                id="comentar"
+                                className="border-b border-[#354052] px-1 py-5 text-sm text-[#9ca3af]"
+                            >
                                 <Link
                                     to="/login"
                                     className="text-[#58AAF0] hover:underline"
@@ -348,10 +378,11 @@ export default function Post() {
                         )}
 
                         {erro && (
-                            <p className="px-1 py-3 text-sm text-red-400">{erro}</p>
+                            <p className="px-1 py-3 text-sm text-red-400">
+                                {erro}
+                            </p>
                         )}
 
-                        {/* LISTA DE COMENTÁRIOS — ESTILO X */}
                         <section>
                             <h2 className="border-b border-[#242b3a] px-1 py-4 text-base font-bold text-white">
                                 Respostas
@@ -395,6 +426,7 @@ export default function Post() {
                                                                 excluirComentario(comentario.id)
                                                             }
                                                             title="Excluir comentário"
+                                                            aria-label="Excluir comentário"
                                                             className="ml-auto cursor-pointer rounded-full p-2 transition hover:bg-red-500/10 hover:text-red-400"
                                                         >
                                                             <TrashIcon size={15} />
@@ -419,7 +451,6 @@ export default function Post() {
                         </section>
                     </section>
 
-                    {/* COLUNA LATERAL — MÚSICAS RECOMENDADAS */}
                     <aside className="hidden xl:block">
                         <div className="fixed top-2/5 w-[340px] -translate-y-2/5">
                             <h2 className="mb-5 font-serif text-base text-white">
@@ -445,7 +476,6 @@ export default function Post() {
                             </div>
                         </div>
                     </aside>
-
                 </div>
             </PageContent>
         </PageLayout>

@@ -6,10 +6,9 @@ import SearchBar from "../components/searchbar";
 import OuvirCard from "../components/ouvirCard";
 import { API_URL } from "../api";
 
-import { MagnifyingGlassIcon, PlusIcon } from "@phosphor-icons/react";
+import { MagnifyingGlassIcon, PlusIcon, StarIcon } from "@phosphor-icons/react";
 
 import MusicCard from "../components/musicCard";
-import { StarIcon } from "@phosphor-icons/react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import toast from "react-hot-toast";
 

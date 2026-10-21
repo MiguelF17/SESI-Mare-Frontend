@@ -5,80 +5,48 @@ import SearchBar from "../components/searchbar";
 import PostCard from "../components/postCard";
 import RecommendedMusic from "../components/recommendedMusic";
 import FeedTabs from "../components/feedTabs";
+
 import { useEffect, useState } from "react";
-import { API_URL } from "../api";
+import { apiRequest } from "../api";
+import { useHomeFeed } from "../hooks/useHomeFeed";
+import { useMusicasRecomendadas } from "../hooks/useMusicasRecomendadas";
 
 export default function Home() {
-  const [posts, setPosts] = useState<any[]>([]);
-  const [musicas, setMusicas] = useState<any[]>([]);
-  const [generosFavoritos, setGenerosFavoritos] = useState<string[]>([]);
-  const [abaAtiva, setAbaAtiva] = useState<"paraVoce" | "seguindo">(
-    "paraVoce"
+  const {
+    posts,
+    musicas,
+    generosFavoritos,
+    carregando,
+    erro,
+  } = useHomeFeed();
+
+  const { musicasRecomendadas } = useMusicasRecomendadas(
+    musicas,
+    generosFavoritos
+  );
+
+  const [abaAtiva, setAbaAtiva] = useState<
+    "paraVoce" | "seguindo"
+  >("paraVoce");
+
+  const [usuarioLogadoId, setUsuarioLogadoId] = useState<number | null>(
+    null
   );
 
   useEffect(() => {
-    async function buscarDados() {
+    async function buscarUsuarioLogado() {
       try {
-        const token = localStorage.getItem("token");
-
-        const [respostaPosts, respostaMusicas, respostaGeneros] =
-          await Promise.all([
-            fetch(`${API_URL}/posts`, {
-              headers: token
-                ? { Authorization: `Bearer ${token}` }
-                : {},
-            }),
-            fetch(`${API_URL}/musicas`),
-            token
-              ? fetch(`${API_URL}/usuarios/me/generos`, {
-                  headers: {
-                    Authorization: `Bearer ${token}`,
-                  },
-                })
-              : Promise.resolve(null),
-          ]);
-
-        if (!respostaPosts.ok || !respostaMusicas.ok) {
-          throw new Error("Erro ao buscar dados");
-        }
-
-        const dadosPosts = await respostaPosts.json();
-        const dadosMusicas = await respostaMusicas.json();
-
-        setPosts(dadosPosts);
-        setMusicas(dadosMusicas);
-
-        if (respostaGeneros?.ok) {
-          const dadosGeneros = await respostaGeneros.json();
-
-          setGenerosFavoritos(
-            Array.isArray(dadosGeneros) ? dadosGeneros : []
-          );
-        } else {
-          setGenerosFavoritos([]);
-        }
-      } catch (erro) {
-        console.error("Erro ao buscar dados:", erro);
+        const usuario = await apiRequest<{ id: number }>("/usuarios/me");
+        setUsuarioLogadoId(usuario.id);
+      } catch (error) {
+        console.error("Erro ao buscar usuário logado:", error);
       }
     }
 
-    buscarDados();
+    if (localStorage.getItem("token")) {
+      buscarUsuarioLogado();
+    }
   }, []);
-
-  const normalizarGenero = (genero: string) =>
-    genero.trim().toLocaleLowerCase("pt-BR");
-
-  const musicasRecomendadas =
-    generosFavoritos.length > 0
-      ? musicas.filter((musica) =>
-          generosFavoritos.some(
-            (genero) =>
-              typeof musica.genero === "string" &&
-              normalizarGenero(musica.genero) ===
-                normalizarGenero(genero)
-          )
-        )
-      : musicas;
 
   return (
     <PageLayout>
@@ -99,31 +67,52 @@ export default function Home() {
             </div>
 
             <div className="flex flex-col gap-6 pt-4">
-              {posts.length > 0 ? (
+              {carregando ? (
+                <p className="py-8 text-center text-sm text-[#697386]">
+                  Carregando publicações...
+                </p>
+              ) : erro ? (
+                <p className="py-8 text-center text-sm text-red-400">
+                  {erro}
+                </p>
+              ) : posts.length > 0 ? (
                 posts.map((post) => (
                   <PostCard
                     key={post.id}
                     postId={post.id}
-                    name={post.usuario?.nome}
-                    username={post.usuario?.username}
+                    name={post.usuario?.nome ?? "Usuário"}
+                    username={post.usuario?.username ?? ""}
                     foto={post.usuario?.foto}
                     time={post.dataCriacao}
-                    content={post.texto}
-                    musicId={post.musica?.id}
-                    musicTitle={post.musica?.titulo}
-                    artist={post.musica?.artista?.nome}
+                    content={post.texto ?? ""}
+                    musicId={post.musica?.id ?? 0}
+                    musicTitle={
+                      post.musica?.titulo ?? "Música indisponível"
+                    }
+                    artist={
+                      post.musica?.artista?.nome ??
+                      "Artista desconhecido"
+                    }
                     artistId={post.musica?.artista?.id}
                     musicCover={post.musica?.capa}
                     nota={post.nota}
                     avaliacoes={post.musica?.avaliacoes}
-                    likes={post._count?.curtidas}
-                    comments={post._count?.comentarios}
-                    curtidoPorMim={post.curtidoPorMim}
-                    duracaoSegundos={post.musica?.duracaoSegundos}
+                    likes={post._count?.curtidas ?? 0}
+                    comments={post._count?.comentarios ?? 0}
+                    curtidoPorMim={post.curtidoPorMim ?? false}
+                    duracaoSegundos={
+                      post.musica?.duracaoSegundos
+                    }
+
+                    ehMeuPost={
+                      usuarioLogadoId !== null &&
+                      post.usuario?.id === usuarioLogadoId
+                    }
+
                   />
                 ))
               ) : (
-                <p className="py-8 text-center text-[14px] text-[#697386]">
+                <p className="py-8 text-center text-sm text-[#697386]">
                   Nenhum post feito.
                 </p>
               )}
@@ -140,15 +129,15 @@ export default function Home() {
                 {musicasRecomendadas.length > 0 ? (
                   musicasRecomendadas.slice(0, 5).map((musica) => (
                     <RecommendedMusic
-                      id={musica.id}
                       key={musica.id}
+                      id={musica.id}
                       titulo={musica.titulo}
                       artist={musica.artista?.nome}
                       capa={musica.capa}
                     />
                   ))
                 ) : (
-                  <p className="py-8 text-center text-[14px] text-[#697386]">
+                  <p className="py-8 text-center text-sm text-[#697386]">
                     Nenhuma música encontrada para seus gêneros favoritos.
                   </p>
                 )}

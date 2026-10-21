@@ -214,9 +214,10 @@ export default function Resultados() {
                           musicCover={p.musica?.capa}
                           nota={p.musica?.nota}
                           avaliacoes={p.musica?.avaliacoes}
-                          likes={p._count?.curtidas}
+                          likes={p._count?.curtidas ?? 0}
                           comments={p._count?.comentarios}
                           duracaoSegundos={p.musica?.duracaoSegundos}
+                          curtidoPorMim={p.curtidoPorMim ?? false}
                         />
                       ))}
                     </div>

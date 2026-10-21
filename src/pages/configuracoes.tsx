@@ -12,8 +12,52 @@ import PageLayout from "../components/pageLayout";
 import PageContent from "../components/pageContent";
 import SearchBar from "../components/searchbar";
 import RecommendedMusic from "../components/recommendedMusic";
+import { useEffect, useState } from "react";
+import { API_URL } from "../api";
 
 export default function Configuracoes() {
+  const [musicas, setMusicas] = useState<any[]>([]);
+  const [carregando, setCarregando] = useState(true);
+  const [recomendadas, setRecomendadas] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function buscarDados() {
+      try {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+          return;
+        }
+
+        const [respostaSalvos, respostaMusicas] = await Promise.all([
+          fetch(`${API_URL}/usuarios/me/salvos`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }),
+
+          fetch(`${API_URL}/musicas`),
+        ]);
+
+        if (!respostaSalvos.ok || !respostaMusicas.ok) {
+          throw new Error("Erro ao buscar dados");
+        }
+
+        const dadosSalvos = await respostaSalvos.json();
+        const dadosMusicas = await respostaMusicas.json();
+
+        setMusicas(dadosSalvos);
+        setRecomendadas(dadosMusicas);
+      } catch (error) {
+        console.error("Erro ao buscar dados:", error);
+      } finally {
+        setCarregando(false);
+      }
+    }
+
+    buscarDados();
+  }, []);
+
   return (
     <PageLayout>
       <PageContent>
@@ -234,9 +278,21 @@ export default function Configuracoes() {
               </h2>
 
               <div className="flex flex-col gap-3">
-                <RecommendedMusic titulo="Lembrança" artist="Ayla" />
-
-                <RecommendedMusic titulo="Super Power Girl" artist="Kira" />
+                {recomendadas.length > 0 ? (
+                  recomendadas.slice(0, 5).map((musica) => (
+                    <RecommendedMusic
+                      id={musica.id}
+                      key={musica.id}
+                      titulo={musica.titulo}
+                      artist={musica.artista?.nome}
+                      capa={musica.capa}
+                    />
+                  ))
+                ) : (
+                  <p className="py-8 text-center text-[14px] text-[#697386]">
+                    Nenhuma música recomendada.
+                  </p>
+                )}
               </div>
             </div>
           </aside>

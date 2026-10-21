@@ -4,62 +4,36 @@ import { Eye, EyeOff } from "lucide-react";
 import fundoLogin from "../assets/fundoLogin.png";
 import logo from "../assets/mare.png";
 import toast from "react-hot-toast";
-import { API_URL } from "../api";
+import { useAuth } from "../hooks/useAuth";
 
 function Login() {
   const navigate = useNavigate();
-
+  const { entrar, carregando } = useAuth();
   const [login, setLogin] = useState("");
   const [senha, setSenha] = useState("");
   const [mostrarSenha, setMostrarSenha] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
     e.preventDefault();
 
     try {
-      const resposta = await fetch(`${API_URL}/login`, {
-        method: "POST",
-
-        headers: {
-          "Content-Type": "application/json",
-        },
-
-        body: JSON.stringify({
-          login: login,
-          senha: senha,
-        }),
-      });
-
-      const dados = await resposta.json();
-
-      // ERRO NO LOGIN
-
-      if (!resposta.ok) {
-        toast.error(dados.error || "Email ou senha incorretos.");
-
-        return;
-      }
-
-      localStorage.setItem("token", dados.token);
-      localStorage.setItem("usuario", JSON.stringify(dados.usuario));
-
-      if (!dados.usuario.preferenciasConcluidas) {
-        navigate("/filtrar");
-      } else {
-        navigate("/");
-      }
-
-      // AVISO DE SUCESSO
+      const usuario = await entrar(login.trim(), senha);
 
       toast.success("Login realizado com sucesso!");
 
-      setTimeout(() => {
-        navigate("/filtrar");
-      }, 1000);
+      navigate(
+        usuario.preferenciasConcluidas ? "/home" : "/filtrar"
+      );
     } catch (error) {
-      console.error("Erro ao conectar com a API:", error);
+      console.error("Erro ao fazer login:", error);
 
-      toast.error("Não foi possível conectar ao servidor.");
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Não foi possível conectar ao servidor."
+      );
     }
   };
 
@@ -302,23 +276,17 @@ function Login() {
 
             <button
               type="submit"
+              disabled={carregando}
               className="
-                                w-full
-                                h-12
-                                bg-[#58AAF0]
-                                hover:bg-[#3F95D8]
-                                text-[#080D14]
-                                font-semibold
-                                rounded-lg
-                                transition
-                                duration-200
-                                cursor-pointer
-                                shadow-lg
-                                hover:shadow-[#58AAF0]/20
-                                hover:scale-[1.01]
-                            "
+    w-full h-12
+    bg-[#58AAF0] hover:bg-[#3F95D8]
+    text-[#080D14] font-semibold
+    rounded-lg transition duration-200
+    cursor-pointer disabled:opacity-60
+    disabled:cursor-not-allowed
+  "
             >
-              Entrar
+              {carregando ? "Entrando..." : "Entrar"}
             </button>
 
             {/* CADASTRO */}

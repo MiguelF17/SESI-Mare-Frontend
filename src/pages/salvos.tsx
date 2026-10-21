@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 
 import PageLayout from "../components/pageLayout";
@@ -5,12 +6,25 @@ import PageContent from "../components/pageContent";
 import SearchBar from "../components/searchbar";
 import MusicCard from "../components/musicCard";
 import RecommendedMusic from "../components/recommendedMusic";
-import { API_URL } from "../api";
+
+import { apiRequest } from "../api";
+import {
+  buscarMusicas,
+  type Musica,
+} from "../services/musicaService";
+
+interface MusicaSalva {
+  musica: Musica & {
+    _count?: {
+      posts?: number;
+    };
+  };
+}
 
 export default function Salvos() {
-  const [musicas, setMusicas] = useState<any[]>([]);
+  const [musicas, setMusicas] = useState<MusicaSalva[]>([]);
   const [carregando, setCarregando] = useState(true);
-  const [recomendadas, setRecomendadas] = useState<any[]>([]);
+  const [recomendadas, setRecomendadas] = useState<Musica[]>([]);
 
   useEffect(() => {
     async function buscarDados() {
@@ -18,30 +32,23 @@ export default function Salvos() {
         const token = localStorage.getItem("token");
 
         if (!token) {
+          setMusicas([]);
           return;
         }
 
-        const [respostaSalvos, respostaMusicas] = await Promise.all([
-          fetch(`${API_URL}/usuarios/me/salvos`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }),
-
-          fetch(`${API_URL}/musicas`),
+        const [dadosSalvos, dadosMusicas] = await Promise.all([
+          apiRequest<unknown>("/usuarios/me/salvos"),
+          buscarMusicas(),
         ]);
 
-        if (!respostaSalvos.ok || !respostaMusicas.ok) {
-          throw new Error("Erro ao buscar dados");
+        if (!Array.isArray(dadosSalvos)) {
+          throw new Error("A API retornou uma lista de músicas salvas inválida.");
         }
 
-        const dadosSalvos = await respostaSalvos.json();
-        const dadosMusicas = await respostaMusicas.json();
-
-        setMusicas(dadosSalvos);
+        setMusicas(dadosSalvos as MusicaSalva[]);
         setRecomendadas(dadosMusicas);
       } catch (error) {
-        console.error("Erro ao buscar dados:", error);
+        console.error("Erro ao buscar músicas salvas:", error);
       } finally {
         setCarregando(false);
       }
@@ -50,12 +57,17 @@ export default function Salvos() {
     buscarDados();
   }, []);
 
+  function removerMusicaSalva(musicaId: number) {
+    setMusicas((atuais) =>
+      atuais.filter((salvamento) => salvamento.musica.id !== musicaId)
+    );
+  }
+
   return (
     <PageLayout>
       <PageContent>
         <div className="grid grid-cols-1 gap-10 xl:grid-cols-[minmax(0,1fr)_340px]">
           <div className="flex flex-col">
-
             <div className="sticky top-0 z-20 bg-[#080A10]">
               <div className="w-full pb-6">
                 <SearchBar />
@@ -73,7 +85,6 @@ export default function Salvos() {
             </div>
 
             <section className="flex flex-col gap-4">
-
               {carregando ? (
                 <p className="py-8 text-center text-[14px] text-[#697386]">
                   Carregando músicas...
@@ -93,26 +104,23 @@ export default function Salvos() {
                       tipo="post"
                       titulo={musica.titulo}
                       artista={musica.artista?.nome}
-                      artistaId={musica?.artista?.id}
+                      artistaId={musica.artista?.id}
                       capa={musica.capa}
                       nota={musica.nota}
-                      avaliacoes={musica._count?.posts ?? 0}
+                      avaliacoes={
+                        musica.avaliacoes ?? musica._count?.posts ?? 0
+                      }
                       duracaoSegundos={musica.duracaoSegundos}
-                      onRemover={() => {
-                        setMusicas((atuais) =>
-                          atuais.filter((salvamento) => salvamento.musica?.id !== musica.id)
-                        );
-                      }}
+                      onRemover={() => removerMusicaSalva(musica.id)}
                     />
                   );
                 })
               )}
-
             </section>
           </div>
 
           <aside className="hidden xl:block">
-            <div className="fixed top-2/5 -translate-y-2/5 w-[340px]">
+            <div className="fixed top-2/5 w-[340px] -translate-y-2/5">
               <h2 className="mb-5 font-serif text-[16px] text-white">
                 Músicas recomendadas
               </h2>
