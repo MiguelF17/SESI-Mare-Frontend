@@ -1,14 +1,13 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
-import PageLayout from "../components/pageLayout";
-import PageContent from "../components/pageContent";
-import SearchBar from "../components/searchbar";
-import MusicCard from "../components/musicCard";
-import { buscarMusicas, type Musica } from "../services/musicaService";
-import { buscarPosts } from "../services/postService";
-import { buscarArtistas, type Artista } from "../services/artistaService";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
+
 import { UserCircleIcon } from "@phosphor-icons/react";
-
 import {
   TrendUpIcon,
   StarIcon,
@@ -18,29 +17,43 @@ import {
   CaretRightIcon,
 } from "@phosphor-icons/react";
 
+import PageLayout from "../components/pageLayout";
+import PageContent from "../components/pageContent";
+import SearchBar from "../components/searchbar";
+import MusicCard from "../components/musicCard";
+
+import { apiRequest } from "../api";
+import { buscarMusicas, type Musica } from "../services/musicaService";
+import { buscarPosts } from "../services/postService";
+import { buscarArtistas, type Artista } from "../services/artistaService";
+import { buscarGenerosFavoritos } from "../services/usuarioService";
+import { useMusicasRecomendadas } from "../hooks/useMusicasRecomendadas";
+import { useNavigate } from "react-router-dom";
+
 type MusicaExplorar = Musica & {
   artistaId?: number;
   quantidadePosts?: number;
 };
+
+interface ArtistaFavorito {
+  artistaId: number;
+}
 
 function Carrossel({ children }: { children: ReactNode }) {
   const trilhoRef = useRef<HTMLDivElement>(null);
   const [podeVoltar, setPodeVoltar] = useState(false);
   const [podeAvancar, setPodeAvancar] = useState(false);
 
-  function atualizarSetas() {
-    const trilho = trilhoRef.current;
-    if (!trilho) return;
-
-    const maxScroll = trilho.scrollWidth - trilho.clientWidth;
-
-    setPodeVoltar(trilho.scrollLeft > 2);
-    setPodeAvancar(maxScroll - trilho.scrollLeft > 2);
-  }
-
   useEffect(() => {
     const trilho = trilhoRef.current;
     if (!trilho) return;
+
+    const atualizarSetas = () => {
+      const maxScroll = trilho.scrollWidth - trilho.clientWidth;
+
+      setPodeVoltar(trilho.scrollLeft > 2);
+      setPodeAvancar(maxScroll - trilho.scrollLeft > 2);
+    };
 
     atualizarSetas();
 
@@ -51,8 +64,11 @@ function Carrossel({ children }: { children: ReactNode }) {
     const observador = new ResizeObserver(atualizarSetas);
     observador.observe(trilho);
 
+    window.addEventListener("resize", atualizarSetas);
+
     return () => {
       trilho.removeEventListener("scroll", atualizarSetas);
+      window.removeEventListener("resize", atualizarSetas);
       observador.disconnect();
     };
   }, [children]);
@@ -68,13 +84,13 @@ function Carrossel({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="group/carrossel relative">
+    <div className="group/carrossel relative min-w-0">
       {podeVoltar && (
         <button
           type="button"
-          aria-label="Voltar músicas"
+          aria-label="Voltar itens"
           onClick={() => mover(-1)}
-          className="absolute -left-4 top-1/2 z-20 hidden h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-[#354052] bg-[#111420]/95 text-white shadow-lg transition-all duration-300 hover:scale-105 hover:bg-[#273349] group-hover/carrossel:flex"
+          className="absolute -left-4 top-1/2 z-20 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-[#354052] bg-[#111420]/95 text-white shadow-lg hover:bg-[#273349] group-hover/carrossel:flex"
         >
           <CaretLeftIcon size={20} weight="bold" />
         </button>
@@ -82,8 +98,7 @@ function Carrossel({ children }: { children: ReactNode }) {
 
       <div
         ref={trilhoRef}
-        className="flex snap-x snap-proximity gap-4 overflow-x-auto scroll-smooth pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-        style={{ scrollBehavior: "smooth" }}
+        className="flex min-w-0 gap-4 overflow-x-auto scroll-smooth px-2 py-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {children}
       </div>
@@ -91,9 +106,9 @@ function Carrossel({ children }: { children: ReactNode }) {
       {podeAvancar && (
         <button
           type="button"
-          aria-label="Avançar músicas"
+          aria-label="Avançar itens"
           onClick={() => mover(1)}
-          className="absolute -right-4 top-1/2 z-20 hidden h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-[#354052] bg-[#111420]/95 text-white shadow-lg transition-all duration-300 hover:scale-105 hover:bg-[#273349] group-hover/carrossel:flex"
+          className="absolute -right-4 top-1/2 z-20 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-[#354052] bg-[#111420]/95 text-white shadow-lg hover:bg-[#273349] group-hover/carrossel:flex"
         >
           <CaretRightIcon size={20} weight="bold" />
         </button>
@@ -102,12 +117,21 @@ function Carrossel({ children }: { children: ReactNode }) {
   );
 }
 
+
+
 export default function Explorar() {
+  const navigate = useNavigate();
   const [musicas, setMusicas] = useState<MusicaExplorar[]>([]);
+  const [artistas, setArtistas] = useState<Artista[]>([]);
+  const [generosFavoritos, setGenerosFavoritos] = useState<string[]>([]);
+  const [artistasFavoritos, setArtistasFavoritos] = useState<
+    ArtistaFavorito[]
+  >([]);
+
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState(false);
-  const [artistas, setArtistas] = useState<Artista[]>([]);
 
+  // Carrega catálogo, artistas e preferências.
   useEffect(() => {
     let ativo = true;
 
@@ -117,10 +141,6 @@ export default function Explorar() {
           buscarMusicas(),
           buscarArtistas(),
         ]);
-
-        if (ativo) {
-          setArtistas(dadosArtistas);
-        }
 
         let dadosPosts: Awaited<ReturnType<typeof buscarPosts>> = [];
 
@@ -150,12 +170,43 @@ export default function Explorar() {
           })
         );
 
-        if (ativo) {
-          setMusicas(catalogoComPosts);
-          setErro(false);
+        let generos: string[] = [];
+        let artistasFav: ArtistaFavorito[] = [];
+
+        if (localStorage.getItem("token")) {
+          const resultados = await Promise.allSettled([
+            buscarGenerosFavoritos(),
+            apiRequest<ArtistaFavorito[]>("/usuarios/me/artistas"),
+          ]);
+
+          if (resultados[0].status === "fulfilled") {
+            generos = resultados[0].value;
+          } else {
+            console.error(
+              "Erro ao buscar gêneros favoritos:",
+              resultados[0].reason
+            );
+          }
+
+          if (resultados[1].status === "fulfilled") {
+            artistasFav = resultados[1].value;
+          } else {
+            console.error(
+              "Erro ao buscar artistas favoritos:",
+              resultados[1].reason
+            );
+          }
         }
-      } catch (erro) {
-        console.error("Erro ao buscar músicas:", erro);
+
+        if (!ativo) return;
+
+        setMusicas(catalogoComPosts);
+        setArtistas(dadosArtistas);
+        setGenerosFavoritos(generos);
+        setArtistasFavoritos(artistasFav);
+        setErro(false);
+      } catch (error) {
+        console.error("Erro ao carregar Explorar:", error);
 
         if (ativo) {
           setErro(true);
@@ -174,7 +225,7 @@ export default function Explorar() {
     };
   }, []);
 
-  // Evita duplicatas caso a API retorne alguma música repetida.
+  // Remove músicas duplicadas.
   const catalogo = useMemo(() => {
     const unicas = new Map<number, MusicaExplorar>();
 
@@ -185,38 +236,80 @@ export default function Explorar() {
     return Array.from(unicas.values());
   }, [musicas]);
 
-  // Em alta: músicas que aparecem em mais posts.
-  const musicasEmAlta = [...catalogo]
-    .sort(
-      (a, b) =>
-        (b.quantidadePosts ?? 0) - (a.quantidadePosts ?? 0)
-    )
-    .slice(0, 8);
-
-  // Mais bem avaliadas.
-  const musicasMaisBemAvaliadas = [...catalogo]
-    .filter((musica) => (musica.avaliacoes ?? 0) > 0)
-    .sort((a, b) => {
-      const diferenca = (b.nota ?? 0) - (a.nota ?? 0);
-
-      if (diferenca !== 0) return diferenca;
-
-      return (b.avaliacoes ?? 0) - (a.avaliacoes ?? 0);
-    })
-    .slice(0, 8);
-
-  // Descubra: prioriza músicas que ainda não apareceram em "Em alta".
-  const idsEmAlta = new Set(
-    musicasEmAlta.map((musica) => musica.id)
+  // Em alta: músicas com mais publicações.
+  const musicasEmAlta = useMemo(
+    () =>
+      [...catalogo]
+        .sort(
+          (a, b) =>
+            (b.quantidadePosts ?? 0) - (a.quantidadePosts ?? 0) ||
+            (b.avaliacoes ?? 0) - (a.avaliacoes ?? 0)
+        )
+        .slice(0, 8),
+    [catalogo]
   );
 
-  const musicasRestantes = catalogo.filter(
-    (musica) => !idsEmAlta.has(musica.id)
+  // Mais bem avaliadas: considera nota e número de avaliações.
+  const musicasMaisBemAvaliadas = useMemo(
+    () =>
+      [...catalogo]
+        .filter((musica) => (musica.avaliacoes ?? 0) > 0)
+        .sort(
+          (a, b) =>
+            (b.nota ?? 0) - (a.nota ?? 0) ||
+            (b.avaliacoes ?? 0) - (a.avaliacoes ?? 0)
+        )
+        .slice(0, 8),
+    [catalogo]
   );
 
-  const musicasRecomendadas = (
-    musicasRestantes.length > 0 ? musicasRestantes : catalogo
-  ).slice(0, 8);
+  // Calcula recomendações a partir das preferências do usuário.
+  const { musicasRecomendadas: musicasPorPreferencia } =
+    useMusicasRecomendadas(
+      catalogo,
+      generosFavoritos,
+      artistasFavoritos
+    );
+
+  // Evita repetir as músicas de "Em alta" quando houver alternativas.
+  const musicasRecomendadas = useMemo(() => {
+    const idsEmAlta = new Set(
+      musicasEmAlta.map((musica) => musica.id)
+    );
+
+    const restantes = catalogo.filter(
+      (musica) => !idsEmAlta.has(musica.id)
+    );
+
+    const idsRestantes = new Set(
+      restantes.map((musica) => musica.id)
+    );
+
+    const personalizadas = musicasPorPreferencia.filter((musica) =>
+      idsRestantes.has(musica.id)
+    );
+
+    // Prioriza as preferências, preenchendo vagas com outras músicas.
+    const outrasMusicas = restantes.filter(
+      (musica) =>
+        !personalizadas.some((recomendada) => recomendada.id === musica.id)
+    );
+
+    const resultado = [...personalizadas, ...outrasMusicas];
+
+    // Se o catálogo for pequeno, permite repetir músicas de "Em alta".
+    if (resultado.length < 8) {
+      const idsIncluidos = new Set(
+        resultado.map((musica) => musica.id)
+      );
+
+      resultado.push(
+        ...catalogo.filter((musica) => !idsIncluidos.has(musica.id))
+      );
+    }
+
+    return resultado.slice(0, 8);
+  }, [catalogo, musicasEmAlta, musicasPorPreferencia]);
 
   function renderizarCard(
     musica: MusicaExplorar,
@@ -225,7 +318,7 @@ export default function Explorar() {
     return (
       <div
         key={musica.id}
-        className="shrink-0 snap-start transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02]"
+        className="shrink-0 snap-start px-1 py-1 transition-transform duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02]"
       >
         <MusicCard
           id={musica.id}
@@ -253,11 +346,9 @@ export default function Explorar() {
       <section className="mb-12 min-w-0">
         <div className="mb-5 flex items-center gap-2">
           {icone}
-
           <h2 className="font-serif text-[17px] text-white">
             {titulo}
           </h2>
-
         </div>
 
         {lista.length > 0 ? (
@@ -275,31 +366,34 @@ export default function Explorar() {
     );
   }
 
-
   function renderizarArtistas() {
     return (
       <section className="mb-12 min-w-0">
         <div className="mb-5 flex items-center gap-2">
           <UserCircleIcon size={20} className="text-[#58A9E8]" />
-
           <h2 className="font-serif text-[17px] text-white">
             Artistas
           </h2>
-
         </div>
 
         {artistas.length === 0 ? (
           <p className="py-4 text-sm text-[#697386]">
-            Nenhum artista encontrado.
+            {carregando
+              ? "Carregando artistas..."
+              : "Nenhum artista encontrado."}
           </p>
         ) : (
           <Carrossel>
+
             {artistas.map((artista) => (
-              <div
+              <button
                 key={artista.id}
-                className="w-36 shrink-0 snap-start transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02]"
+                type="button"
+                onClick={() => navigate(`/artista/${artista.id}`)}
+                aria-label={`Ver perfil de ${artista.nome}`}
+                className="w-36 shrink-0 snap-start rounded-xl px-1 py-2 text-left transition-transform duration-300 hover:-translate-y-1 hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#58A9E8]"
               >
-                <div className="flex cursor-pointer flex-col items-center transition-colors py-4 duration-300">
+                <div className="flex cursor-pointer flex-col items-center">
                   <div className="mb-3 flex h-36 w-36 items-center justify-center overflow-hidden rounded-full bg-[#202737]">
                     {artista.fotoURL ? (
                       <img
@@ -324,26 +418,24 @@ export default function Explorar() {
                     Artista
                   </p>
                 </div>
-              </div>
+              </button>
             ))}
+
           </Carrossel>
         )}
       </section>
     );
   }
 
-
   return (
     <PageLayout>
       <PageContent>
-        {/* BUSCA */}
         <div className="sticky top-0 z-20 bg-[#080A10]">
           <div className="w-full pb-6 md:w-[65%]">
             <SearchBar />
           </div>
         </div>
 
-        {/* TÍTULO */}
         <div className="mb-10">
           <h1 className="font-serif text-[26px] text-gray-100">
             Explorar
@@ -356,7 +448,7 @@ export default function Explorar() {
 
         {erro && (
           <p className="mb-8 text-sm text-red-400">
-            Não foi possível carregar as músicas. Tente atualizar a página.
+            Não foi possível carregar o catálogo. Tente atualizar a página.
           </p>
         )}
 
@@ -383,7 +475,6 @@ export default function Explorar() {
           "quadrado"
         )}
 
-        {/* CATÁLOGO COMPLETO */}
         <section className="mb-12">
           <div className="mb-5 flex items-center gap-2">
             <MusicNotesIcon size={18} className="text-[#58A9E8]" />

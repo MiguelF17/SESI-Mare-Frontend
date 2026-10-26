@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import toast from "react-hot-toast";
+import { useEffect, useRef, useState } from "react";
 import {
   MagnifyingGlassIcon,
   PlusIcon,
   StarIcon,
+  CaretLeftIcon,
+  CaretRightIcon,
 } from "@phosphor-icons/react";
 
 import PageLayout from "../components/pageLayout";
@@ -18,6 +20,93 @@ import { criarPost } from "../services/postService";
 import type { Musica } from "../services/musicaService";
 import { buscarMeuPerfil } from "../services/usuarioService";
 import type { MeuPerfil } from "../services/usuarioService";
+import { apiRequest } from "../api";
+import { buscarGenerosFavoritos } from "../services/usuarioService";
+import { useMusicasRecomendadas } from "../hooks/useMusicasRecomendadas";
+
+
+function CarrosselRecomendadas({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const trilhoRef = useRef<HTMLDivElement>(null);
+  const [podeVoltar, setPodeVoltar] = useState(false);
+  const [podeAvancar, setPodeAvancar] = useState(false);
+
+  useEffect(() => {
+    const trilho = trilhoRef.current;
+    if (!trilho) return;
+
+    function atualizarSetas() {
+      const maxScroll = trilho!.scrollWidth - trilho!.clientWidth;
+
+      setPodeVoltar(trilho!.scrollLeft > 2);
+      setPodeAvancar(maxScroll - trilho!.scrollLeft > 2);
+    }
+
+    atualizarSetas();
+
+    trilho.addEventListener("scroll", atualizarSetas, {
+      passive: true,
+    });
+
+    const observador = new ResizeObserver(atualizarSetas);
+    observador.observe(trilho);
+
+    window.addEventListener("resize", atualizarSetas);
+
+    return () => {
+      trilho.removeEventListener("scroll", atualizarSetas);
+      observador.disconnect();
+      window.removeEventListener("resize", atualizarSetas);
+    };
+  }, []);
+
+  function mover(direcao: number) {
+    const trilho = trilhoRef.current;
+    if (!trilho) return;
+
+    trilho.scrollBy({
+      left: direcao * trilho.clientWidth * 0.75,
+      behavior: "smooth",
+    });
+  }
+
+  return (
+    <div className="group/carrossel relative min-w-0">
+      {podeVoltar && (
+        <button
+          type="button"
+          aria-label="Voltar músicas"
+          onClick={() => mover(-1)}
+          className="absolute left-1 top-[calc(50%-8px)] cursor-pointer z-20 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-[#354052] bg-[#111420]/95 text-white shadow-lg hover:bg-[#273349] group-hover/carrossel:flex"
+        >
+          <CaretLeftIcon size={20} weight="bold" />
+        </button>
+      )}
+
+      <div
+        ref={trilhoRef}
+        className="flex min-w-0 gap-8 overflow-x-auto scroll-smooth px-3 py-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {children}
+      </div>
+
+      {podeAvancar && (
+        <button
+          type="button"
+          aria-label="Avançar músicas"
+          onClick={() => mover(1)}
+          className="absolute right-1 top-[calc(50%-8px)] cursor-pointer z-20 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-[#354052] bg-[#111420]/95 text-white shadow-lg hover:bg-[#273349] group-hover/carrossel:flex"
+        >
+          <CaretRightIcon size={20} weight="bold" />
+        </button>
+      )}
+    </div>
+  );
+}
+
 
 function EstrelaNota({
   estrela,
@@ -75,6 +164,10 @@ export default function CriarPost() {
   const [musicaSelecionada, setMusicaSelecionada] =
     useState<Musica | null>(null);
   const [usuario, setUsuario] = useState<MeuPerfil | null>(null);
+  const [generosFavoritos, setGenerosFavoritos] = useState<string[]>([]);
+  const [artistasFavoritos, setArtistasFavoritos] = useState<
+    { artistaId: number }[]
+  >([]);
 
   const [nota, setNota] = useState(0);
   const [texto, setTexto] = useState("");
@@ -85,6 +178,33 @@ export default function CriarPost() {
   const [searchParams] = useSearchParams();
   const musicaId = searchParams.get("musica");
 
+  useEffect(() => {
+    let ativo = true;
+
+    async function carregarPreferencias() {
+      try {
+        if (!localStorage.getItem("token")) return;
+
+        const [generos, artistas] = await Promise.all([
+          buscarGenerosFavoritos(),
+          apiRequest<{ artistaId: number }[]>("/usuarios/me/artistas"),
+        ]);
+
+        if (!ativo) return;
+
+        setGenerosFavoritos(generos);
+        setArtistasFavoritos(artistas);
+      } catch (error) {
+        console.error("Erro ao carregar preferências musicais:", error);
+      }
+    }
+
+    carregarPreferencias();
+
+    return () => {
+      ativo = false;
+    };
+  }, []);
   // Carregar músicas e selecionar a indicada na URL.
   useEffect(() => {
     let ativo = true;
@@ -210,6 +330,12 @@ export default function CriarPost() {
     }
   }
 
+  const { musicasRecomendadas } = useMusicasRecomendadas(
+    musicas,
+    generosFavoritos,
+    artistasFavoritos
+  );
+
   return (
     <PageLayout>
       <PageContent>
@@ -221,7 +347,7 @@ export default function CriarPost() {
               Criar avaliação
             </h1>
 
-            {/* Músicas recomendadas */}
+            {/* Músicas recomendadas com base nas preferências */}
             <section className="mt-5">
               <h2 className="mb-2 font-serif text-[18px] text-white">
                 Músicas recomendadas
@@ -231,34 +357,38 @@ export default function CriarPost() {
                 <p className="py-3 text-[12px] text-[#697386]">
                   Carregando músicas...
                 </p>
-              ) : musicas.length === 0 ? (
+              ) : musicasRecomendadas.length === 0 ? (
                 <p className="py-3 text-[12px] text-[#697386]">
-                  Nenhuma música disponível.
+                  Nenhuma recomendação encontrada para suas preferências.
                 </p>
               ) : (
-                <div className="flex gap-3 overflow-x-auto pb-3">
-                  {musicas.slice(0, 4).map((musica) => (
-                    <button
-                      type="button"
-                      key={musica.id}
-                      onClick={() => selecionarMusica(musica)}
-                      aria-pressed={musicaSelecionada?.id === musica.id}
-                      className={`w-[160px] shrink-0 cursor-pointer rounded-lg text-left ${
-                        musicaSelecionada?.id === musica.id
-                          ? "ring-2 ring-[#5ba4e8]"
-                          : ""
-                      }`}
-                    >
-                      <MusicCard
-                        tipo="quadrado"
-                        titulo={musica.titulo}
-                        artista={
-                          musica.artista?.nome ?? "Artista desconhecido"
-                        }
-                        capa={musica.capa}
-                      />
-                    </button>
-                  ))}
+                <div className="flex gap-3 overflow-x-hidden pb-3">
+
+                  {musicasRecomendadas.length > 0 && (
+                    <CarrosselRecomendadas>
+                      {musicasRecomendadas.slice(0, 8).map((musica) => (
+                        <button
+                          type="button"
+                          key={musica.id}
+                          onClick={() => selecionarMusica(musica)}
+                          aria-pressed={musicaSelecionada?.id === musica.id}
+                          className={`w-[160px] shrink-0 snap-start rounded-lg text-left transition ${musicaSelecionada?.id === musica.id
+                              ? "ring-2 ring-[#5ba4e8]"
+                              : "hover:opacity-80"
+                            }`}
+                        >
+                          <MusicCard
+                            tipo="quadrado"
+                            larguraFixa
+                            titulo={musica.titulo}
+                            artista={musica.artista?.nome ?? "Artista desconhecido"}
+                            capa={musica.capa}
+                          />
+                        </button>
+                      ))}
+                    </CarrosselRecomendadas>
+                  )}
+
                 </div>
               )}
             </section>

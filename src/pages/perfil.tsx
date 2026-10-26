@@ -20,7 +20,6 @@ import RecommendedMusic from "../components/recommendedMusic";
 import MusicCard from "../components/musicCard";
 import ImageCropModal from "../components/imageCropModal";
 
-import calcularTempo from "../calcularTempo";
 import { apiRequest } from "../api";
 import { buscarPosts, type Post } from "../services/postService";
 import {
@@ -31,20 +30,10 @@ import {
   buscarMusicas,
   type Musica,
 } from "../services/musicaService";
-
-type ComentarioPerfil = {
-  id: number;
-  texto: string;
-  dataCriacao: string;
-  post?: {
-    musica?: {
-      titulo?: string;
-      artista?: {
-        nome?: string;
-      };
-    };
-  };
-};
+import ComentarioPerfilCard, {
+  type ComentarioPerfil,
+} from "../components/comentarioPerfilCard";
+import RecommendedMusicList from "../components/recommendedMusicList";
 
 type MusicaSalva = {
   musica: Musica;
@@ -54,14 +43,17 @@ export default function Perfil() {
   const [usuario, setUsuario] = useState<MeuPerfil | null>(null);
 
   const [aba, setAba] = useState<
-    "avaliacoes" | "comentarios" | "salvos"
+    "avaliacoes" | "comentarios" | "salvos" | "curtidos"
   >("avaliacoes");
+
+  const [curtidos, setCurtidos] = useState<Post[]>([]);
 
   const [carregando, setCarregando] = useState(true);
   const [avaliacoes, setAvaliacoes] = useState<Post[]>([]);
   const [comentarios, setComentarios] = useState<ComentarioPerfil[]>([]);
   const [salvos, setSalvos] = useState<MusicaSalva[]>([]);
   const [musicas, setMusicas] = useState<Musica[]>([]);
+
 
   const [editando, setEditando] = useState(false);
   const [nomeEditado, setNomeEditado] = useState("");
@@ -95,12 +87,31 @@ export default function Perfil() {
     }
   }, []);
 
+  function removerDosCurtidos(postId: number) {
+    setCurtidos((atuais) =>
+      atuais.filter((post) => post.id !== postId)
+    );
+  }
+
+  async function buscarCurtidos() {
+    try {
+      const dados = await buscarPosts({
+        rota: "/usuarios/me/curtidas",
+      });
+
+      setCurtidos(dados);
+    } catch (error) {
+      console.error("Erro ao buscar posts curtidos:", error);
+      toast.error("Não foi possível carregar os posts curtidos.");
+    }
+  }
 
   useEffect(() => {
     buscarPerfil();
     buscarAvaliacoes();
     buscarComentarios();
     buscarSalvos();
+    buscarCurtidos();
     carregarMusicas();
   }, []);
 
@@ -441,26 +452,32 @@ export default function Perfil() {
                 </div>
               </div>
 
-              <div className="mb-6">
-                <h1 className="font-serif text-[26px] text-gray-100">
-                  Perfil
-                </h1>
+              {/* Título da página */}
+              <div className="mb-6 flex items-center gap-4">
+                <div className="min-w-0">
+                  <h1 className="font-serif text-[26px] text-gray-100">
+                    {usuario.nome}
+                  </h1>
 
-                <p className="mt-1 font-serif text-[13px] text-[#697386]">
-                  Suas músicas e publicações
-                </p>
+                  <p className="mt-1 truncate font-serif text-[13px] text-[#697386]">
+                    Músicas e publicações de @{usuario.username}
+                  </p>
+                </div>
               </div>
 
-              <section className="w-full overflow-hidden rounded-xl border border-[#252d38] bg-[#0d121c]">
-                {/* CAPA */}
+              {/* Cabeçalho do perfil */}
+              <section className="w-full overflow-hidden rounded-2xl border border-[#273349] bg-[#0C121D]">
+                {/* Capa */}
                 <div
-                  className="relative h-[140px] bg-[#141a28] bg-cover bg-center"
+                  className="relative h-36 bg-gradient-to-br from-[#172a43] via-[#142033] to-[#0C121D] bg-cover bg-center sm:h-44"
                   style={
                     usuario.capa
-                      ? { backgroundImage: `url(${usuario.capa})` }
+                      ? { backgroundImage: `url("${usuario.capa}")` }
                       : undefined
                   }
                 >
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0C121D]/80 to-transparent" />
+
                   <input
                     ref={capaInputRef}
                     type="file"
@@ -478,18 +495,19 @@ export default function Perfil() {
                   <button
                     type="button"
                     onClick={() => capaInputRef.current?.click()}
-                    className="absolute right-4 top-4 flex cursor-pointer items-center gap-2 rounded-lg bg-[#111726]/70 px-3 py-2 font-serif text-[12px] text-white transition hover:text-blue-400"
+                    className="absolute right-4 top-4 z-10 flex cursor-pointer items-center gap-2 rounded-lg border border-white/10 bg-[#080A10]/70 px-3 py-2 text-sm text-gray-200 backdrop-blur-sm transition hover:border-[#58AAF0] hover:text-[#58AAF0]"
                   >
                     <CameraIcon size={18} />
                     Alterar capa
                   </button>
                 </div>
 
-                {/* INFORMAÇÕES */}
-                <div className="px-6 pb-6">
-                  <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
-                    <div className="flex items-end gap-4">
-                      <div className="relative z-10 -mt-4 h-[82px] w-[82px] shrink-0">
+                {/* Informações e ações */}
+                <div className="px-5 pb-6 sm:px-6">
+                  <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+                    {/* Foto e identificação */}
+                    <div className="flex min-w-0 items-end gap-4">
+                      <div className="relative z-10 -mt-12 h-[88px] w-[88px] shrink-0 sm:h-24 sm:w-24">
                         <input
                           ref={fotoInputRef}
                           type="file"
@@ -508,20 +526,17 @@ export default function Perfil() {
                           type="button"
                           onClick={() => fotoInputRef.current?.click()}
                           aria-label="Alterar foto de perfil"
-                          className="group relative h-full w-full cursor-pointer overflow-hidden rounded-full border-4 border-[#0d121c] bg-[#1a2130]"
+                          className="group relative h-full w-full cursor-pointer overflow-hidden rounded-full border-4 border-[#0C121D] bg-[#192538]"
                         >
                           {usuario.foto ? (
                             <img
                               src={usuario.foto}
-                              alt={usuario.nome}
+                              alt={`Foto de ${usuario.nome}`}
                               className="h-full w-full object-cover"
                             />
                           ) : (
                             <div className="flex h-full w-full items-center justify-center">
-                              <UserIcon
-                                size={34}
-                                className="text-gray-400"
-                              />
+                              <UserIcon size={38} className="text-[#8793a8]" />
                             </div>
                           )}
 
@@ -531,37 +546,33 @@ export default function Perfil() {
                         </button>
                       </div>
 
-                      <div className="pb-1">
-                        <div className="flex flex-wrap items-baseline">
-                          <h2 className="font-serif text-[18px] text-gray-100">
-                            {usuario.nome}
-                          </h2>
+                      <div className="min-w-0 pb-1">
+                        <h2 className="break-words text-lg font-semibold text-white">
+                          {usuario.nome}
+                        </h2>
 
-                          <p className="ml-2 font-serif text-[16px] text-gray-500">
-                            @{usuario.username}
-                          </p>
-                        </div>
-
-                        <p className="mt-1 font-serif text-[12px] text-gray-500">
-                          {usuario.bio || "Ainda não adicionou uma bio."}
+                        <p className="text-sm text-[#8793a8]">
+                          @{usuario.username}
                         </p>
                       </div>
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-3">
+                    {/* Botões */}
+                    <div className="flex flex-wrap gap-2">
                       <button
                         type="button"
                         onClick={compartilharPerfil}
-                        className="flex cursor-pointer items-center gap-2 rounded-lg border border-[#252d38] px-4 py-2 font-serif text-[12px] text-gray-300 transition hover:border-blue-400 hover:text-blue-400"
+                        aria-label="Compartilhar perfil"
+                        className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-[#354052] px-3 py-2 text-sm text-gray-300 transition hover:border-[#58AAF0] hover:text-[#58AAF0]"
                       >
                         <ShareNetworkIcon size={18} />
-                        Compartilhar
+                        <span>Compartilhar</span>
                       </button>
 
                       <button
                         type="button"
                         onClick={abrirEdicao}
-                        className="flex cursor-pointer items-center gap-2 rounded-lg bg-[#5ea3ee] px-4 py-2 font-serif text-[12px] text-white transition hover:bg-[#7ab4f2]"
+                        className="flex cursor-pointer items-center gap-2 rounded-lg bg-[#58AAF0] px-3 py-2 text-sm text-[#080A10] transition hover:bg-[#80c0fa]"
                       >
                         <PencilSimpleIcon size={18} />
                         Editar perfil
@@ -569,26 +580,47 @@ export default function Perfil() {
                     </div>
                   </div>
 
-                  <div className="mt-5 flex flex-wrap gap-6 font-serif text-[14px] text-gray-400">
+                  {/* Bio */}
+                  <p className="mt-5 whitespace-pre-wrap break-words text-sm leading-6 text-gray-300">
+                    {usuario.bio || (
+                      <span className="italic text-[#697386]">
+                        Este usuário ainda não adicionou uma bio.
+                      </span>
+                    )}
+                  </p>
+
+                  {/* Contadores */}
+                  <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-[#273349] pt-5 text-sm text-[#8793a8]">
                     <Link
-                      to={`/usuarios/${usuario.id}/seguidores`}
-                      className="transition-colors hover:text-[#58AAF0]"
+                      to={`/usuarios/${usuario.id}/seguidores?nome=${encodeURIComponent(usuario.nome)}&username=${encodeURIComponent(usuario.username)}`}
+                      className="transition hover:text-[#58AAF0]"
                     >
-                      <strong className="text-gray-200">
+                      <strong className="text-white">
                         {usuario._count?.seguidores ?? 0}
                       </strong>{" "}
                       Seguidores
                     </Link>
 
                     <Link
-                      to={`/usuarios/${usuario.id}/seguindo`}
-                      className="transition-colors hover:text-[#58AAF0]"
+                      to={`/usuarios/${usuario.id}/seguindo?nome=${encodeURIComponent(usuario.nome)}&username=${encodeURIComponent(usuario.username)}`}
+                      className="transition hover:text-[#58AAF0]"
                     >
-                      <strong className="text-gray-200">
+                      <strong className="text-white">
                         {usuario._count?.seguindo ?? 0}
                       </strong>{" "}
                       Seguindo
                     </Link>
+
+                    <div className="flex items-center gap-2">
+                      <MusicNoteIcon size={17} />
+
+                      <span>
+                        <strong className="text-white">
+                          {usuario._count?.posts ?? avaliacoes.length}
+                        </strong>{" "}
+                        Avaliações
+                      </span>
+                    </div>
                   </div>
                 </div>
               </section>
@@ -620,6 +652,17 @@ export default function Perfil() {
 
                   <button
                     type="button"
+                    onClick={() => setAba("curtidos")}
+                    className={`shrink-0 cursor-pointer border-b-2 px-1 pb-3 font-serif text-[14px] transition ${aba === "curtidos"
+                      ? "border-blue-400 text-white"
+                      : "border-transparent text-gray-500 hover:text-blue-400"
+                      }`}
+                  >
+                    Curtidos
+                  </button>
+
+                  <button
+                    type="button"
                     onClick={() => setAba("salvos")}
                     className={`shrink-0 cursor-pointer border-b-2 px-1 pb-3 font-serif text-[14px] transition ${aba === "salvos"
                       ? "border-blue-400 text-white"
@@ -628,6 +671,7 @@ export default function Perfil() {
                   >
                     Músicas salvas
                   </button>
+
                 </div>
               </div>
 
@@ -702,31 +746,63 @@ export default function Perfil() {
 
                     {comentarios.length > 0 ? (
                       comentarios.map((comentario) => (
-                        <div
+                        <ComentarioPerfilCard
                           key={comentario.id}
-                          className="rounded-lg border border-[#354052] bg-[#111420] p-4"
-                        >
-                          <p className="text-[14px] leading-5 text-[#d1d5db]">
-                            {comentario.texto}
-                          </p>
-
-                          <div className="mt-3">
-                            <p className="text-[12px] text-[#697386]">
-                              Em{" "}
-                              {comentario.post?.musica?.titulo ?? "música indisponível"}
-                              {" — "}
-                              {comentario.post?.musica?.artista?.nome ?? "artista desconhecido"}
-                            </p>
-
-                            <p className="mt-1 text-[12px] text-[#697386]">
-                              há {calcularTempo(comentario.dataCriacao)}
-                            </p>
-                          </div>
-                        </div>
+                          comentario={comentario}
+                        />
                       ))
                     ) : (
-                      <p className="py-8 text-center text-[14px] text-[#697386]">
+                      <p className="py-8 text-center text-sm text-[#697386]">
                         Nenhum comentário feito.
+                      </p>
+                    )}
+                  </>
+                )}
+
+                {/* POSTS CURTIDOS */}
+                {aba === "curtidos" && (
+                  <>
+                    <div className="flex items-center gap-2">
+                      <ChatCircleIcon size={18} className="text-blue-400" />
+
+                      <h2 className="font-serif text-[18px] text-gray-100">
+                        Posts curtidos
+                      </h2>
+                    </div>
+
+                    {curtidos.filter((post) => post.musica?.id != null).length > 0 ? (
+                      curtidos
+                        .filter((post) => post.musica?.id != null)
+                        .map((post) => (
+                          <PostCard
+                            key={post.id}
+                            postId={post.id}
+                            name={post.usuario?.nome ?? "Usuário"}
+                            username={post.usuario?.username ?? ""}
+                            foto={post.usuario?.foto ?? undefined}
+                            time={post.dataCriacao}
+                            content={post.texto ?? ""}
+                            nota={post.nota}
+                            musicId={post.musica!.id}
+                            musicTitle={post.musica?.titulo ?? "Música indisponível"}
+                            artist={post.musica?.artista?.nome ?? "Artista desconhecido"}
+                            artistId={post.musica?.artista?.id}
+                            musicCover={post.musica?.capa ?? undefined}
+                            duracaoSegundos={post.musica?.duracaoSegundos}
+                            likes={post._count?.curtidas ?? 0}
+                            comments={post._count?.comentarios ?? 0}
+                            avaliacoes={post.musica?.avaliacoes}
+                            curtidoPorMim={post.curtidoPorMim ?? true}
+                            ehMeuPost={
+                              usuarioLogadoId !== null &&
+                              post.usuario?.id === usuarioLogadoId
+                            }
+                            onUnlike={() => removerDosCurtidos(post.id)}
+                          />
+                        ))
+                    ) : (
+                      <p className="py-8 text-center text-sm text-[#697386]">
+                        Você ainda não curtiu nenhuma publicação.
                       </p>
                     )}
                   </>
@@ -792,21 +868,9 @@ export default function Perfil() {
                 </h2>
 
                 <div className="flex flex-col gap-3">
-                  {musicas.length > 0 ? (
-                    musicas.slice(0, 5).map((musica) => (
-                      <RecommendedMusic
-                        id={musica.id}
-                        key={musica.id}
-                        titulo={musica.titulo}
-                        artist={musica.artista?.nome ?? "Artista desconhecido"}
-                        capa={musica.capa ?? undefined}
-                      />
-                    ))
-                  ) : (
-                    <p className="py-8 text-center text-[14px] text-[#697386]">
-                      Nenhuma música recomendada.
-                    </p>
-                  )}
+
+                  <RecommendedMusicList />
+
                 </div>
               </div>
             </aside>

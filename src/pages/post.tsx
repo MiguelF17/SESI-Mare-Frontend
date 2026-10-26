@@ -27,6 +27,7 @@ import {
 
 import calcularTempo from "../calcularTempo";
 import fotoPadrao from "../assets/logo.png";
+import RecommendedMusicList from "../components/recommendedMusicList";
 
 interface MusicaRecomendada {
     id: number;
@@ -48,6 +49,7 @@ export default function Post() {
     const [comentarios, setComentarios] = useState<Comentario[]>([]);
     const [musicas, setMusicas] = useState<MusicaRecomendada[]>([]);
     const [usuarioLogadoId, setUsuarioLogadoId] = useState<number | null>(null);
+    
 
     const [textoComentario, setTextoComentario] = useState("");
     const [carregando, setCarregando] = useState(true);
@@ -309,6 +311,11 @@ export default function Post() {
                                 comments={totalComentarios}
                                 avaliacoes={post.musica?.avaliacoes}
                                 curtidoPorMim={post.curtidoPorMim ?? false}
+
+                                ehMeuPost={
+                                    usuarioLogadoId !== null &&
+                                    post.usuario?.id === usuarioLogadoId
+                                }
                             />
                         </div>
 
@@ -450,21 +457,9 @@ export default function Post() {
                             </h2>
 
                             <div className="flex flex-col gap-3">
-                                {musicas.length > 0 ? (
-                                    musicas.slice(0, 5).map((musica) => (
-                                        <RecommendedMusic
-                                            key={musica.id}
-                                            id={musica.id}
-                                            titulo={musica.titulo}
-                                            artist={musica.artista?.nome || "Artista desconhecido"}
-                                            capa={musica.capa}
+                                        <RecommendedMusicList
                                         />
-                                    ))
-                                ) : (
-                                    <p className="py-5 text-sm text-[#697386]">
-                                        Nenhuma música recomendada.
-                                    </p>
-                                )}
+
                             </div>
                         </div>
                     </aside>

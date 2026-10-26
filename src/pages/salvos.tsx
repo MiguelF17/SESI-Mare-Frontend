@@ -12,6 +12,7 @@ import {
   buscarMusicas,
   type Musica,
 } from "../services/musicaService";
+import RecommendedMusicList from "../components/recommendedMusicList";
 
 interface MusicaSalva {
   musica: Musica & {
@@ -25,6 +26,7 @@ export default function Salvos() {
   const [musicas, setMusicas] = useState<MusicaSalva[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [recomendadas, setRecomendadas] = useState<Musica[]>([]);
+  
 
   useEffect(() => {
     async function buscarDados() {
@@ -126,21 +128,8 @@ export default function Salvos() {
               </h2>
 
               <div className="flex flex-col gap-3">
-                {recomendadas.length > 0 ? (
-                  recomendadas.slice(0, 5).map((musica) => (
-                    <RecommendedMusic
-                      id={musica.id}
-                      key={musica.id}
-                      titulo={musica.titulo}
-                      artist={musica.artista?.nome}
-                      capa={musica.capa}
+                    <RecommendedMusicList
                     />
-                  ))
-                ) : (
-                  <p className="py-8 text-center text-[14px] text-[#697386]">
-                    Nenhuma música recomendada.
-                  </p>
-                )}
               </div>
             </div>
           </aside>

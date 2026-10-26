@@ -6,6 +6,7 @@ import {
     UserCheck,
     MusicNoteIcon,
     ShareNetworkIcon,
+    ChatCircleIcon,
 } from "@phosphor-icons/react";
 import { Settings, User } from "lucide-react";
 import toast from "react-hot-toast";
@@ -25,10 +26,16 @@ import {
     type PerfilPublico as PerfilPublicoTipo,
 } from "../services/usuarioService";
 
+import { apiRequest } from "../api";
+
 import {
     buscarMusicas,
     type Musica,
 } from "../services/musicaService";
+import ComentarioPerfilCard, {
+    type ComentarioPerfil,
+} from "../components/comentarioPerfilCard";
+import RecommendedMusicList from "../components/recommendedMusicList";
 
 export default function PerfilPublico() {
     const { username } = useParams<{ username: string }>();
@@ -40,8 +47,12 @@ export default function PerfilPublico() {
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState("");
     const [processando, setProcessando] = useState(false);
+    const [comentarios, setComentarios] = useState<ComentarioPerfil[]>([]);
+    const [aba, setAba] = useState<"avaliacoes" | "comentarios">("avaliacoes");
+
 
     const ehMeuPerfil = usuario !== null && usuario.id === meuId;
+
 
     useEffect(() => {
         let ativo = true;
@@ -56,12 +67,30 @@ export default function PerfilPublico() {
             setCarregando(true);
             setErro("");
             setUsuario(null);
+            setComentarios([]);
 
             try {
                 const perfil = await buscarPerfilPublico(username);
 
-                if (ativo) {
-                    setUsuario(perfil);
+                if (!ativo) return;
+
+                setUsuario(perfil);
+
+                // Busca os comentários da pessoa cujo perfil foi aberto.
+                try {
+                    const dados = await apiRequest<ComentarioPerfil[]>(
+                        `/usuarios/${perfil.id}/comentarios`
+                    );
+
+                    if (ativo) {
+                        setComentarios(dados);
+                    }
+                } catch (error) {
+                    console.error("Erro ao buscar comentários do perfil:", error);
+
+                    if (ativo) {
+                        toast.error("Não foi possível carregar os comentários.");
+                    }
                 }
             } catch (error) {
                 console.error("Erro ao carregar perfil público:", error);
@@ -86,6 +115,28 @@ export default function PerfilPublico() {
             ativo = false;
         };
     }, [username]);
+
+    async function carregarComentarios() {
+        if (!usuario) return;
+
+        try {
+            const dados = await apiRequest<ComentarioPerfil[]>(
+                `/usuarios/${usuario.id}/comentarios`
+            );
+
+            setComentarios(dados);
+        } catch (error) {
+            console.error("Erro ao buscar comentários do perfil:", error);
+            toast.error("Não foi possível carregar os comentários.");
+        }
+    }
+
+    useEffect(() => {
+        if (usuario) {
+            carregarComentarios();
+        }
+    }, [usuario?.id]);
+
 
     useEffect(() => {
         let ativo = true;
@@ -288,23 +339,26 @@ export default function PerfilPublico() {
                             </div>
                         </div>
 
-                        {/* Cabeçalho do perfil */}
-                        <section className="w-full overflow-hidden rounded-xl border border-[#252d38] bg-[#0d121c]">
+                        <section className="w-full overflow-hidden rounded-2xl border border-[#273349] bg-[#0C121D]">
                             {/* Capa */}
                             <div
-                                className="h-[140px] bg-[#141a28] bg-cover bg-center"
+                                className="relative h-36 bg-gradient-to-br from-[#172a43] via-[#142033] to-[#0C121D] bg-cover bg-center sm:h-44"
                                 style={
                                     usuario.capa
-                                        ? { backgroundImage: `url("${usuario.capa}")` }
+                                        ? {
+                                            backgroundImage: `url("${usuario.capa}")`,
+                                        }
                                         : undefined
                                 }
-                            />
+                            >
+                                <div className="absolute inset-0 bg-gradient-to-t from-[#0C121D]/80 to-transparent" />
+                            </div>
 
-                            {/* Informações */}
-                            <div className="px-6 pb-6">
-                                <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+                            {/* Dados e ações */}
+                            <div className="px-5 pb-6 sm:px-6">
+                                <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
                                     <div className="flex min-w-0 items-end gap-4">
-                                        <div className="-mt-4 flex h-[82px] w-[82px] shrink-0 items-center justify-center overflow-hidden rounded-full border-4 border-[#0d121c] bg-[#1a2130]">
+                                        <div className="-mt-12 z-30 flex h-[88px] w-[88px] shrink-0 items-center justify-center overflow-hidden rounded-full border-4 border-[#0C121D] bg-[#192538] sm:h-24 sm:w-24">
                                             {usuario.foto ? (
                                                 <img
                                                     src={usuario.foto}
@@ -313,45 +367,39 @@ export default function PerfilPublico() {
                                                 />
                                             ) : (
                                                 <UserCircleIcon
-                                                    size={34}
-                                                    className="text-gray-400"
+                                                    size={42}
+                                                    className="text-[#8793a8]"
                                                 />
                                             )}
                                         </div>
 
                                         <div className="min-w-0 pb-1">
-                                            <div className="flex flex-wrap items-baseline gap-x-2">
-                                                <h2 className="font-serif text-[18px] text-gray-100">
-                                                    {usuario.nome}
-                                                </h2>
+                                            <h2 className="break-words text-lg font-semibold text-white">
+                                                {usuario.nome}
+                                            </h2>
 
-                                                <p className="font-serif text-[16px] text-gray-500">
-                                                    @{usuario.username}
-                                                </p>
-                                            </div>
-
-                                            <p className="mt-1 whitespace-pre-wrap break-words font-serif text-[12px] text-gray-500">
-                                                {usuario.bio || "Ainda não adicionou uma bio."}
+                                            <p className="text-sm text-[#8793a8]">
+                                                @{usuario.username}
                                             </p>
                                         </div>
                                     </div>
 
-                                    {/* Ações do perfil */}
-                                    <div className="flex flex-wrap items-center gap-3">
+                                    <div className="flex flex-wrap gap-2">
                                         <button
                                             type="button"
                                             onClick={compartilharPerfil}
-                                            className="flex cursor-pointer items-center gap-2 rounded-lg border border-[#252d38] px-4 py-2 font-serif text-[12px] text-gray-300 transition hover:border-blue-400 hover:text-blue-400"
+                                            aria-label="Compartilhar perfil"
+                                            className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-[#354052] px-3 py-2 text-sm text-gray-300 transition hover:border-[#58AAF0] hover:text-[#58AAF0]"
                                         >
                                             <ShareNetworkIcon size={18} />
-                                            Compartilhar
+                                            <span>Compartilhar</span>
                                         </button>
 
                                         {ehMeuPerfil ? (
                                             <button
                                                 type="button"
                                                 onClick={() => navigate("/perfil")}
-                                                className="flex cursor-pointer items-center gap-2 rounded-lg bg-[#5ea3ee] px-4 py-2 font-serif text-[12px] text-white transition hover:bg-[#7ab4f2]"
+                                                className="flex cursor-pointer items-center gap-2 rounded-lg bg-[#58AAF0] px-3 py-2 text-sm text-[#080A10] transition hover:bg-[#80c0fa]"
                                             >
                                                 <Settings size={17} />
                                                 Editar perfil
@@ -361,9 +409,9 @@ export default function PerfilPublico() {
                                                 type="button"
                                                 onClick={alternarSeguir}
                                                 disabled={processando}
-                                                className={`flex cursor-pointer items-center gap-2 rounded-lg px-4 py-2 font-serif text-[12px] transition disabled:cursor-not-allowed disabled:opacity-50 ${usuario.seguindoPorMim
-                                                    ? "border border-[#252d38] text-gray-300 hover:border-red-400 hover:text-red-400"
-                                                    : "bg-[#5ea3ee] text-white hover:bg-[#7ab4f2]"
+                                                className={`flex cursor-pointer items-center gap-2 rounded-lg px-4 py-2 text-sm transition disabled:cursor-not-allowed disabled:opacity-50 ${usuario.seguindoPorMim
+                                                    ? "border border-[#354052] text-gray-300 hover:border-red-400 hover:text-red-400"
+                                                    : "bg-[#58AAF0] text-[#080A10] hover:bg-[#80c0fa]"
                                                     }`}
                                             >
                                                 {usuario.seguindoPorMim ? (
@@ -382,13 +430,22 @@ export default function PerfilPublico() {
                                     </div>
                                 </div>
 
+                                {/* Bio */}
+                                <p className="mt-5 whitespace-pre-wrap break-words text-sm leading-6 text-gray-300">
+                                    {usuario.bio || (
+                                        <span className="italic text-[#697386]">
+                                            Este usuário ainda não adicionou uma bio.
+                                        </span>
+                                    )}
+                                </p>
+
                                 {/* Contadores */}
-                                <div className="mt-5 flex flex-wrap gap-6 font-serif text-[14px] text-gray-400">
+                                <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-[#273349] pt-5 text-sm text-[#8793a8]">
                                     <Link
                                         to={`/usuarios/${usuario.id}/seguidores?nome=${encodeURIComponent(usuario.nome)}&username=${encodeURIComponent(usuario.username)}`}
-                                        className="transition-colors hover:text-[#58AAF0]"
+                                        className="transition hover:text-[#58AAF0]"
                                     >
-                                        <strong className="text-gray-200">
+                                        <strong className="text-white">
                                             {usuario._count?.seguidores ?? 0}
                                         </strong>{" "}
                                         Seguidores
@@ -396,92 +453,126 @@ export default function PerfilPublico() {
 
                                     <Link
                                         to={`/usuarios/${usuario.id}/seguindo?nome=${encodeURIComponent(usuario.nome)}&username=${encodeURIComponent(usuario.username)}`}
-                                        className="transition-colors hover:text-[#58AAF0]"
+                                        className="transition hover:text-[#58AAF0]"
                                     >
-                                        <strong className="text-gray-200">
+                                        <strong className="text-white">
                                             {usuario._count?.seguindo ?? 0}
                                         </strong>{" "}
                                         Seguindo
                                     </Link>
 
-                                    <span>
-                                        <strong className="text-gray-200">
-                                            {usuario._count?.posts ?? posts.length}
-                                        </strong>{" "}
-                                        Avaliações
-                                    </span>
-                                </div>
+                                    <div className="flex items-center gap-2">
+                                        <MusicNoteIcon size={17} />
 
+                                        <span>
+                                            <strong className="text-white">
+                                                {usuario._count?.posts ?? posts.length}
+                                            </strong>{" "}
+                                            Avaliações
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
                         </section>
 
                         {/* Avaliações */}
+                        {/* ABAS */}
                         <div className="mt-8 border-b border-[#252d38]">
-                            <div className="flex gap-8">
-                                <div className="shrink-0 border-b-2 border-blue-400 px-1 pb-3 font-serif text-[14px] text-white">
+                            <div className="flex gap-8 overflow-x-auto">
+                                <button
+                                    type="button"
+                                    onClick={() => setAba("avaliacoes")}
+                                    className={`shrink-0 cursor-pointer border-b-2 px-1 pb-3 font-serif text-[14px] transition ${aba === "avaliacoes"
+                                        ? "border-blue-400 text-white"
+                                        : "border-transparent text-gray-500 hover:text-blue-400"
+                                        }`}
+                                >
                                     Últimas avaliações
-                                </div>
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={() => setAba("comentarios")}
+                                    className={`shrink-0 cursor-pointer border-b-2 px-1 pb-3 font-serif text-[14px] transition ${aba === "comentarios"
+                                        ? "border-blue-400 text-white"
+                                        : "border-transparent text-gray-500 hover:text-blue-400"
+                                        }`}
+                                >
+                                    Comentários
+                                </button>
                             </div>
                         </div>
 
                         <div className="flex flex-col gap-6 pt-6">
-                            <div className="flex items-center gap-2">
-                                <MusicNoteIcon
-                                    size={18}
-                                    className="text-blue-400"
-                                />
+                            {aba === "avaliacoes" && (
+                                <>
+                                    <div className="flex items-center gap-2">
+                                        <MusicNoteIcon size={18} className="text-blue-400" />
+                                        <h2 className="font-serif text-[18px] text-gray-100">
+                                            Últimas avaliações
+                                        </h2>
+                                    </div>
 
-                                <h2 className="font-serif text-[18px] text-gray-100">
-                                    Últimas avaliações
-                                </h2>
-                            </div>
+                                    {posts.length > 0 ? (
+                                        posts.map((post) => (
+                                            <PostCard
+                                                key={post.id}
+                                                postId={post.id}
+                                                name={post.usuario?.nome ?? usuario.nome}
+                                                username={post.usuario?.username ?? usuario.username}
+                                                foto={post.usuario?.foto ?? usuario.foto ?? undefined}
+                                                time={post.dataCriacao}
+                                                content={post.texto ?? ""}
+                                                nota={post.nota}
+                                                musicId={post.musica!.id}
+                                                musicTitle={post.musica?.titulo ?? "Música indisponível"}
+                                                artist={post.musica?.artista?.nome ?? "Artista desconhecido"}
+                                                artistId={post.musica?.artista?.id}
+                                                musicCover={post.musica?.capa ?? undefined}
+                                                duracaoSegundos={post.musica?.duracaoSegundos}
+                                                likes={post._count?.curtidas ?? 0}
+                                                comments={post._count?.comentarios ?? 0}
+                                                avaliacoes={
+                                                    post.musica?._count?.posts ??
+                                                    post.musica?.avaliacoes ??
+                                                    0
+                                                }
+                                                curtidoPorMim={post.curtidoPorMim ?? false}
+                                                ehMeuPost={
+                                                    meuId !== null && post.usuario?.id === meuId
+                                                }
+                                            />
+                                        ))
+                                    ) : (
+                                        <p className="py-8 text-center text-sm text-[#697386]">
+                                            Nenhuma avaliação publicada.
+                                        </p>
+                                    )}
+                                </>
+                            )}
 
-                            {posts.length > 0 ? (
-                                posts.map((post) => (
-                                    <PostCard
-                                        key={post.id}
-                                        postId={post.id}
-                                        name={post.usuario?.nome ?? usuario.nome}
-                                        username={post.usuario?.username ?? usuario.username}
-                                        foto={post.usuario?.foto ?? usuario.foto ?? undefined}
-                                        time={post.dataCriacao}
-                                        content={post.texto ?? ""}
-                                        nota={post.nota}
-                                        musicId={post.musica!.id}
-                                        musicTitle={
-                                            post.musica?.titulo ?? "Música indisponível"
-                                        }
-                                        artist={
-                                            post.musica?.artista?.nome ??
-                                            "Artista desconhecido"
-                                        }
-                                        artistId={post.musica?.artista?.id}
-                                        musicCover={post.musica?.capa ?? undefined}
-                                        duracaoSegundos={post.musica?.duracaoSegundos}
-                                        likes={post._count?.curtidas ?? 0}
-                                        comments={post._count?.comentarios ?? 0}
-                                        avaliacoes={
-                                            post.musica?._count?.posts ??
-                                            post.musica?.avaliacoes ??
-                                            0
-                                        }
-                                        curtidoPorMim={post.curtidoPorMim ?? false}
-                                        ehMeuPost={
-                                            meuId !== null && post.usuario?.id === meuId
-                                        }
-                                    />
-                                ))
-                            ) : (
-                                <div className="rounded-xl border border-[#252d38] bg-[#0d121c] px-6 py-12 text-center">
-                                    <MusicNoteIcon
-                                        size={30}
-                                        className="mx-auto mb-3 text-[#697386]"
-                                    />
+                            {aba === "comentarios" && (
+                                <>
+                                    <div className="flex items-center gap-2">
+                                        <ChatCircleIcon size={18} className="text-blue-400" />
+                                        <h2 className="font-serif text-[18px] text-gray-100">
+                                            Comentários
+                                        </h2>
+                                    </div>
 
-                                    <p className="font-serif text-[14px] text-gray-300">
-                                        Nenhuma avaliação publicada.
-                                    </p>
-                                </div>
+                                    {comentarios.length > 0 ? (
+                                        comentarios.map((comentario) => (
+                                            <ComentarioPerfilCard
+                                                key={comentario.id}
+                                                comentario={comentario}
+                                            />
+                                        ))
+                                    ) : (
+                                        <p className="py-8 text-center text-sm text-[#697386]">
+                                            Nenhum comentário publicado.
+                                        </p>
+                                    )}
+                                </>
                             )}
                         </div>
                     </section>
@@ -494,21 +585,7 @@ export default function PerfilPublico() {
                             </h2>
 
                             <div className="flex flex-col gap-3">
-                                {musicas.length > 0 ? (
-                                    musicas.slice(0, 5).map((musica) => (
-                                        <RecommendedMusic
-                                            id={musica.id}
-                                            key={musica.id}
-                                            titulo={musica.titulo}
-                                            artist={musica.artista?.nome ?? "Artista desconhecido"}
-                                            capa={musica.capa ?? undefined}
-                                        />
-                                    ))
-                                ) : (
-                                    <p className="py-8 text-center text-[14px] text-[#697386]">
-                                        Nenhuma música recomendada.
-                                    </p>
-                                )}
+                                <RecommendedMusicList />
                             </div>
                         </div>
                     </aside>

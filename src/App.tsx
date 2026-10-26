@@ -21,6 +21,7 @@ import Post from "./pages/post";
 import Filtrar from "./pages/filtrar";
 import PerfilPublico from "./pages/perfilPublico";
 import ListaSeguidores from "./pages/listaSeguidores";
+import Notificacoes from "./pages/notificacoes";
 
 function App() {
   return (
@@ -57,6 +58,7 @@ function App() {
           <Route path="/configuracoes" element={<Configuracoes />} />
           <Route path="/buscar" element={<Resultados />} />
           <Route path="/usuarios/:id/:tipo" element={<ListaSeguidores />} />
+          <Route path="/notificacoes" element={<Notificacoes />} />
         </Route>
 
       </Routes>

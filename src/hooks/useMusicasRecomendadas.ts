@@ -1,28 +1,48 @@
+
 import { useMemo } from "react";
 import type { Musica } from "../services/musicaService";
 
+interface ArtistaFavorito {
+  artistaId: number;
+}
+
 export function useMusicasRecomendadas(
   musicas: Musica[],
-  generosFavoritos: string[]
+  generosFavoritos: string[],
+  artistasFavoritos: ArtistaFavorito[] = []
 ) {
-  const musicasRecomendadas = useMemo(() => {
-    if (generosFavoritos.length === 0) {
-      return musicas;
+  return useMemo(() => {
+    const normalizar = (valor: string) =>
+      valor.trim().toLocaleLowerCase("pt-BR");
+
+    const generos = generosFavoritos.map(normalizar);
+    const idsArtistas = artistasFavoritos.map(
+      (artista) => Number(artista.artistaId)
+    );
+
+    const recomendadas = musicas.filter((musica) => {
+      const combinaGenero =
+        typeof musica.genero === "string" &&
+        generos.includes(normalizar(musica.genero));
+
+      const combinaArtista =
+        musica.artista?.id != null &&
+        idsArtistas.includes(Number(musica.artista.id));
+
+      return combinaGenero || combinaArtista;
+    });
+
+    // Embaralha a ordem das recomendações.
+    for (let i = recomendadas.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [recomendadas[i], recomendadas[j]] = [
+        recomendadas[j],
+        recomendadas[i],
+      ];
     }
 
-    const normalizarGenero = (genero: string) =>
-      genero.trim().toLocaleLowerCase("pt-BR");
-
-    return musicas.filter(
-      (musica) =>
-        typeof musica.genero === "string" &&
-        generosFavoritos.some(
-          (genero) =>
-            normalizarGenero(musica.genero!) ===
-            normalizarGenero(genero)
-        )
-    );
-  }, [musicas, generosFavoritos]);
-
-  return { musicasRecomendadas };
+    return {
+      musicasRecomendadas: recomendadas,
+    };
+  }, [musicas, generosFavoritos, artistasFavoritos]);
 }

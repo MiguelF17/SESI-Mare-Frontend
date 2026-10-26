@@ -16,6 +16,7 @@ import {
     buscarMusicas,
     type Musica,
 } from "../services/musicaService";
+import RecommendedMusicList from "../components/recommendedMusicList";
 
 interface UsuarioLista {
     id: number;
@@ -386,24 +387,7 @@ export default function ListaSeguidores() {
                             </h2>
 
                             <div className="flex flex-col gap-3">
-                                {musicas.length > 0 ? (
-                                    musicas.slice(0, 5).map((musica) => (
-                                        <RecommendedMusic
-                                            key={musica.id}
-                                            id={musica.id}
-                                            titulo={musica.titulo}
-                                            artist={
-                                                musica.artista?.nome ??
-                                                "Artista desconhecido"
-                                            }
-                                            capa={musica.capa ?? undefined}
-                                        />
-                                    ))
-                                ) : (
-                                    <p className="py-4 font-serif text-[13px] text-[#697386]">
-                                        Nenhuma música recomendada disponível.
-                                    </p>
-                                )}
+                                <RecommendedMusicList />
                             </div>
                         </div>
                     </aside>

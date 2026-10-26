@@ -7,6 +7,7 @@ import {
   BookmarkSimpleIcon,
   UserIcon,
   GearIcon,
+  BellIcon,
 } from "@phosphor-icons/react";
 import { useMeuPerfil } from "../hooks/useMeuPerfil";
 
@@ -88,6 +89,14 @@ export default function Sidebar() {
           >
             <PlaylistIcon size={20} />
             Explorar
+          </Link>
+
+          <Link
+            to="/notificacoes"
+            className="flex items-center gap-4 px-8 py-6 hover:bg-white/5 transition"
+          >
+            <BellIcon size={20} />
+            Notificações
           </Link>
 
           <Link

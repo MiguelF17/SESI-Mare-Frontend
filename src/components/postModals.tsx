@@ -112,7 +112,7 @@ export default function PostModals({
                 type="button"
                 disabled={salvandoAcao}
                 onClick={() => setModalAcao(null)}
-                className="rounded-lg px-4 py-2 text-sm text-[#b5bbc5] hover:bg-[#202737] disabled:opacity-50"
+                className="rounded-lg cursor-pointer px-4 py-2 text-sm text-[#b5bbc5] hover:bg-[#202737] disabled:opacity-50"
               >
                 Cancelar
               </button>
@@ -121,7 +121,7 @@ export default function PostModals({
                 type="button"
                 disabled={salvandoAcao || !motivoDenuncia.trim()}
                 onClick={onDenunciar}
-                className="rounded-lg bg-[#58AAF0] px-4 py-2 text-sm font-medium text-[#080A10] hover:bg-[#72b7f5] disabled:opacity-50"
+                className="rounded-lg cursor-pointer bg-[#58AAF0] px-4 py-2 text-sm font-medium text-[#080A10] hover:bg-[#72b7f5] disabled:opacity-50"
               >
                 {salvandoAcao ? "Enviando..." : "Enviar denúncia"}
               </button>

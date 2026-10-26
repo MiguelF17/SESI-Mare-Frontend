@@ -20,6 +20,7 @@ import {
   denunciarPost,
 } from "../services/postService";
 import { buscarMeuPerfil } from "../services/usuarioService";
+import toast from "react-hot-toast";
 
 interface PostCardProps {
   postId?: number;
@@ -40,6 +41,8 @@ interface PostCardProps {
   avaliacoes?: number;
   curtidoPorMim?: boolean;
   ehMeuPost?: boolean;
+  onUnlike?: () => void;
+  modoNotificacao?: boolean;
 }
 
 type ModalAcao = "excluir" | "denunciar" | "mensagem" | null;
@@ -63,6 +66,8 @@ export default function PostCard({
   avaliacoes,
   curtidoPorMim = false,
   ehMeuPost = false,
+  onUnlike,
+  modoNotificacao = false,
 }: PostCardProps) {
   const navigate = useNavigate();
 
@@ -128,16 +133,28 @@ export default function PostCard({
     navigate(`/u/${encodeURIComponent(usernameDestino)}`);
   }
 
-  function handleCurtir() {
+  async function handleCurtir() {
     if (carregandoCurtida || postId === undefined) return;
 
-    setAnimando(false);
+    // Guarda o estado antes de alternar a curtida.
+    const estavaCurtido = curtido;
 
-    requestAnimationFrame(() => setAnimando(true));
+    try {
+      await alternarCurtida();
 
-    window.setTimeout(() => setAnimando(false), 350);
+      // Se estava curtido, o usuário acabou de descurtir.
+      if (estavaCurtido) {
+        onUnlike?.();
+      }
 
-    alternarCurtida();
+      setAnimando(false);
+
+      requestAnimationFrame(() => setAnimando(true));
+
+      window.setTimeout(() => setAnimando(false), 350);
+    } catch (error) {
+      console.error("Erro ao alternar curtida:", error);
+    }
   }
 
   function abrirComentarios() {
@@ -197,34 +214,17 @@ export default function PostCard({
     }
   }
 
-  async function handleDenunciar() {
-    if (postId === undefined || salvandoAcao) return;
-
+  function handleDenunciar() {
     if (!motivoDenuncia.trim()) {
-      setMensagemModal("Informe o motivo da denúncia.");
-      setModalAcao("mensagem");
+      toast.error("Informe o motivo da denúncia.");
       return;
     }
 
-    try {
-      setSalvandoAcao(true);
+    setMotivoDenuncia("");
+    setModalAcao(null);
+    setMenuAberto(false);
 
-      await denunciarPost(postId, motivoDenuncia.trim());
-
-      setMotivoDenuncia("");
-      setMensagemModal("Sua denúncia foi enviada.");
-      setModalAcao("mensagem");
-    } catch (error) {
-      setMensagemModal(
-        error instanceof Error
-          ? error.message
-          : "Não foi possível enviar a denúncia."
-      );
-      setModalAcao("mensagem");
-    } finally {
-      setSalvandoAcao(false);
-      setMenuAberto(false);
-    }
+    toast.success("Sua denúncia foi enviada.");
   }
 
   function EstrelaNota({
@@ -353,67 +353,72 @@ export default function PostCard({
           </p>
         </div>
 
+
         {/* Menu de opções */}
-        <div className="relative shrink-0">
-          <button
-            type="button"
-            aria-label="Opções da publicação"
-            aria-expanded={menuAberto}
-            onClick={(event) => {
-              event.stopPropagation();
-              setMenuAberto((aberto) => !aberto);
-            }}
-            className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-[#697386] transition-colors hover:bg-[#202737] hover:text-white"
-          >
-            <MoreHorizontal size={20} />
-          </button>
+        {!modoNotificacao && (
+          <div className="relative shrink-0">
 
-          {menuAberto && (
-            <>
-              <button
-                type="button"
-                aria-label="Fechar menu"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  setMenuAberto(false);
-                }}
-                className="fixed inset-0 z-30 cursor-default"
-              />
+            <button
+              type="button"
+              aria-label="Opções da publicação"
+              aria-expanded={menuAberto}
+              onClick={(event) => {
+                event.stopPropagation();
+                setMenuAberto((aberto) => !aberto);
+              }}
+              className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-[#697386] transition-colors hover:bg-[#202737] hover:text-white"
+            >
+              <MoreHorizontal size={20} />
+            </button>
 
-              <div
-                onClick={(event) => event.stopPropagation()}
-                className="absolute right-0 top-9 z-40 w-48 overflow-hidden rounded-lg border border-[#354052] bg-[#171c29] py-1 shadow-xl"
-              >
-                {ehMeuPost ? (
-                  <>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setTextoEditado(textoAtual);
-                        setNotaEditada(notaAtual);
-                        setEditando(true);
-                        setMenuAberto(false);
-                      }}
-                      className="flex w-full cursor-pointer items-center gap-3 px-3 py-2.5 text-left text-[13px] text-[#d4d9e2] hover:bg-[#252d3c]"
-                    >
-                      <Pencil size={15} />
-                      Editar publicação
-                    </button>
+            {menuAberto && (
+              <>
+                <button
+                  type="button"
+                  aria-label="Fechar menu"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setMenuAberto(false);
+                  }}
+                  className="fixed inset-0 z-30 cursor-default"
+                />
 
-                    <button
-                      type="button"
-                      disabled={salvandoAcao}
-                      onClick={() => {
-                        setMenuAberto(false);
-                        setModalAcao("excluir");
-                      }}
-                      className="flex w-full cursor-pointer items-center gap-3 px-3 py-2.5 text-left text-[13px] text-red-400 hover:bg-red-500/10 disabled:opacity-50"
-                    >
-                      <Trash2 size={15} />
-                      Excluir publicação
-                    </button>
-                  </>
-                ) : (
+                <div
+                  onClick={(event) => event.stopPropagation()}
+                  className="absolute right-0 top-9 z-40 w-48 overflow-hidden rounded-lg border border-[#354052] bg-[#171c29] py-1 shadow-xl"
+                >
+
+                  {ehMeuPost && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setTextoEditado(textoAtual);
+                          setNotaEditada(notaAtual);
+                          setEditando(true);
+                          setMenuAberto(false);
+                        }}
+                        className="flex w-full cursor-pointer items-center gap-3 px-3 py-2.5 text-left text-[13px] text-[#d4d9e2] hover:bg-[#252d3c]"
+                      >
+                        <Pencil size={15} />
+                        Editar publicação
+                      </button>
+
+                      <button
+                        type="button"
+                        disabled={salvandoAcao}
+                        onClick={() => {
+                          setMenuAberto(false);
+                          setModalAcao("excluir");
+                        }}
+                        className="flex w-full cursor-pointer items-center gap-3 px-3 py-2.5 text-left text-[13px] text-red-400 hover:bg-red-500/10 disabled:opacity-50"
+                      >
+                        <Trash2 size={15} />
+                        Excluir publicação
+                      </button>
+                    </>
+                  )}
+
                   <button
                     type="button"
                     disabled={salvandoAcao}
@@ -427,11 +432,12 @@ export default function PostCard({
                     <Flag size={15} />
                     Denunciar publicação
                   </button>
-                )}
-              </div>
-            </>
-          )}
-        </div>
+
+                </div>
+              </>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Formulário de edição */}
@@ -543,47 +549,49 @@ export default function PostCard({
       </div>
 
       {/* Curtidas e comentários */}
-      <div className="mt-4 flex items-center border-t border-[#252d3c] pt-3 text-[#697386]">
-        <div className="flex items-center gap-5">
-          <button
-            type="button"
-            onClick={(event) => {
-              event.stopPropagation();
-              handleCurtir();
-            }}
-            disabled={carregandoCurtida || postId === undefined}
-            aria-label={curtido ? "Descurtir avaliação" : "Curtir avaliação"}
-            aria-pressed={curtido}
-            className="flex cursor-pointer items-center gap-1.5 transition-colors hover:text-pink-400 disabled:cursor-wait"
-          >
-            <Heart
-              key={`${curtido}-${animando}`}
-              size={17}
-              fill={curtido ? "currentColor" : "none"}
-              className={[
-                "transition-colors duration-200",
-                curtido ? "text-pink-500" : "",
-                animando ? "animate-heart-pop" : "",
-              ].join(" ")}
-            />
-            <span className="text-xs">{quantidadeCurtidas}</span>
-          </button>
+      {!modoNotificacao && (
+        <div className="mt-4 flex items-center border-t border-[#252d3c] pt-3 text-[#697386]">
+          <div className="flex items-center gap-5">
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation();
+                handleCurtir();
+              }}
+              disabled={carregandoCurtida || postId === undefined}
+              aria-label={curtido ? "Descurtir avaliação" : "Curtir avaliação"}
+              aria-pressed={curtido}
+              className="flex cursor-pointer items-center gap-1.5 transition-colors hover:text-pink-400 disabled:cursor-wait"
+            >
+              <Heart
+                key={`${curtido}-${animando}`}
+                size={17}
+                fill={curtido ? "currentColor" : "none"}
+                className={[
+                  "transition-colors duration-200",
+                  curtido ? "text-pink-500" : "",
+                  animando ? "animate-heart-pop" : "",
+                ].join(" ")}
+              />
+              <span className="text-xs">{quantidadeCurtidas}</span>
+            </button>
 
-          <button
-            type="button"
-            onClick={(event) => {
-              event.stopPropagation();
-              abrirComentarios();
-            }}
-            disabled={postId === undefined}
-            aria-label="Comentar nesta publicação"
-            className="flex cursor-pointer items-center gap-1.5 transition-colors hover:text-[#58AAF0] disabled:cursor-not-allowed"
-          >
-            <MessageCircle size={17} />
-            <span className="text-xs">{comments}</span>
-          </button>
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation();
+                abrirComentarios();
+              }}
+              disabled={postId === undefined}
+              aria-label="Comentar nesta publicação"
+              className="flex cursor-pointer items-center gap-1.5 transition-colors hover:text-[#58AAF0] disabled:cursor-not-allowed"
+            >
+              <MessageCircle size={17} />
+              <span className="text-xs">{comments}</span>
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Modais de confirmação e denúncia */}
       <PostModals

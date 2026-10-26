@@ -11,6 +11,8 @@ import RecommendedMusic from "../components/recommendedMusic";
 import { buscarArtistas, type Artista } from "../services/artistaService";
 import { buscarMusicas, type Musica } from "../services/musicaService";
 import { buscarPosts, type Post } from "../services/postService";
+import { apiRequest } from "../api";
+import RecommendedMusicList from "../components/recommendedMusicList";
 
 function normalizar(valor: unknown) {
   return String(valor ?? "")
@@ -29,7 +31,10 @@ export default function Resultados() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState(false);
-
+  const [usuarioLogadoId, setUsuarioLogadoId] = useState<number | null>(
+    null
+  );
+  
   useEffect(() => {
     let ativo = true;
 
@@ -69,6 +74,30 @@ export default function Resultados() {
       ativo = false;
     };
   }, []);
+
+  useEffect(() => {
+  let ativo = true;
+
+  async function carregarUsuarioLogado() {
+    try {
+      const usuario = await apiRequest<{ id: number }>("/usuarios/me");
+
+      if (ativo) {
+        setUsuarioLogadoId(usuario.id);
+      }
+    } catch {
+      if (ativo) {
+        setUsuarioLogadoId(null);
+      }
+    }
+  }
+
+  carregarUsuarioLogado();
+
+  return () => {
+    ativo = false;
+  };
+}, []);
 
   const musicasFiltradas = musicas.filter(
     (musica) =>
@@ -225,6 +254,10 @@ export default function Resultados() {
                           comments={post._count?.comentarios ?? 0}
                           duracaoSegundos={post.musica?.duracaoSegundos}
                           curtidoPorMim={post.curtidoPorMim ?? false}
+                          ehMeuPost={
+                            usuarioLogadoId !== null &&
+                            post.usuario?.id === usuarioLogadoId
+                          }
                         />
                       ))}
                     </div>
@@ -246,21 +279,8 @@ export default function Resultados() {
               </h2>
 
               <div className="flex flex-col gap-3">
-                {musicas.length > 0 ? (
-                  musicas.slice(0, 5).map((musica) => (
-                    <RecommendedMusic
-                      id={musica.id}
-                      key={musica.id}
-                      titulo={musica.titulo}
-                      artist={musica.artista?.nome}
-                      capa={musica.capa ?? undefined}
+                    <RecommendedMusicList
                     />
-                  ))
-                ) : (
-                  <p className="text-sm text-[#697386]">
-                    Nenhuma música recomendada.
-                  </p>
-                )}
               </div>
             </div>
           </aside>
