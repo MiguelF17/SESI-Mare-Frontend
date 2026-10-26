@@ -51,7 +51,7 @@ export default function Sidebar() {
 
         {/* MENU */}
         <nav className="mt-4 flex flex-col">
-          <div className="px-8 mb-6 flex items-center gap-2">
+          <div className="px-8 mb-6 flex items-center gap-2 cursor-default">
             <div className="flex h-[80px] w-[80px] shrink-0 items-center justify-center rounded-full bg-[#1a2130]">
               {usuario?.foto ? (
                 <img

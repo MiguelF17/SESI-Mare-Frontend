@@ -5,6 +5,7 @@ import {
   useRef,
   useState,
   type ReactNode,
+  type PointerEvent,
 } from "react";
 
 import { UserCircleIcon } from "@phosphor-icons/react";
@@ -39,10 +40,17 @@ interface ArtistaFavorito {
   artistaId: number;
 }
 
+
 function Carrossel({ children }: { children: ReactNode }) {
   const trilhoRef = useRef<HTMLDivElement>(null);
+
   const [podeVoltar, setPodeVoltar] = useState(false);
   const [podeAvancar, setPodeAvancar] = useState(false);
+  const [arrastando, setArrastando] = useState(false);
+
+  const inicioX = useRef(0);
+  const scrollInicial = useRef(0);
+  const arrastou = useRef(false);
 
   useEffect(() => {
     const trilho = trilhoRef.current;
@@ -73,6 +81,55 @@ function Carrossel({ children }: { children: ReactNode }) {
     };
   }, [children]);
 
+  function iniciarArraste(e: PointerEvent<HTMLDivElement>) {
+    // Arrasta apenas com o botão principal do mouse ou com toque.
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+
+    const trilho = trilhoRef.current;
+    if (!trilho) return;
+
+    inicioX.current = e.clientX;
+    scrollInicial.current = trilho.scrollLeft;
+    arrastou.current = false;
+
+    setArrastando(true);
+
+    trilho.setPointerCapture(e.pointerId);
+  }
+
+  function moverArraste(e: PointerEvent<HTMLDivElement>) {
+    const trilho = trilhoRef.current;
+    if (!trilho || !arrastando) return;
+
+    const distancia = e.clientX - inicioX.current;
+
+    if (Math.abs(distancia) > 5) {
+      arrastou.current = true;
+    }
+
+    if (arrastou.current) {
+      trilho.scrollLeft = scrollInicial.current - distancia;
+    }
+  }
+
+  function finalizarArraste(e: React.PointerEvent<HTMLDivElement>) {
+    const trilho = trilhoRef.current;
+    if (!trilho) return;
+
+    if (trilho.hasPointerCapture(e.pointerId)) {
+      trilho.releasePointerCapture(e.pointerId);
+    }
+
+    setArrastando(false);
+
+    // Evita que o clique em um card aconteça depois de arrastá-lo.
+    if (arrastou.current) {
+      requestAnimationFrame(() => {
+        arrastou.current = false;
+      });
+    }
+  }
+
   function mover(direcao: number) {
     const trilho = trilhoRef.current;
     if (!trilho) return;
@@ -98,7 +155,24 @@ function Carrossel({ children }: { children: ReactNode }) {
 
       <div
         ref={trilhoRef}
-        className="flex min-w-0 gap-4 overflow-x-auto scroll-smooth px-2 py-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        onPointerDown={iniciarArraste}
+        onPointerMove={moverArraste}
+        onPointerUp={finalizarArraste}
+        onPointerCancel={finalizarArraste}
+        onClickCapture={(e) => {
+          if (arrastou.current) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+        }}
+        className={`flex min-w-0 gap-4 overflow-x-auto px-2 py-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${arrastando
+          ? "cursor-grabbing select-none"
+          : "cursor-grab scroll-smooth"
+          }`}
+        style={{
+          touchAction: "pan-y",
+          scrollBehavior: arrastando ? "auto" : "smooth",
+        }}
       >
         {children}
       </div>
@@ -116,6 +190,7 @@ function Carrossel({ children }: { children: ReactNode }) {
     </div>
   );
 }
+
 
 
 
@@ -401,6 +476,7 @@ export default function Explorar() {
                         alt={artista.nome}
                         loading="lazy"
                         className="h-full w-full object-cover transition-transform duration-500 hover:scale-110"
+                        draggable={false}
                       />
                     ) : (
                       <UserCircleIcon

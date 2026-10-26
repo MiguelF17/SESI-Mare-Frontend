@@ -177,7 +177,7 @@ export default function MusicCard({
           <img
             src={capa || logo}
             alt={titulo}
-            className="absolute inset-0 h-full w-full object-cover"
+            className="absolute inset-0 h-full w-full object-cover" draggable={false}
           />
 
           <div className="absolute inset-0 bg-black/60" />
@@ -237,7 +237,7 @@ export default function MusicCard({
         <img
           src={capa || logo}
           alt={titulo}
-          className="mx-auto aspect-square w-full rounded-xl object-cover"
+          className="mx-auto aspect-square w-full rounded-xl object-cover" draggable={false}
         />
 
         <p className="mt-2 truncate text-xs text-white">{titulo}</p>
@@ -279,7 +279,7 @@ export default function MusicCard({
         <img
           src={capa || logo}
           alt={titulo}
-          className="h-16 w-16 shrink-0 rounded-xl object-cover"
+          className="h-16 w-16 shrink-0 rounded-xl object-cover" draggable={false}
         />
 
         <div className="ml-3 min-w-0 flex-1">
