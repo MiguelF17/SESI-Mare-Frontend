@@ -11,6 +11,7 @@ export interface Comentario {
     username?: string;
     foto?: string | null;
   };
+  editado?: boolean;
 }
 
 export async function buscarComentarios(

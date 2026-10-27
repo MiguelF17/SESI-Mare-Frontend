@@ -1,15 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-    Bell,
-    Heart,
-    MessageCircle,
-    UserRound,
-    Music2,
-    CheckCheck,
-    RefreshCw,
-    Check,
-} from "lucide-react";
+    BellIcon,
+    HeartIcon,
+    ChatCircleIcon,
+    UserCircleIcon,
+    MusicNotesIcon,
+    ArrowClockwiseIcon,
+    CheckIcon,
+} from "@phosphor-icons/react";
 
 import PageLayout from "../components/pageLayout";
 import PageContent from "../components/pageContent";
@@ -76,7 +75,6 @@ export default function Notificacoes() {
     const [atualizando, setAtualizando] = useState<number | null>(null);
     const [marcandoTodas, setMarcandoTodas] = useState(false);
 
-    // Carrega as notificações do usuário logado.
     const carregarNotificacoes = useCallback(async () => {
         try {
             setCarregando(true);
@@ -115,28 +113,26 @@ export default function Notificacoes() {
             filtro === "todas" || !notificacao.lida
     );
 
-    // Escolhe o ícone conforme o tipo de notificação.
     function iconeNotificacao(tipo: string) {
         switch (tipo) {
             case "curtida":
-                return <Heart size={19} />;
+                return <HeartIcon size={20} />;
 
             case "comentario":
-                return <MessageCircle size={19} />;
+                return <ChatCircleIcon size={20} />;
 
             case "seguir":
             case "seguidor":
-                return <UserRound size={19} />;
+                return <UserCircleIcon size={20} />;
 
             case "musica":
-                return <Music2 size={19} />;
+                return <MusicNotesIcon size={20} />;
 
             default:
-                return <Bell size={19} />;
+                return <BellIcon size={20} />;
         }
     }
 
-    // Formata a data em um texto mais fácil de ler.
     function tempoNotificacao(data: string) {
         const dataNotificacao = new Date(data);
         const diferenca = Date.now() - dataNotificacao.getTime();
@@ -167,7 +163,6 @@ export default function Notificacoes() {
         return dataNotificacao.toLocaleDateString("pt-BR");
     }
 
-    // Marca uma notificação específica como lida.
     async function marcarComoLida(id: number) {
         if (atualizando !== null) return;
 
@@ -195,7 +190,6 @@ export default function Notificacoes() {
         }
     }
 
-    // Marca todas as notificações como lidas.
     async function marcarTodasComoLidas() {
         if (naoLidas === 0 || marcandoTodas) return;
 
@@ -221,7 +215,6 @@ export default function Notificacoes() {
         }
     }
 
-    // Abre a publicação, música ou perfil relacionado.
     async function abrirNotificacao(notificacao: Notificacao) {
         if (!notificacao.lida) {
             try {
@@ -265,33 +258,34 @@ export default function Notificacoes() {
                             <BotaoVoltar fallback="/" />
 
                             <div className="min-w-0 flex-1">
-                                <h1 className="font-serif text-[24px] text-white">
+                                <h1 className="font-serif text-2xl text-[#E4EFFF]">
                                     Notificações
                                 </h1>
 
-                                <p className="mt-1 font-serif text-[13px] text-[#697386]">
+                                <p className="mt-1 font-serif text-[13px] text-[#718096]">
                                     Acompanhe as interações no seu perfil.
                                 </p>
                             </div>
 
                             {naoLidas > 0 && (
-                                <span className="flex h-7 min-w-7 items-center justify-center rounded-full bg-[#58AAF0]/15 px-2 font-serif text-xs text-[#58AAF0]">
+                                <span className="flex h-7 min-w-7 items-center justify-center rounded-full bg-[#58AAF0]/15 px-2 text-xs font-medium text-[#58AAF0]">
                                     {naoLidas}
                                 </span>
                             )}
                         </div>
 
                         {/* Lista de notificações */}
-                        <section className="overflow-hidden rounded-xl border border-[#252d38] bg-[#0d121c]">
-                            <header className="flex flex-wrap items-center justify-between gap-3 border-b border-[#252d38] px-4 py-4 sm:px-5">
+                        <section className="overflow-hidden rounded-xl border border-[#354052] bg-[#111420]">
+                            <header className="flex flex-wrap items-center justify-between gap-3 border-b border-[#252d3c] px-4 py-4 sm:px-5">
                                 <div className="flex items-center gap-2">
                                     <button
                                         type="button"
                                         onClick={() => setFiltro("todas")}
-                                        className={`cursor-pointer rounded-lg px-4 py-2 font-serif text-[12px] transition ${filtro === "todas"
-                                            ? "bg-[#58AAF0]/15 text-[#58AAF0]"
-                                            : "text-[#9aa6ba] hover:bg-[#141b29]"
-                                            }`}
+                                        className={`cursor-pointer rounded-lg px-4 py-2 text-xs transition ${
+                                            filtro === "todas"
+                                                ? "bg-[#202737] text-[#58AAF0]"
+                                                : "text-[#718096] hover:bg-[#202737] hover:text-[#E4EFFF]"
+                                        }`}
                                     >
                                         Todas
                                     </button>
@@ -299,10 +293,11 @@ export default function Notificacoes() {
                                     <button
                                         type="button"
                                         onClick={() => setFiltro("naoLidas")}
-                                        className={`cursor-pointer rounded-lg px-4 py-2 font-serif text-[12px] transition ${filtro === "naoLidas"
-                                            ? "bg-[#58AAF0]/15 text-[#58AAF0]"
-                                            : "text-[#9aa6ba] hover:bg-[#141b29]"
-                                            }`}
+                                        className={`cursor-pointer rounded-lg px-4 py-2 text-xs transition ${
+                                            filtro === "naoLidas"
+                                                ? "bg-[#202737] text-[#58AAF0]"
+                                                : "text-[#718096] hover:bg-[#202737] hover:text-[#E4EFFF]"
+                                        }`}
                                     >
                                         Não lidas
                                     </button>
@@ -312,9 +307,9 @@ export default function Notificacoes() {
                                     type="button"
                                     onClick={marcarTodasComoLidas}
                                     disabled={naoLidas === 0 || marcandoTodas}
-                                    className="inline-flex cursor-pointer items-center gap-2 rounded-lg px-2 py-2 font-serif text-[11px] text-[#58AAF0] transition hover:bg-[#58AAF0]/10 disabled:cursor-not-allowed disabled:opacity-40"
+                                    className="inline-flex text-[12px] cursor-pointer items-center gap-2 rounded-lg px-2 py-2 text-xs text-[#58AAF0] transition hover:bg-[#202737] disabled:cursor-not-allowed disabled:opacity-40"
                                 >
-                                    <CheckCheck size={15} />
+                                    <CheckIcon size={20} />
 
                                     {marcandoTodas
                                         ? "Atualizando..."
@@ -324,13 +319,13 @@ export default function Notificacoes() {
 
                             {/* Carregamento */}
                             {carregando ? (
-                                <div className="divide-y divide-[#252d38]">
+                                <div className="divide-y divide-[#252d3c]">
                                     {[1, 2, 3, 4].map((item) => (
                                         <div
                                             key={item}
                                             className="flex animate-pulse items-center gap-4 px-5 py-5"
                                         >
-                                            <div className="h-12 w-12 shrink-0 rounded-full bg-[#202737]" />
+                                            <div className="h-11 w-11 shrink-0 rounded-full bg-[#202737]" />
 
                                             <div className="flex-1 space-y-2">
                                                 <div className="h-3 w-3/4 rounded bg-[#202737]" />
@@ -351,29 +346,29 @@ export default function Notificacoes() {
                                         onClick={() =>
                                             setTentativa((valor) => valor + 1)
                                         }
-                                        className="mt-4 inline-flex cursor-pointer items-center gap-2 rounded-lg border border-[#354052] px-4 py-2 font-serif text-xs text-[#58AAF0] transition hover:bg-[#58AAF0]/10"
+                                        className="mt-4 inline-flex cursor-pointer items-center gap-2 rounded-lg border border-[#354052] px-4 py-2 text-xs text-[#58AAF0] transition hover:bg-[#202737]"
                                     >
-                                        <RefreshCw size={15} />
+                                        <ArrowClockwiseIcon size={16} />
                                         Tentar novamente
                                     </button>
                                 </div>
                             ) : notificacoesFiltradas.length === 0 ? (
                                 /* Lista vazia */
                                 <div className="flex flex-col items-center px-6 py-14 text-center">
-                                    <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-[#354052] bg-[#111827]">
-                                        <Bell
-                                            size={27}
-                                            className="text-[#697386]"
+                                    <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-[#354052] bg-[#202737]">
+                                        <BellIcon
+                                            size={28}
+                                            className="text-[#718096]"
                                         />
                                     </div>
 
-                                    <h2 className="font-serif text-base text-gray-100">
+                                    <h2 className="text-base font-medium text-[#E4EFFF]">
                                         {filtro === "naoLidas"
                                             ? "Tudo em dia"
                                             : "Nenhuma notificação por enquanto"}
                                     </h2>
 
-                                    <p className="mt-2 max-w-xs font-serif text-[13px] leading-5 text-[#697386]">
+                                    <p className="mt-2 max-w-xs text-[13px] leading-5 text-[#718096]">
                                         {filtro === "naoLidas"
                                             ? "Você já conferiu todas as suas notificações."
                                             : "Quando alguém curtir suas publicações, comentar ou seguir você, os avisos aparecerão aqui."}
@@ -381,14 +376,15 @@ export default function Notificacoes() {
                                 </div>
                             ) : (
                                 /* Notificações */
-                                <div className="divide-y divide-[#252d38]">
+                                <div className="divide-y divide-[#252d3c]">
                                     {notificacoesFiltradas.map((notificacao) => (
                                         <div
                                             key={notificacao.id}
-                                            className={`group flex items-start gap-3 px-4 py-4 transition-colors hover:bg-[#141b29] sm:gap-4 sm:px-5 ${!notificacao.lida
-                                                ? "bg-[#58AAF0]/[0.035]"
-                                                : ""
-                                                }`}
+                                            className={`group flex items-start gap-3 px-4 py-4 transition-colors hover:bg-[#202737]/50 sm:gap-4 sm:px-5 ${
+                                                !notificacao.lida
+                                                    ? "bg-[#58AAF0]/[0.035]"
+                                                    : ""
+                                            }`}
                                         >
                                             <button
                                                 type="button"
@@ -403,25 +399,25 @@ export default function Notificacoes() {
                                                     <img
                                                         src={notificacao.usuario.foto}
                                                         alt=""
-                                                        className="h-12 w-12 shrink-0 rounded-full border border-[#354052] object-cover"
+                                                        className="h-11 w-11 shrink-0 rounded-full border border-[#354052] object-cover"
                                                     />
                                                 ) : (
-                                                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-[#354052] bg-[#171e2c] text-[#58AAF0]">
+                                                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#354052] bg-[#202737] text-[#58AAF0]">
                                                         {iconeNotificacao(notificacao.tipo)}
                                                     </div>
                                                 )}
 
                                                 <div className="min-w-0 flex-1">
                                                     {/* Nome e ação */}
-                                                    <p className="break-words font-serif text-[13px] leading-5 text-gray-200">
-                                                        <span className="font-semibold text-white">
+                                                    <p className="break-words text-[14px] leading-5 text-[#d1d5db]">
+                                                        <span className="font-semibold text-[#E4EFFF]">
                                                             {notificacao.usuario?.nome ?? "Alguém"}
                                                         </span>{" "}
                                                         {notificacao.mensagem}
                                                     </p>
 
                                                     {notificacao.usuario?.username && (
-                                                        <p className="mt-0.5 font-serif text-[11px] text-[#697386]">
+                                                        <p className="mt-0.5 text-[12px] text-[#718096]">
                                                             @{notificacao.usuario.username}
                                                         </p>
                                                     )}
@@ -429,18 +425,16 @@ export default function Notificacoes() {
                                                     {/* Texto do comentário */}
                                                     {notificacao.tipo === "comentario" &&
                                                         notificacao.textoComentario && (
-                                                            <div className="mt-2 rounded-lg border-l-2 border-[#58AAF0] bg-[#111827] px-3 py-2">
-                                                                <p className="break-words font-serif text-xs leading-5 text-[#b8c3d5]">
-                                                                    “{notificacao.textoComentario}”
-                                                                </p>
-                                                            </div>
+                                                            <p className="mt-2 break-words text-sm leading-6 text-[#9ca8ba]">
+                                                                “{notificacao.textoComentario}”
+                                                            </p>
                                                         )}
 
-                                                    {/* Detalhes da publicação */}
+                                                    {/* Publicação relacionada */}
                                                     {notificacao.post && (
                                                         <div
-                                                            className="mt-3 rounded-xl border border-[#252d38] bg-[#111827] p-3"
-                                                            onClick={(e) => e.stopPropagation()}
+                                                            className="mt-3"
+                                                            onClick={(event) => event.stopPropagation()}
                                                         >
                                                             <PostCard
                                                                 postId={notificacao.post.id}
@@ -455,22 +449,16 @@ export default function Notificacoes() {
                                                                     notificacao.musicaId ??
                                                                     0
                                                                 }
-                                                                musicTitle={
-                                                                    notificacao.post.musica?.titulo ?? "Música"
-                                                                }
-                                                                artist={
-                                                                    notificacao.post.musica?.artista?.nome ?? ""
-                                                                }
+                                                                musicTitle={notificacao.post.musica?.titulo ?? "Música"}
+                                                                artist={notificacao.post.musica?.artista?.nome ?? ""}
                                                                 musicCover={notificacao.post.musica?.capa ?? null}
                                                                 modoNotificacao
                                                             />
                                                         </div>
                                                     )}
 
-
-
                                                     {/* Data */}
-                                                    <p className="mt-2 font-serif text-[11px] text-[#697386]">
+                                                    <p className="mt-2 text-[11px] text-[#718096]">
                                                         {tempoNotificacao(notificacao.criadaEm)}
                                                     </p>
                                                 </div>
@@ -489,14 +477,14 @@ export default function Notificacoes() {
                                                     <button
                                                         type="button"
                                                         onClick={() => {
-                                                            marcarComoLida(notificacao.id).catch(() => { });
+                                                            marcarComoLida(notificacao.id).catch(() => {});
                                                         }}
                                                         disabled={atualizando !== null}
                                                         title="Marcar como lida"
                                                         aria-label="Marcar como lida"
-                                                        className="cursor-pointer rounded-lg p-2 text-[#697386] transition hover:bg-[#58AAF0]/10 hover:text-[#58AAF0] disabled:cursor-not-allowed disabled:opacity-40"
+                                                        className="cursor-pointer rounded-lg p-2 text-[#718096] transition hover:bg-[#202737] hover:text-[#58AAF0] disabled:cursor-not-allowed disabled:opacity-40"
                                                     >
-                                                        <Check size={16} />
+                                                        <CheckIcon size={17} />
                                                     </button>
                                                 )}
                                             </div>
@@ -516,7 +504,7 @@ export default function Notificacoes() {
                     {/* Músicas recomendadas */}
                     <aside className="hidden min-w-0 xl:block">
                         <div className="fixed top-2/5 w-[340px] -translate-y-2/5">
-                            <h2 className="mb-5 font-serif text-[16px] text-white">
+                            <h2 className="mb-5 font-serif text-base text-[#E4EFFF]">
                                 Músicas recomendadas
                             </h2>
 

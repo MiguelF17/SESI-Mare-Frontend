@@ -9,7 +9,7 @@ export default function PageLayout({ children }: PageLayoutProps) {
     <div className="min-h-screen bg-[#080A10] text-white">
       <Sidebar />
 
-      <main className="ml-85 min-h-screen">
+      <main className="ml-0 md:ml-[340px] min-h-screen">
         {children}
       </main>
     </div>

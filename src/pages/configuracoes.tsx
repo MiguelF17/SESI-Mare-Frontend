@@ -2,15 +2,15 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Contrast,
-  Bell,
-  SlidersHorizontal,
-  ShieldCheck,
-  ScrollText,
-  LogOut,
-  ChevronRight,
-  Music2,
-} from "lucide-react";
+  CircleHalfIcon,
+  BellIcon,
+  SlidersHorizontalIcon,
+  ShieldCheckIcon,
+  FileTextIcon,
+  SignOutIcon,
+  CaretRightIcon,
+  MusicNotesIcon,
+} from "@phosphor-icons/react";
 
 import PageLayout from "../components/pageLayout";
 import PageContent from "../components/pageContent";
@@ -118,6 +118,9 @@ export default function Configuracoes() {
   const [salvandoGeneros, setSalvandoGeneros] = useState(false);
   const [erroGeneros, setErroGeneros] = useState("");
   const [sucessoGeneros, setSucessoGeneros] = useState("");
+  const [mostrarConfirmacaoSaida, setMostrarConfirmacaoSaida] =
+  useState(false);
+const [saindo, setSaindo] = useState(false);
 
   // Aplica e salva o tema escolhido.
   useEffect(() => {
@@ -291,6 +294,14 @@ export default function Configuracoes() {
   }
 
   function sairDaConta() {
+    setMostrarConfirmacaoSaida(true);
+  }
+
+  function confirmarSaida() {
+    if (saindo) return;
+
+    setSaindo(true);
+
     localStorage.removeItem("token");
     localStorage.removeItem("usuario");
     sessionStorage.removeItem("token");
@@ -331,7 +342,7 @@ export default function Configuracoes() {
                 <div className="flex flex-col gap-2">
                   {/* APARÊNCIA */}
                   <CaixaOpcao
-                    icone={<Contrast size={16} className="text-[#8992A5]" />}
+                    icone={<CircleHalfIcon size={16} className="text-[#8992A5]" />}
                     titulo="Aparência"
                   >
                     <select
@@ -355,15 +366,14 @@ export default function Configuracoes() {
                     aria-expanded={mostrarNotificacoes}
                     className="flex min-h-[42px] w-full cursor-pointer items-center gap-3 rounded-md border border-[#252D38] bg-[#10151F] px-4 text-left transition hover:border-[#3A73C4]"
                   >
-                    <Bell size={16} className="text-[#8992A5]" />
+                    <BellIcon size={16} className="text-[#8992A5]" />
                     <span className="flex-1 text-[12px] text-[#B8BECC]">
                       Notificações
                     </span>
-                    <ChevronRight
+                    <CaretRightIcon
                       size={14}
-                      className={`text-[#737C8E] transition-transform ${
-                        mostrarNotificacoes ? "rotate-90" : ""
-                      }`}
+                      className={`text-[#737C8E] transition-transform ${mostrarNotificacoes ? "rotate-90" : ""
+                        }`}
                     />
                   </button>
 
@@ -405,25 +415,24 @@ export default function Configuracoes() {
                     aria-expanded={mostrarGeneros}
                     className="flex min-h-[42px] w-full cursor-pointer items-center gap-3 rounded-md border border-[#252D38] bg-[#10151F] px-4 text-left transition hover:border-[#3A73C4]"
                   >
-                    <SlidersHorizontal
+                    <SlidersHorizontalIcon
                       size={16}
                       className="text-[#8992A5]"
                     />
                     <span className="flex-1 text-[12px] text-[#B8BECC]">
                       Preferências musicais
                     </span>
-                    <ChevronRight
+                    <CaretRightIcon
                       size={14}
-                      className={`text-[#737C8E] transition-transform ${
-                        mostrarGeneros ? "rotate-90" : ""
-                      }`}
+                      className={`text-[#737C8E] transition-transform ${mostrarGeneros ? "rotate-90" : ""
+                        }`}
                     />
                   </button>
 
                   {mostrarGeneros && (
                     <div className="rounded-md border border-[#252D38] bg-[#10151F] p-4">
                       <div className="mb-3 flex items-center gap-2">
-                        <Music2 size={16} className="text-[#58A9E8]" />
+                        <MusicNotesIcon size={16} className="text-[#58A9E8]" />
                         <p className="text-[12px] text-[#B8BECC]">
                           Quais gêneros você gosta?
                         </p>
@@ -448,11 +457,10 @@ export default function Configuracoes() {
                                 type="button"
                                 onClick={() => alternarGenero(genero)}
                                 aria-pressed={selecionado}
-                                className={`rounded-md cursor-pointer border px-3 py-1.5 text-[11px] transition ${
-                                  selecionado
+                                className={`rounded-md cursor-pointer border px-3 py-1.5 text-[11px] transition ${selecionado
                                     ? "border-[#3A73C4] bg-[#203A56] text-white"
                                     : "border-[#252D38] bg-[#080A10] text-[#8992A5] hover:border-[#3A73C4] hover:text-white"
-                                }`}
+                                  }`}
                               >
                                 {genero}
                               </button>
@@ -464,11 +472,10 @@ export default function Configuracoes() {
                       <p className="mt-3 text-[11px] text-[#697386]">
                         {generos.length === 0
                           ? "Nenhum gênero selecionado."
-                          : `${generos.length} ${
-                              generos.length === 1
-                                ? "gênero selecionado"
-                                : "gêneros selecionados"
-                            }`}
+                          : `${generos.length} ${generos.length === 1
+                            ? "gênero selecionado"
+                            : "gêneros selecionados"
+                          }`}
                       </p>
 
                       {erroGeneros && (
@@ -518,11 +525,11 @@ export default function Configuracoes() {
                     onClick={() => navigate("/termos")}
                     className="flex min-h-[42px] w-full items-center gap-3 rounded-md border border-[#252D38] bg-[#10151F] px-4 text-left transition hover:border-[#3A73C4]"
                   >
-                    <ShieldCheck size={16} className="text-[#8992A5]" />
+                    <ShieldCheckIcon size={16} className="text-[#8992A5]" />
                     <span className="flex-1 cursor-pointer text-[12px] text-[#B8BECC]">
                       Termos de uso
                     </span>
-                    <ChevronRight size={14} className="text-[#737C8E]" />
+                    <CaretRightIcon size={14} className="text-[#737C8E]" />
                   </button>
 
                   <button
@@ -530,11 +537,11 @@ export default function Configuracoes() {
                     onClick={() => navigate("/privacidade")}
                     className="flex min-h-[42px] cursor-pointer w-full items-center gap-3 rounded-md border border-[#252D38] bg-[#10151F] px-4 text-left transition hover:border-[#3A73C4]"
                   >
-                    <ScrollText size={16} className="text-[#8992A5]" />
+                    <FileTextIcon size={16} className="text-[#8992A5]" />
                     <span className="flex-1 text-[12px] text-[#B8BECC]">
                       Privacidade
                     </span>
-                    <ChevronRight size={14} className="text-[#737C8E]" />
+                    <CaretRightIcon size={14} className="text-[#737C8E]" />
                   </button>
                 </div>
               </section>
@@ -550,7 +557,7 @@ export default function Configuracoes() {
                   onClick={sairDaConta}
                   className="flex min-h-[42px] w-full cursor-pointer items-center gap-3 rounded-md border border-[#6B2632] bg-[#160D12] px-4 text-left transition hover:border-[#E5484D]"
                 >
-                  <LogOut size={16} className="text-[#C94B55]" />
+                  <SignOutIcon size={16} className="text-[#C94B55]" />
                   <span className="text-[12px] text-[#C94B55]">
                     Sair da conta
                   </span>
@@ -573,6 +580,55 @@ export default function Configuracoes() {
           </aside>
         </div>
       </PageContent>
+
+            {/* Confirmação para sair da conta */}
+      {mostrarConfirmacaoSaida && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="titulo-sair"
+            className="w-full max-w-sm rounded-2xl border border-[#354052] bg-[#111420] p-5 shadow-2xl shadow-black/40"
+          >
+            <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-full bg-red-500/10 text-red-400">
+              <SignOutIcon size={22} />
+            </div>
+
+            <h2
+              id="titulo-sair"
+              className="text-base font-semibold text-white"
+            >
+              Sair da conta?
+            </h2>
+
+            <p className="mt-2 text-sm leading-6 text-[#9ca3af]">
+              Você precisará entrar novamente para acessar sua conta. Deseja
+              continuar?
+            </p>
+
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setMostrarConfirmacaoSaida(false)}
+                disabled={saindo}
+                className="cursor-pointer rounded-lg border border-[#354052] px-4 py-2.5 text-sm text-[#d1d5db] transition hover:bg-white/5 disabled:opacity-50"
+              >
+                Cancelar
+              </button>
+
+              <button
+                type="button"
+                onClick={confirmarSaida}
+                disabled={saindo}
+                className="cursor-pointer rounded-lg bg-red-500 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {saindo ? "Saindo..." : "Sair da conta"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
     </PageLayout>
   );
 }

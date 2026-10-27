@@ -1,149 +1,182 @@
-import logo from "../assets/logoSidebar.png";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import {
   HouseLineIcon,
   PlaylistIcon,
+  PlaylistIcon as PlaylistFilledIcon,
   BookmarkSimpleIcon,
+  BookmarkSimpleIcon as BookmarkFilledIcon,
   UserIcon,
+  UserCircleIcon,
   GearIcon,
+  GearIcon as GearFilledIcon,
   BellIcon,
+  BellRingingIcon,
 } from "@phosphor-icons/react";
-import { useMeuPerfil } from "../hooks/useMeuPerfil";
 
-interface Usuario {
-  id: number;
-  username: string;
-  nome: string;
-  email: string;
-  foto: string | null;
-}
+import logo from "../assets/logoSidebar.png";
+import { useMeuPerfil } from "../hooks/useMeuPerfil";
+import { apiRequest } from "../api";
+
 export default function Sidebar() {
   const { usuario } = useMeuPerfil();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  function handleLogout() {
-    localStorage.removeItem("token");
-    localStorage.removeItem("usuario");
-    sessionStorage.removeItem("user");
-    sessionStorage.removeItem("token");
+  const [naoLidas, setNaoLidas] = useState(0);
 
-    navigate("/login");
-  }
+  useEffect(() => {
+    async function buscarNotificacoes() {
+      try {
+        const notificacoes = await apiRequest<{ lida: boolean }[]>(
+          "/notificacoes"
+        );
 
-  function Post() {
+        setNaoLidas(
+          notificacoes.filter((notificacao) => !notificacao.lida).length
+        );
+      } catch (error) {
+        console.error("Erro ao buscar notificações:", error);
+      }
+    }
+
+    buscarNotificacoes();
+  }, []);
+
+  function handlePost() {
     navigate("/criarpost");
   }
 
+  function linkAtivo(caminho: string) {
+    return location.pathname === caminho;
+  }
+
+  const estiloLink = (ativo: boolean) =>
+    `flex items-center gap-4 px-6 py-5 transition ${
+      ativo
+        ? "text-[#72B8F5] font-medium"
+        : "text-white hover:bg-white/5"
+    }`;
+
   return (
     <aside
-      className="w-85 h-screen bg-[#111420] border-r border-[#354052] text-white flex flex-col justify-between fixed top-0 left-0 z-50"
+      className="fixed left-0 top-0 z-50 flex h-dvh w-[340px] max-w-[85vw] flex-col border-r border-[#354052] bg-[#111420] text-white"
       style={{ fontFamily: "Inter, sans-serif", fontWeight: 300 }}
     >
-      {/* TOPO */}
-      <div>
+      <div className="min-h-0 flex-1 overflow-y-auto">
         {/* Logo */}
-        <div className="p-6  flex items-center gap-2 cursor-pointer">
-          <Link to="/" className="flex items-center">
-            <img src={logo} className="h-16" />
+        <div className="flex items-center gap-2 px-6 py-4">
+          <Link to="/">
+            <img src={logo} alt="Maré" className="h-12 max-h-14 w-auto" />
           </Link>
         </div>
 
-        {/* MENU */}
-        <nav className="mt-4 flex flex-col">
-          <div className="px-8 mb-6 flex items-center gap-2 cursor-default">
-            <div className="flex h-[80px] w-[80px] shrink-0 items-center justify-center rounded-full bg-[#1a2130]">
-              {usuario?.foto ? (
-                <img
-                  src={usuario.foto}
-                  alt={usuario.nome}
-                  className="rounded-full object-cover"
-                />
-              ) : (
-                <div className="flex h-full w-full items-center justify-center">
-                  <UserIcon size={34} className="text-gray-400" />
-                </div>
-              )}
-            </div>
-
-            <div>
-              <p className="text-white text-[16px]"> {usuario?.nome || "Usuário"}</p>
-
-              <p className="text-[#697386] text-[12px]">@{usuario?.username}</p>
-            </div>
+        {/* Usuário */}
+        <div className="mb-6 flex items-center gap-3 px-6">
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#1a2130]">
+            {usuario?.foto ? (
+              <img
+                src={usuario.foto}
+                alt={usuario.nome}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <UserIcon size={30} className="text-gray-400" />
+            )}
           </div>
 
-          <hr className="border-r border-[#354052]" />
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-[15px] text-white">
+              {usuario?.nome || "Usuário"}
+            </p>
+            <p className="truncate text-[12px] text-[#697386]">
+              @{usuario?.username || ""}
+            </p>
+          </div>
+        </div>
 
-          <Link
-            to="/home"
-            className="flex items-center gap-4 px-8 py-6 hover:bg-white/5 transition"
-          >
-            <HouseLineIcon size={20} />
+        <hr className="border-[#354052]" />
+
+        {/* Menu */}
+        <nav className="flex flex-col py-2">
+          <Link to="/home" className={estiloLink(linkAtivo("/home"))}>
+            {linkAtivo("/home") ? (
+              <HouseLineIcon size={22} weight="fill" />
+            ) : (
+              <HouseLineIcon size={22} />
+            )}
             Início
           </Link>
 
           <Link
             to="/explorar"
-            className="flex items-center gap-4 px-8 py-6 hover:bg-white/5 transition"
+            className={estiloLink(linkAtivo("/explorar"))}
           >
-            <PlaylistIcon size={20} />
+            <PlaylistIcon
+              size={22}
+            />
             Explorar
           </Link>
 
           <Link
             to="/notificacoes"
-            className="flex items-center gap-4 px-8 py-6 hover:bg-white/5 transition"
+            className={estiloLink(linkAtivo("/notificacoes"))}
           >
-            <BellIcon size={20} />
-            Notificações
+            <BellIcon
+              size={22}
+              weight={linkAtivo("/notificacoes") ? "fill" : "regular"}
+            />
+            <span className="flex-1">Notificações</span>
+
+            {naoLidas > 0 && (
+              <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#58AAF0] px-1.5 text-[11px] text-white">
+                {naoLidas > 99 ? "99+" : naoLidas}
+              </span>
+            )}
           </Link>
 
-          <Link
-            to="/salvos"
-            className="flex items-center gap-4 px-8 py-6 hover:bg-white/5 transition"
-          >
-            <BookmarkSimpleIcon size={20} />
+          <Link to="/salvos" className={estiloLink(linkAtivo("/salvos"))}>
+            <BookmarkSimpleIcon
+              size={22}
+              weight={linkAtivo("/salvos") ? "fill" : "regular"}
+            />
             Salvos
           </Link>
 
-          <Link
-            to="/perfil"
-            className="flex items-center gap-4 px-8 py-6 hover:bg-white/5 transition"
-          >
-            <UserIcon size={20} />
+          <Link to="/perfil" className={estiloLink(linkAtivo("/perfil"))}>
+            <UserIcon
+              size={22}
+              weight={linkAtivo("/perfil") ? "fill" : "regular"}
+            />
             Perfil
           </Link>
         </nav>
 
-        {/* Post */}
-        <div className="px-8 my-6">
+        {/* Criar publicação */}
+        <div className="px-6 py-4">
           <button
-            onClick={Post}
-            className="
-      w-full
-      bg-[#58AAF0]
-      text-white
-      py-3
-      rounded-lg
-      hover:bg-[#4a8bc2]
-      transition
-      cursor-pointer
-      font-medium
-    "
+            onClick={handlePost}
+            className="w-full cursor-pointer rounded-lg bg-[#58AAF0] py-3 font-medium text-white transition hover:bg-[#4a8bc2]"
           >
             Post
           </button>
         </div>
       </div>
 
-      <Link
-        to="/configuracoes"
-        className="flex gap-4 px-8 py-6 cursor-pointer  hover:bg-white/5 transition"
-      >
-        <GearIcon size={20} />
-        Configurações
-      </Link>
+      {/* Configurações */}
+      <div className="shrink-0 border-t border-[#354052]">
+        <Link
+          to="/configuracoes"
+          className={estiloLink(linkAtivo("/configuracoes"))}
+        >
+          <GearIcon
+            size={22}
+            weight={linkAtivo("/configuracoes") ? "fill" : "regular"}
+          />
+          Configurações
+        </Link>
+      </div>
     </aside>
   );
 }
