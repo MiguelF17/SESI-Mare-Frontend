@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Check } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useAuth } from "../hooks/useAuth";
 
@@ -22,24 +22,61 @@ function Cadastro() {
   const [mostrarConfirmarSenha, setMostrarConfirmarSenha] =
     useState(false);
 
+  const requisitosSenha = [
+    {
+      texto: "Pelo menos 8 caracteres",
+      valido: formData.senha.length >= 8,
+    },
+    {
+      texto: "Uma letra maiúscula",
+      valido: /[A-Z]/.test(formData.senha),
+    },
+    {
+      texto: "Uma letra minúscula",
+      valido: /[a-z]/.test(formData.senha),
+    },
+    {
+      texto: "Um número",
+      valido: /[0-9]/.test(formData.senha),
+    },
+    {
+      texto: "Um caractere especial",
+      valido: /[^A-Za-z0-9]/.test(formData.senha),
+    },
+  ];
+
+  const senhaValida = requisitosSenha.every(
+    (requisito) => requisito.valido
+  );
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: name === "username"
+        ? value.toLowerCase()
+        : value,
+    }));
   };
+
 
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement>
   ) => {
     e.preventDefault();
 
+    if (!senhaValida) {
+      toast.error("Sua senha não atende a todos os requisitos.");
+      return;
+    }
+
     try {
       await cadastrar(formData);
 
-      toast.success("Conta criada com sucesso!");
+      toast.success("Cadastro realizado! Verifique seu e-mail para confirmar a conta.");
 
       setFormData({
         username: "",
@@ -48,9 +85,11 @@ function Cadastro() {
         confirmarSenha: "",
       });
 
-      setTimeout(() => {
-        navigate("/login");
-      }, 1000);
+      navigate("/login", {
+        state: {
+          mensagem: "Enviamos um link de confirmação para seu e-mail. Verifique sua caixa de entrada.",
+        },
+      });
     } catch (error) {
       console.error("Erro ao cadastrar:", error);
 
@@ -65,17 +104,20 @@ function Cadastro() {
   return (
     <main
       className="
-        h-screen
-        w-full
-        flex
-        items-center
-        justify-end
-        relative
-        overflow-hidden
-        px-6
-        lg:px-20
-        bg-[#080A10]
-    "
+  min-h-screen
+  w-full
+  flex
+  items-center
+  justify-center
+  lg:justify-end
+  relative
+  overflow-x-hidden
+  px-4
+  py-4
+  sm:px-6
+  lg:px-20
+  bg-[#080A10]
+"
       style={{
         fontFamily: "Inter, sans-serif",
       }}
@@ -120,32 +162,34 @@ function Cadastro() {
       {/* CAIXA DE CADASTRO */}
       <div
         className="
-                    relative
-                    z-10
-                    w-full
-                    max-w-[420px]
-                    mr-0
-                    lg:mr-[5%]
-                    
-                "
+  relative
+  z-10
+  w-full
+  max-w-[420px]
+  mx-auto
+  lg:mx-0
+  lg:mr-[5%]
+"
       >
 
         {/* CARD */}
         <div
           className="
-        bg-[#111A25]/95
-        backdrop-blur-md
-        border
-        border-[#354052]
-        rounded-2xl
-        shadow-2xl
-        px-8
-        py-6
-    "
+  w-full
+  bg-[#111A25]/95
+  backdrop-blur-md
+  border
+  border-[#354052]
+  rounded-2xl
+  shadow-2xl
+  px-5
+  py-4
+  sm:px-7
+"
         >
 
           {/* CABEÇALHO */}
-          <div className="text-center mb-5">
+          <div className="text-center mb-3">
             <h1
               className="
             text-3xl
@@ -172,7 +216,7 @@ function Cadastro() {
             onSubmit={handleSubmit}
             className="
                             w-full
-                            space-y-4
+                            space-y-3
                         "
           >
 
@@ -346,6 +390,29 @@ function Cadastro() {
               </div>
 
             </div>
+
+              {formData.senha.length > 0 && (
+                <div className="grid grid-cols-2 gap-x-2 gap-y-1">
+                  {requisitosSenha.map((requisito) => (
+                    <div
+                      key={requisito.texto}
+                      className={`flex items-center gap-1.5 text-[11px] transition-colors ${requisito.valido
+                          ? "text-[#58AAF0]"
+                          : "text-[#718096]"
+                        }`}
+                    >
+                      <Check
+                        size={12}
+                        className={
+                          requisito.valido ? "opacity-100" : "opacity-30"
+                        }
+                      />
+
+                      <span>{requisito.texto}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
 
             {/* CONFIRMAR SENHA */}
             <div className="space-y-2">

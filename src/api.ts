@@ -1,7 +1,18 @@
-export const API_URL = "http://192.168.15.8:3000";
+
+export const API_URL = "http://192.168.15.11:3000";
 
 interface ApiRequestOptions extends RequestInit {
   token?: string | null;
+}
+
+export class ApiError extends Error {
+  code?: string;
+
+  constructor(message: string, code?: string) {
+    super(message);
+    this.name = "ApiError";
+    this.code = code;
+  }
 }
 
 export async function apiRequest<T = unknown>(
@@ -16,12 +27,10 @@ export async function apiRequest<T = unknown>(
 
   const headers = new Headers(headersOriginais);
 
-  // Adiciona o token quando disponível.
   if (token) {
     headers.set("Authorization", `Bearer ${token}`);
   }
 
-  // Define JSON como padrão, exceto quando o corpo for FormData.
   if (
     opcoesFetch.body &&
     !(opcoesFetch.body instanceof FormData) &&
@@ -35,7 +44,6 @@ export async function apiRequest<T = unknown>(
     headers,
   });
 
-  // Algumas rotas podem não retornar conteúdo.
   if (resposta.status === 204) {
     return undefined as T;
   }
@@ -48,17 +56,23 @@ export async function apiRequest<T = unknown>(
 
   if (!resposta.ok) {
     let mensagem = "Ocorreu um erro na requisição.";
+    let codigo: string | undefined;
 
     if (dados && typeof dados === "object") {
       const erro = dados as Record<string, unknown>;
+
       mensagem = String(
         erro.error ?? erro.erro ?? erro.message ?? mensagem
       );
+
+      if (typeof erro.code === "string") {
+        codigo = erro.code;
+      }
     } else if (typeof dados === "string" && dados.trim()) {
       mensagem = dados;
     }
 
-    throw new Error(mensagem);
+    throw new ApiError(mensagem, codigo);
   }
 
   return dados as T;

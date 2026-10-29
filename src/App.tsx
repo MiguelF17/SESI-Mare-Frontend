@@ -22,6 +22,7 @@ import Filtrar from "./pages/filtrar";
 import PerfilPublico from "./pages/perfilPublico";
 import ListaSeguidores from "./pages/listaSeguidores";
 import Notificacoes from "./pages/notificacoes";
+import VerificarEmail from "./pages/verificarEmail";
 
 function App() {
   return (
@@ -41,6 +42,7 @@ function App() {
         {/* Páginas públicas */}
         <Route path="/contato" element={<Contato />} />
         <Route path="/faq" element={<Faq />} />
+        <Route path="/verificar-email" element={<VerificarEmail />}/>
 
 
         <Route element={<ProtectedRoute />}>

@@ -45,9 +45,16 @@ export function useAuth() {
       throw new Error("As senhas não são iguais.");
     }
 
-    if (dados.senha.length < 6) {
+    const senhaValida =
+      dados.senha.length >= 8 &&
+      /[A-Z]/.test(dados.senha) &&
+      /[a-z]/.test(dados.senha) &&
+      /[0-9]/.test(dados.senha) &&
+      /[^A-Za-z0-9]/.test(dados.senha);
+
+    if (!senhaValida) {
       throw new Error(
-        "A senha deve ter pelo menos 6 caracteres."
+        "A senha não atende a todos os requisitos."
       );
     }
 

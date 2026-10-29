@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import fundoLogin from "../assets/fundoLogin.png";
 import logo from "../assets/mare.png";
 import toast from "react-hot-toast";
 import { useAuth } from "../hooks/useAuth";
+import { ApiError } from "../api";
+import { reenviarVerificacao } from "../services/authService";
 
 function Login() {
   const navigate = useNavigate();
@@ -12,6 +14,36 @@ function Login() {
   const [login, setLogin] = useState("");
   const [senha, setSenha] = useState("");
   const [mostrarSenha, setMostrarSenha] = useState(false);
+  const location = useLocation();
+  const [emailNaoVerificado, setEmailNaoVerificado] = useState(false);
+  const [reenviando, setReenviando] = useState(false);
+
+  const mensagemCadastro = location.state?.mensagem;
+
+  const handleReenviarVerificacao = async () => {
+    if (!login.trim()) {
+      toast.error("Informe seu e-mail ou username.");
+      return;
+    }
+
+    try {
+      setReenviando(true);
+
+      const resposta = await reenviarVerificacao(
+        login.trim().toLowerCase()
+      );
+
+      toast.success(resposta.message);
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Não foi possível reenviar o e-mail."
+      );
+    } finally {
+      setReenviando(false);
+    }
+  };
 
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement>
@@ -19,7 +51,7 @@ function Login() {
     e.preventDefault();
 
     try {
-      const usuario = await entrar(login.trim(), senha);
+      const usuario = await entrar(login.trim().toLowerCase(), senha);
 
       toast.success("Login realizado com sucesso!");
 
@@ -29,6 +61,15 @@ function Login() {
     } catch (error) {
       console.error("Erro ao fazer login:", error);
 
+      if (
+        error instanceof ApiError &&
+        error.code === "EMAIL_NAO_VERIFICADO"
+      ) {
+        setEmailNaoVerificado(true);
+        toast.error("Confirme seu e-mail antes de entrar.");
+        return;
+      }
+
       toast.error(
         error instanceof Error
           ? error.message
@@ -37,20 +78,24 @@ function Login() {
     }
   };
 
+
   return (
     <main
       className="
-                min-h-screen
-                w-full
-                flex
-                items-center
-                justify-end
-                relative
-                overflow-hidden
-                px-6
-                lg:px-20
-                bg-[#080A10]
-            "
+  min-h-screen
+  w-full
+  flex
+  items-center
+  justify-center
+  lg:justify-end
+  relative
+  overflow-x-hidden
+  px-4
+  py-24
+  sm:px-6
+  lg:px-20
+  bg-[#080A10]
+"
       style={{
         fontFamily: "Inter, sans-serif",
       }}
@@ -97,25 +142,28 @@ function Login() {
 
       <div
         className="
-                    relative
-                    z-10
-                    w-full
-                    max-w-[420px]
-                    mr-0
-                    lg:mr-[5%]
-                "
+  relative
+  z-10
+  w-full
+  max-w-[420px]
+  mx-auto
+  lg:mx-0
+  lg:mr-[5%]
+"
       >
         <div
           className="
-                        bg-[#111A25]/95
-                        backdrop-blur-md
-                        border
-                        border-[#354052]
-                        rounded-2xl
-                        shadow-2xl
-                        px-8
-                        py-6
-                    "
+  w-full
+  bg-[#111A25]/95
+  backdrop-blur-md
+  border
+  border-[#354052]
+  rounded-2xl
+  shadow-2xl
+  px-5
+  py-6
+  sm:px-8
+"
         >
           {/* CABEÇALHO */}
 
@@ -140,6 +188,12 @@ function Login() {
               Bem-vindo de volta à Maré.
             </p>
           </div>
+
+          {mensagemCadastro && (
+            <div className="mb-4 rounded-lg border border-[#58AAF0]/30 bg-[#58AAF0]/10 py-3 px-2 text-sm text-[#A9D8FF]">
+              {mensagemCadastro}
+            </div>
+          )}
 
           {/* FORMULÁRIO */}
 
@@ -170,7 +224,10 @@ function Login() {
                 type="text"
                 required
                 value={login}
-                onChange={(e) => setLogin(e.target.value)}
+                onChange={(e) => {
+                  setLogin(e.target.value.toLowerCase());
+                  setEmailNaoVerificado(false);
+                }}
                 placeholder="Digite seu e-mail ou usuário"
                 className="
                                     w-full
@@ -288,6 +345,34 @@ function Login() {
             >
               {carregando ? "Entrando..." : "Entrar"}
             </button>
+
+            {emailNaoVerificado && (
+              <div className="text-center space-y-2">
+                <p className="text-sm text-[#B8C7D9]">
+                  Seu e-mail ainda não foi confirmado.
+                </p>
+
+                <button
+                  type="button"
+                  onClick={handleReenviarVerificacao}
+                  disabled={reenviando || !login.trim()}
+                  className="
+        text-sm
+        text-[#58AAF0]
+        hover:text-[#7BC3FF]
+        hover:underline
+        transition
+        cursor-pointer
+        disabled:opacity-50
+        disabled:cursor-not-allowed
+      "
+                >
+                  {reenviando
+                    ? "Enviando e-mail..."
+                    : "Reenviar e-mail de verificação"}
+                </button>
+              </div>
+            )}
 
             {/* CADASTRO */}
 

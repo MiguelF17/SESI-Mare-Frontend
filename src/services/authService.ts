@@ -1,3 +1,4 @@
+
 import { apiRequest } from "../api";
 
 export interface UsuarioAutenticado {
@@ -21,9 +22,21 @@ interface DadosCadastro {
 }
 
 interface RespostaCadastro {
-  id: number;
-  username: string;
-  email: string;
+  message: string;
+  usuario: {
+    id: number;
+    nome: string;
+    username: string;
+    email: string;
+  };
+}
+
+interface RespostaVerificacao {
+  message: string;
+}
+
+interface RespostaReenvio {
+  message: string;
 }
 
 export async function loginUsuario(
@@ -45,4 +58,27 @@ export async function cadastrarUsuario(
     token: null,
     body: JSON.stringify(dados),
   });
+}
+
+export async function verificarEmail(
+  token: string
+): Promise<RespostaVerificacao> {
+  return apiRequest<RespostaVerificacao>("/usuarios/verificar-email", {
+    method: "POST",
+    token: null,
+    body: JSON.stringify({ token }),
+  });
+}
+
+export async function reenviarVerificacao(
+  login: string
+): Promise<RespostaReenvio> {
+  return apiRequest<RespostaReenvio>(
+    "/usuarios/reenviar-verificacao",
+    {
+      method: "POST",
+      token: null,
+      body: JSON.stringify({ login }),
+    }
+  );
 }
