@@ -17,7 +17,6 @@ import calcularTempo from "../calcularTempo";
 import {
   editarPost,
   excluirPost,
-  denunciarPost,
 } from "../services/postService";
 import { buscarMeuPerfil } from "../services/usuarioService";
 import toast from "react-hot-toast";
