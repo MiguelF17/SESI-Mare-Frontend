@@ -59,7 +59,7 @@ export default function Sidebar() {
       className="fixed left-0 top-0 z-50 flex h-dvh w-[340px] max-w-[85vw] flex-col border-r border-[#354052] bg-[#111420] text-white"
       style={{ fontFamily: "Inter, sans-serif", fontWeight: 300 }}
     >
-      <div className="min-h-0 flex-1 overflow-y-auto">
+      <div className="min-h-0 flex-1 overflow-hidden">
         {/* Logo */}
         <div className="flex items-center gap-2 px-6 py-4">
           <Link to="/">
