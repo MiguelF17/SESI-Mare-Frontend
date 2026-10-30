@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
-import fundoLogin from "../assets/fundoLogin.png";
+import fundoLogin from "../assets/fundoLogin.jpg";
 import logo from "../assets/logomare.png";
 import toast from "react-hot-toast";
 import { useAuth } from "../hooks/useAuth";
@@ -94,7 +94,7 @@ function Login() {
   py-24
   sm:px-6
   lg:px-20
-  bg-[#080A10]
+  bg-[var(--cor-fundo)]
 "
       style={{
         fontFamily: "Inter, sans-serif",
@@ -157,7 +157,7 @@ function Login() {
   bg-[#111A25]/95
   backdrop-blur-md
   border
-  border-[#354052]
+  border-[var(--cor-borda)]
   rounded-2xl
   shadow-2xl
   px-5
@@ -172,7 +172,7 @@ function Login() {
               className="
                                 text-3xl
                                 font-bold
-                                text-[#E4EFFF]
+                                text-[var(--cor-texto-destaque)]
                             "
             >
               Login
@@ -190,7 +190,7 @@ function Login() {
           </div>
 
           {mensagemCadastro && (
-            <div className="mb-4 rounded-lg border border-[#58AAF0]/30 bg-[#58AAF0]/10 py-3 px-2 text-sm text-[#A9D8FF]">
+            <div className="mb-4 rounded-lg border border-[var(--cor-destaque)]/30 bg-[var(--cor-destaque)]/10 py-3 px-2 text-sm text-[#A9D8FF]">
               {mensagemCadastro}
             </div>
           )}
@@ -213,7 +213,7 @@ function Login() {
                                     block
                                     text-sm
                                     font-medium
-                                    text-[#E4EFFF]
+                                    text-[var(--cor-texto-destaque)]
                                 "
               >
                 E-mail ou usuário
@@ -234,17 +234,17 @@ function Login() {
                                     px-4
                                     py-3
                                     rounded-lg
-                                    bg-[#080A10]
+                                    bg-[var(--cor-fundo)]
                                     border
-                                    border-[#354052]
-                                    text-[#E4EFFF]
+                                    border-[var(--cor-borda)]
+                                    text-[var(--cor-texto-destaque)]
                                     placeholder-[#68788C]
                                     outline-none
                                     transition
                                     duration-200
-                                    focus:border-[#58AAF0]
+                                    focus:border-[var(--cor-destaque)]
                                     focus:ring-1
-                                    focus:ring-[#58AAF0]
+                                    focus:ring-[var(--cor-destaque)]
                                 "
               />
             </div>
@@ -258,7 +258,7 @@ function Login() {
                                     block
                                     text-sm
                                     font-medium
-                                    text-[#E4EFFF]
+                                    text-[var(--cor-texto-destaque)]
                                 "
               >
                 Senha
@@ -278,17 +278,17 @@ function Login() {
                                         py-3
                                         pr-12
                                         rounded-lg
-                                        bg-[#080A10]
+                                        bg-[var(--cor-fundo)]
                                         border
-                                        border-[#354052]
-                                        text-[#E4EFFF]
+                                        border-[var(--cor-borda)]
+                                        text-[var(--cor-texto-destaque)]
                                         placeholder-[#68788C]
                                         outline-none
                                         transition
                                         duration-200
-                                        focus:border-[#58AAF0]
+                                        focus:border-[var(--cor-destaque)]
                                         focus:ring-1
-                                        focus:ring-[#58AAF0]
+                                        focus:ring-[var(--cor-destaque)]
                                     "
                 />
 
@@ -301,7 +301,7 @@ function Login() {
                                         top-1/2
                                         -translate-y-1/2
                                         text-[#8FA1B5]
-                                        hover:text-[#58AAF0]
+                                        hover:text-[var(--cor-destaque)]
                                         transition
                                         cursor-pointer
                                     "
@@ -319,7 +319,7 @@ function Login() {
                 to="/recuperar-senha"
                 className="
                                     text-xs
-                                    text-[#58AAF0]
+                                    text-[var(--cor-destaque)]
                                     hover:text-[#7BC3FF]
                                     hover:underline
                                     transition
@@ -336,7 +336,7 @@ function Login() {
               disabled={carregando}
               className="
     w-full h-12
-    bg-[#58AAF0] hover:bg-[#3F95D8]
+    bg-[var(--cor-destaque)] hover:bg-[#3F95D8]
     text-[#080D14] font-semibold
     rounded-lg transition duration-200
     cursor-pointer disabled:opacity-60
@@ -358,7 +358,7 @@ function Login() {
                   disabled={reenviando || !login.trim()}
                   className="
         text-sm
-        text-[#58AAF0]
+        text-[var(--cor-destaque)]
         hover:text-[#7BC3FF]
         hover:underline
         transition
@@ -388,7 +388,7 @@ function Login() {
               <Link
                 to="/cadastro"
                 className="
-                                    text-[#58AAF0]
+                                    text-[var(--cor-destaque)]
                                     hover:text-[#7BC3FF]
                                     hover:underline
                                     ml-1

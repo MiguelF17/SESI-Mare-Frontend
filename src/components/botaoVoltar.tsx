@@ -28,7 +28,7 @@ export default function BotaoVoltar({
       onClick={voltar}
       aria-label={label}
       title={label}
-      className={`flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full text-[#d1d5db] transition-colors hover:bg-[#202536] hover:text-white ${className}`}
+      className={`flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full text-[#d1d5db] transition-colors hover:bg-[var(--cor-superficie-menu)] hover:text-[var(--cor-texto-principal)] ${className}`}
     >
       <ArrowLeftIcon size={22} weight="bold" />
     </button>

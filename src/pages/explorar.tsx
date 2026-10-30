@@ -147,7 +147,7 @@ function Carrossel({ children }: { children: ReactNode }) {
           type="button"
           aria-label="Voltar itens"
           onClick={() => mover(-1)}
-          className="absolute -left-4 top-1/2 z-20 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-[#354052] bg-[#111420]/95 text-white shadow-lg hover:bg-[#273349] group-hover/carrossel:flex"
+          className="absolute -left-4 top-1/2 z-20 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-[var(--cor-borda)] bg-[var(--cor-superficie)]/95 text-[var(--cor-texto-principal)] shadow-lg hover:bg-[var(--cor-superficie-borda)] group-hover/carrossel:flex"
         >
           <CaretLeftIcon size={20} weight="bold" />
         </button>
@@ -182,7 +182,7 @@ function Carrossel({ children }: { children: ReactNode }) {
           type="button"
           aria-label="Avançar itens"
           onClick={() => mover(1)}
-          className="absolute -right-4 top-1/2 z-20 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-[#354052] bg-[#111420]/95 text-white shadow-lg hover:bg-[#273349] group-hover/carrossel:flex"
+          className="absolute -right-4 top-1/2 z-20 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-[var(--cor-borda)] bg-[var(--cor-superficie)]/95 text-[var(--cor-texto-principal)] shadow-lg hover:bg-[var(--cor-superficie-borda)] group-hover/carrossel:flex"
         >
           <CaretRightIcon size={20} weight="bold" />
         </button>
@@ -212,18 +212,26 @@ export default function Explorar() {
 
     async function buscarDados() {
       try {
-        const [dadosMusicas, dadosArtistas] = await Promise.all([
+        const token = localStorage.getItem("token");
+        const [
+          dadosMusicas,
+          dadosArtistas,
+          dadosPosts,
+          resultadosFavoritos,
+        ] = await Promise.all([
           buscarMusicas(),
           buscarArtistas(),
+          buscarPosts().catch((erroPosts) => {
+            console.error("Erro ao buscar posts:", erroPosts);
+            return [] as Awaited<ReturnType<typeof buscarPosts>>;
+          }),
+          token
+            ? Promise.allSettled([
+                buscarGenerosFavoritos(),
+                apiRequest<ArtistaFavorito[]>("/usuarios/me/artistas"),
+              ])
+            : Promise.resolve(null),
         ]);
-
-        let dadosPosts: Awaited<ReturnType<typeof buscarPosts>> = [];
-
-        try {
-          dadosPosts = await buscarPosts();
-        } catch (erroPosts) {
-          console.error("Erro ao buscar posts:", erroPosts);
-        }
 
         const quantidadePosts = new Map<number, number>();
 
@@ -248,27 +256,22 @@ export default function Explorar() {
         let generos: string[] = [];
         let artistasFav: ArtistaFavorito[] = [];
 
-        if (localStorage.getItem("token")) {
-          const resultados = await Promise.allSettled([
-            buscarGenerosFavoritos(),
-            apiRequest<ArtistaFavorito[]>("/usuarios/me/artistas"),
-          ]);
-
-          if (resultados[0].status === "fulfilled") {
-            generos = resultados[0].value;
+        if (resultadosFavoritos) {
+          if (resultadosFavoritos[0].status === "fulfilled") {
+            generos = resultadosFavoritos[0].value;
           } else {
             console.error(
               "Erro ao buscar gêneros favoritos:",
-              resultados[0].reason
+              resultadosFavoritos[0].reason
             );
           }
 
-          if (resultados[1].status === "fulfilled") {
-            artistasFav = resultados[1].value;
+          if (resultadosFavoritos[1].status === "fulfilled") {
+            artistasFav = resultadosFavoritos[1].value;
           } else {
             console.error(
               "Erro ao buscar artistas favoritos:",
-              resultados[1].reason
+              resultadosFavoritos[1].reason
             );
           }
         }
@@ -421,7 +424,7 @@ export default function Explorar() {
       <section className="mb-12 min-w-0">
         <div className="mb-5 flex items-center gap-2">
           {icone}
-          <h2 className="font-serif text-[17px] text-white">
+          <h2 className="font-serif text-[17px] text-[var(--cor-texto-principal)]">
             {titulo}
           </h2>
         </div>
@@ -431,7 +434,7 @@ export default function Explorar() {
             {lista.map((musica) => renderizarCard(musica, tipo))}
           </Carrossel>
         ) : (
-          <p className="py-4 text-sm text-[#697386]">
+          <p className="py-4 text-sm text-[var(--cor-texto-discreto)]">
             {carregando
               ? "Carregando músicas..."
               : "Ainda não há músicas nesta seção."}
@@ -445,14 +448,14 @@ export default function Explorar() {
     return (
       <section className="mb-12 min-w-0">
         <div className="mb-5 flex items-center gap-2">
-          <UserCircleIcon size={20} className="text-[#58A9E8]" />
-          <h2 className="font-serif text-[17px] text-white">
+          <UserCircleIcon size={20} className="text-[var(--cor-destaque-alternativo)]" />
+          <h2 className="font-serif text-[17px] text-[var(--cor-texto-principal)]">
             Artistas
           </h2>
         </div>
 
         {artistas.length === 0 ? (
-          <p className="py-4 text-sm text-[#697386]">
+          <p className="py-4 text-sm text-[var(--cor-texto-discreto)]">
             {carregando
               ? "Carregando artistas..."
               : "Nenhum artista encontrado."}
@@ -469,7 +472,7 @@ export default function Explorar() {
                 className="w-36 shrink-0 snap-start rounded-xl px-1 py-2 text-left transition-transform duration-300 hover:-translate-y-1 hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#58A9E8]"
               >
                 <div className="flex cursor-pointer flex-col items-center">
-                  <div className="mb-3 flex h-36 w-36 items-center justify-center overflow-hidden rounded-full bg-[#202737]">
+                  <div className="mb-3 flex h-36 w-36 items-center justify-center overflow-hidden rounded-full bg-[var(--cor-superficie-elevada)]">
                     {artista.fotoURL ? (
                       <img
                         src={artista.fotoURL}
@@ -481,16 +484,16 @@ export default function Explorar() {
                     ) : (
                       <UserCircleIcon
                         size={48}
-                        className="text-[#697386]"
+                        className="text-[var(--cor-texto-discreto)]"
                       />
                     )}
                   </div>
 
-                  <h3 className="w-full truncate text-center text-sm font-medium text-white">
+                  <h3 className="w-full truncate text-center text-sm font-medium text-[var(--cor-texto-principal)]">
                     {artista.nome}
                   </h3>
 
-                  <p className="mt-1 text-xs text-[#697386]">
+                  <p className="mt-1 text-xs text-[var(--cor-texto-discreto)]">
                     Artista
                   </p>
                 </div>
@@ -506,18 +509,18 @@ export default function Explorar() {
   return (
     <PageLayout>
       <PageContent>
-        <div className="sticky top-0 z-20 bg-[#080A10]">
+        <div className="sticky top-0 z-20 bg-[var(--cor-fundo)]">
           <div className="w-full pb-6 md:w-[65%]">
             <SearchBar />
           </div>
         </div>
 
         <div className="mb-10">
-          <h1 className="font-serif text-[26px] text-gray-100">
+          <h1 className="font-serif text-[26px] text-[var(--cor-texto-cinza-100)]">
             Explorar
           </h1>
 
-          <p className="mt-1 font-serif text-[13px] text-[#697386]">
+          <p className="mt-1 font-serif text-[13px] text-[var(--cor-texto-discreto)]">
             Descubra novas músicas, artistas e posts.
           </p>
         </div>
@@ -532,44 +535,44 @@ export default function Explorar() {
 
         {renderizarSecao(
           "Em alta",
-          <TrendUpIcon size={18} className="text-[#58A9E8]" />,
+          <TrendUpIcon size={18} className="text-[var(--cor-destaque-alternativo)]" />,
           musicasEmAlta,
           "banner"
         )}
 
         {renderizarSecao(
           "Mais bem avaliadas",
-          <StarIcon size={18} className="text-[#58A9E8]" />,
+          <StarIcon size={18} className="text-[var(--cor-destaque-alternativo)]" />,
           musicasMaisBemAvaliadas,
           "quadrado"
         )}
 
         {renderizarSecao(
           "Descubra novas músicas",
-          <SparkleIcon size={18} className="text-[#58A9E8]" />,
+          <SparkleIcon size={18} className="text-[var(--cor-destaque-alternativo)]" />,
           musicasRecomendadas,
           "quadrado"
         )}
 
         <section className="mb-12">
           <div className="mb-5 flex items-center gap-2">
-            <MusicNotesIcon size={18} className="text-[#58A9E8]" />
+            <MusicNotesIcon size={18} className="text-[var(--cor-destaque-alternativo)]" />
 
-            <h2 className="font-serif text-[17px] text-white">
+            <h2 className="font-serif text-[17px] text-[var(--cor-texto-principal)]">
               Todas as músicas
             </h2>
 
-            <span className="ml-1 text-xs text-[#697386]">
+            <span className="ml-1 text-xs text-[var(--cor-texto-discreto)]">
               {catalogo.length}
             </span>
           </div>
 
           {carregando ? (
-            <p className="py-6 text-sm text-[#697386]">
+            <p className="py-6 text-sm text-[var(--cor-texto-discreto)]">
               Carregando catálogo...
             </p>
           ) : catalogo.length === 0 ? (
-            <p className="py-6 text-sm text-[#697386]">
+            <p className="py-6 text-sm text-[var(--cor-texto-discreto)]">
               Nenhuma música encontrada.
             </p>
           ) : (

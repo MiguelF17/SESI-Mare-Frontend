@@ -4,7 +4,7 @@ import { Eye, EyeOff, Check } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useAuth } from "../hooks/useAuth";
 
-import fundoCadastro from "../assets/fundoLogin.png";
+import fundoCadastro from "../assets/fundoLogin.jpg";
 import logo from "../assets/logomare.png";
 
 function Cadastro() {
@@ -116,7 +116,7 @@ function Cadastro() {
   py-4
   sm:px-6
   lg:px-20
-  bg-[#080A10]
+  bg-[var(--cor-fundo)]
 "
       style={{
         fontFamily: "Inter, sans-serif",
@@ -179,7 +179,7 @@ function Cadastro() {
   bg-[#111A25]/95
   backdrop-blur-md
   border
-  border-[#354052]
+  border-[var(--cor-borda)]
   rounded-2xl
   shadow-2xl
   px-5
@@ -194,7 +194,7 @@ function Cadastro() {
               className="
             text-3xl
             font-bold
-            text-[#E4EFFF]
+            text-[var(--cor-texto-destaque)]
         "
             >
               Criar conta
@@ -229,7 +229,7 @@ function Cadastro() {
                                     block
                                     text-sm
                                     font-medium
-                                    text-[#E4EFFF]
+                                    text-[var(--cor-texto-destaque)]
                                 "
               >
                 Usuário
@@ -248,17 +248,17 @@ function Cadastro() {
                                     px-4
                                     py-3
                                     rounded-lg
-                                    bg-[#080A10]
+                                    bg-[var(--cor-fundo)]
                                     border
-                                    border-[#354052]
-                                    text-[#E4EFFF]
+                                    border-[var(--cor-borda)]
+                                    text-[var(--cor-texto-destaque)]
                                     placeholder-[#68788C]
                                     outline-none
                                     transition
                                     duration-200
-                                    focus:border-[#58AAF0]
+                                    focus:border-[var(--cor-destaque)]
                                     focus:ring-1
-                                    focus:ring-[#58AAF0]
+                                    focus:ring-[var(--cor-destaque)]
                                 "
               />
 
@@ -273,7 +273,7 @@ function Cadastro() {
                                     block
                                     text-sm
                                     font-medium
-                                    text-[#E4EFFF]
+                                    text-[var(--cor-texto-destaque)]
                                 "
               >
                 E-mail
@@ -292,17 +292,17 @@ function Cadastro() {
                                     px-4
                                     py-3
                                     rounded-lg
-                                    bg-[#080A10]
+                                    bg-[var(--cor-fundo)]
                                     border
-                                    border-[#354052]
-                                    text-[#E4EFFF]
+                                    border-[var(--cor-borda)]
+                                    text-[var(--cor-texto-destaque)]
                                     placeholder-[#68788C]
                                     outline-none
                                     transition
                                     duration-200
-                                    focus:border-[#58AAF0]
+                                    focus:border-[var(--cor-destaque)]
                                     focus:ring-1
-                                    focus:ring-[#58AAF0]
+                                    focus:ring-[var(--cor-destaque)]
                                 "
               />
 
@@ -317,7 +317,7 @@ function Cadastro() {
                                     block
                                     text-sm
                                     font-medium
-                                    text-[#E4EFFF]
+                                    text-[var(--cor-texto-destaque)]
                                 "
               >
                 Senha
@@ -343,17 +343,17 @@ function Cadastro() {
                                         py-3
                                         pr-12
                                         rounded-lg
-                                        bg-[#080A10]
+                                        bg-[var(--cor-fundo)]
                                         border
-                                        border-[#354052]
-                                        text-[#E4EFFF]
+                                        border-[var(--cor-borda)]
+                                        text-[var(--cor-texto-destaque)]
                                         placeholder-[#68788C]
                                         outline-none
                                         transition
                                         duration-200
-                                        focus:border-[#58AAF0]
+                                        focus:border-[var(--cor-destaque)]
                                         focus:ring-1
-                                        focus:ring-[#58AAF0]
+                                        focus:ring-[var(--cor-destaque)]
                                     "
                 />
 
@@ -370,7 +370,7 @@ function Cadastro() {
                                         top-1/2
                                         -translate-y-1/2
                                         text-[#8FA1B5]
-                                        hover:text-[#58AAF0]
+                                        hover:text-[var(--cor-destaque)]
                                         transition
                                         cursor-pointer
                                     "
@@ -397,7 +397,7 @@ function Cadastro() {
                     <div
                       key={requisito.texto}
                       className={`flex items-center gap-1.5 text-[11px] transition-colors ${requisito.valido
-                          ? "text-[#58AAF0]"
+                          ? "text-[var(--cor-destaque)]"
                           : "text-[#718096]"
                         }`}
                     >
@@ -423,7 +423,7 @@ function Cadastro() {
                                     block
                                     text-sm
                                     font-medium
-                                    text-[#E4EFFF]
+                                    text-[var(--cor-texto-destaque)]
                                 "
               >
                 Confirmar senha
@@ -451,17 +451,17 @@ function Cadastro() {
                                         py-3
                                         pr-12
                                         rounded-lg
-                                        bg-[#080A10]
+                                        bg-[var(--cor-fundo)]
                                         border
-                                        border-[#354052]
-                                        text-[#E4EFFF]
+                                        border-[var(--cor-borda)]
+                                        text-[var(--cor-texto-destaque)]
                                         placeholder-[#68788C]
                                         outline-none
                                         transition
                                         duration-200
-                                        focus:border-[#58AAF0]
+                                        focus:border-[var(--cor-destaque)]
                                         focus:ring-1
-                                        focus:ring-[#58AAF0]
+                                        focus:ring-[var(--cor-destaque)]
                                     "
                 />
               </div>
@@ -481,7 +481,7 @@ function Cadastro() {
               <Link
                 to="/termos"
                 className="
-                                    text-[#58AAF0]
+                                    text-[var(--cor-destaque)]
                                     hover:text-[#7BC3FF]
                                     hover:underline
                                     transition
@@ -493,7 +493,7 @@ function Cadastro() {
               <Link
                 to="/privacidade"
                 className="
-                                    text-[#58AAF0]
+                                    text-[var(--cor-destaque)]
                                     hover:text-[#7BC3FF]
                                     hover:underline
                                     transition
@@ -509,8 +509,8 @@ function Cadastro() {
               disabled={carregando}
               className="
     w-full h-12
-    bg-[#58AAF0] hover:bg-[#3F95D8]
-    text-[#080A10] font-semibold
+    bg-[var(--cor-destaque)] hover:bg-[#3F95D8]
+    text-[var(--cor-tinta)] font-semibold
     rounded-lg transition duration-200
     cursor-pointer disabled:opacity-60
     disabled:cursor-not-allowed
@@ -533,7 +533,7 @@ function Cadastro() {
               <Link
                 to="/login"
                 className="
-                                    text-[#58AAF0]
+                                    text-[var(--cor-destaque)]
                                     hover:text-[#7BC3FF]
                                     hover:underline
                                     ml-1

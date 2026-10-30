@@ -1,9 +1,21 @@
 
-import { useMemo } from "react";
+import { useId, useMemo } from "react";
 import type { Musica } from "../services/musicaService";
 
 interface ArtistaFavorito {
   artistaId: number;
+}
+
+function chaveAleatoriaEstavel(musica: Musica, instancia: string) {
+  const identificador = `${instancia}-${musica.id}-${musica.titulo}`;
+  let hash = 2166136261;
+
+  for (let indice = 0; indice < identificador.length; indice += 1) {
+    hash ^= identificador.charCodeAt(indice);
+    hash = Math.imul(hash, 16777619);
+  }
+
+  return hash >>> 0;
 }
 
 export function useMusicasRecomendadas(
@@ -11,6 +23,8 @@ export function useMusicasRecomendadas(
   generosFavoritos: string[],
   artistasFavoritos: ArtistaFavorito[] = []
 ) {
+  const instancia = useId();
+
   return useMemo(() => {
     const normalizar = (valor: string) =>
       valor.trim().toLocaleLowerCase("pt-BR");
@@ -32,17 +46,15 @@ export function useMusicasRecomendadas(
       return combinaGenero || combinaArtista;
     });
 
-    // Embaralha a ordem das recomendações.
-    for (let i = recomendadas.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [recomendadas[i], recomendadas[j]] = [
-        recomendadas[j],
-        recomendadas[i],
-      ];
-    }
+    // Mantém uma ordem variada e estável entre renderizações.
+    recomendadas.sort(
+      (a, b) =>
+        chaveAleatoriaEstavel(a, instancia) -
+        chaveAleatoriaEstavel(b, instancia)
+    );
 
     return {
       musicasRecomendadas: recomendadas,
     };
-  }, [musicas, generosFavoritos, artistasFavoritos]);
+  }, [musicas, generosFavoritos, artistasFavoritos, instancia]);
 }

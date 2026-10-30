@@ -10,16 +10,16 @@ function Sobre() {
 
             {/* HERO */}
             <section
-                className="relative bg-gradient-to-r from-[#080A10] to-[#1A3854] text-white w-full pt-60 pb-40  px-24 overflow-hidden"
+                className="relative w-full overflow-hidden bg-gradient-to-r from-[var(--cor-gradiente-inicio)] to-[var(--cor-gradiente-fim)] px-5 py-24 text-[var(--cor-texto-principal)] sm:px-10 sm:py-36 lg:px-24 lg:py-60"
                 style={{ fontFamily: "Inter, sans-serif" }}
             >
 
                 <div className="relative z-10 max-w-4xl mx-auto text-center">
-                    <h1 className="text-5xl md:text-6xl font-bold mb-4">
+                    <h1 className="mb-4 text-4xl font-bold sm:text-5xl md:text-6xl">
                         Sobre a Maré
                     </h1>
 
-                    <p className="text-lg md:text-xl max-w-2xl mx-auto text-[#D5E8F8]">
+                    <p className="text-lg md:text-xl max-w-2xl mx-auto text-[var(--cor-texto-secundario)]">
                         Um espaço para descobrir músicas, compartilhar opiniões e
                         conectar pessoas através da música.
                     </p>
@@ -30,13 +30,13 @@ function Sobre() {
 
 
             {/* HISTÓRIA */}
-            <section className="py-20 px-6 md:px-12 lg:px-24 text-center max-w-4xl mx-auto">
+            <section className="mx-auto max-w-4xl px-6 py-12 text-center sm:py-16 md:px-12 md:py-20 lg:px-24">
 
-                <h2 className="text-4xl font-semibold text-[#306DA6] mb-10">
+                <h2 className="mb-8 text-3xl font-semibold text-[var(--cor-destaque)] sm:mb-10 sm:text-4xl">
                     Nossa História
                 </h2>
 
-                <p className="text-gray-600 leading-relaxed">
+                <p className="text-[var(--cor-texto-discreto)] leading-relaxed">
                     A Maré surgiu com a ideia de criar um espaço onde a música pudesse
                     ser mais do que apenas algo para ouvir. Nossa proposta é aproximar
                     pessoas que compartilham interesses musicais, permitindo descobrir
@@ -44,7 +44,7 @@ function Sobre() {
                     que outras pessoas estão ouvindo e recomendando.
                 </p>
 
-                <p className="text-gray-600 leading-relaxed mt-4">
+                <p className="text-[var(--cor-texto-discreto)] leading-relaxed mt-4">
                     A plataforma foi desenvolvida pensando em uma experiência simples
                     e intuitiva, reunindo descoberta musical e interação entre usuários
                     em um só lugar.
@@ -54,44 +54,44 @@ function Sobre() {
 
 
             {/* O QUE NOS GUIA */}
-            <section className="py-20 px-6 md:px-12 lg:px-24 text-center bg-[#F4F8FC]">
+            <section className="bg-[var(--cor-superficie)] px-6 py-12 text-center sm:py-16 md:px-12 md:py-20 lg:px-24">
 
-                <h2 className="text-4xl font-semibold text-[#306DA6] mb-10">
+                <h2 className="mb-8 text-3xl font-semibold text-[var(--cor-destaque)] sm:mb-10 sm:text-4xl">
                     O que nos guia
                 </h2>
 
                 <div className="grid md:grid-cols-3 gap-8">
 
-                    <div className="bg-white shadow-md rounded-2xl p-6">
+                    <div className="bg-[var(--cor-superficie)] shadow-md rounded-2xl p-6">
                         <h3 className="text-xl font-semibold mb-2">
                             Descoberta
                         </h3>
 
-                        <p className="text-gray-600">
+                        <p className="text-[var(--cor-texto-discreto)]">
                             Facilitar a descoberta de músicas e artistas que combinam
                             com os interesses de cada usuário.
                         </p>
                     </div>
 
 
-                    <div className="bg-white shadow-md rounded-2xl p-6">
+                    <div className="bg-[var(--cor-superficie)] shadow-md rounded-2xl p-6">
                         <h3 className="text-xl font-semibold mb-2">
                             Comunidade
                         </h3>
 
-                        <p className="text-gray-600">
+                        <p className="text-[var(--cor-texto-discreto)]">
                             Criar um espaço onde pessoas possam compartilhar opiniões
                             e conversar sobre música.
                         </p>
                     </div>
 
 
-                    <div className="bg-white shadow-md rounded-2xl p-6">
+                    <div className="bg-[var(--cor-superficie)] shadow-md rounded-2xl p-6">
                         <h3 className="text-xl font-semibold mb-2">
                             Simplicidade
                         </h3>
 
-                        <p className="text-gray-600">
+                        <p className="text-[var(--cor-texto-discreto)]">
                             Oferecer uma experiência simples, organizada e agradável
                             para descobrir e interagir com músicas.
                         </p>
@@ -103,44 +103,44 @@ function Sobre() {
 
 
             {/* FUNCIONALIDADES */}
-            <section className="py-20 px-6 md:px-12 lg:px-24 text-center">
+            <section className="px-6 py-12 text-center sm:py-16 md:px-12 md:py-20 lg:px-24">
 
-                <h2 className="text-4xl font-semibold text-[#306DA6] mb-10">
+                <h2 className="mb-8 text-3xl font-semibold text-[var(--cor-destaque)] sm:mb-10 sm:text-4xl">
                     O que você pode fazer na Maré
                 </h2>
 
                 <div className="grid md:grid-cols-3 gap-8">
 
-                    <div className="bg-white rounded-2xl p-6 shadow-md">
+                    <div className="bg-[var(--cor-superficie)] rounded-2xl p-6 shadow-md">
                         <h3 className="text-xl font-semibold mb-2">
                             Avaliar músicas
                         </h3>
 
-                        <p className="text-gray-600">
+                        <p className="text-[var(--cor-texto-discreto)]">
                             Dê notas de 1 a 5 estrelas e compartilhe sua opinião
                             sobre suas músicas favoritas.
                         </p>
                     </div>
 
 
-                    <div className="bg-white rounded-2xl p-6 shadow-md">
+                    <div className="bg-[var(--cor-superficie)] rounded-2xl p-6 shadow-md">
                         <h3 className="text-xl font-semibold mb-2">
                             Criar publicações
                         </h3>
 
-                        <p className="text-gray-600">
+                        <p className="text-[var(--cor-texto-discreto)]">
                             Compartilhe suas descobertas e converse com outros
                             usuários através de publicações.
                         </p>
                     </div>
 
 
-                    <div className="bg-white rounded-2xl p-6 shadow-md">
+                    <div className="bg-[var(--cor-superficie)] rounded-2xl p-6 shadow-md">
                         <h3 className="text-xl font-semibold mb-2">
                             Salvar músicas
                         </h3>
 
-                        <p className="text-gray-600">
+                        <p className="text-[var(--cor-texto-discreto)]">
                             Guarde músicas que você deseja ouvir novamente e
                             mantenha sua coleção organizada.
                         </p>
@@ -152,9 +152,9 @@ function Sobre() {
 
 
             {/* EQUIPE */}
-            <section className="py-20 px-6 md:px-12 lg:px-24 text-center bg-[#F4F8FC]">
+            <section className="bg-[var(--cor-superficie)] px-6 py-12 text-center sm:py-16 md:px-12 md:py-20 lg:px-24">
 
-                <h2 className="text-4xl text-[#306DA6] mb-10">
+                <h2 className="mb-8 text-3xl text-[var(--cor-destaque)] sm:mb-10 sm:text-4xl">
                     Nosso Time
                 </h2>
 
@@ -195,19 +195,28 @@ function Sobre() {
 
                         <div
                             key={index}
-                            className="bg-white rounded-xl p-6 shadow-md"
+                            className="bg-[var(--cor-superficie)] rounded-xl p-6 shadow-md"
                         >
 
-                            <img
-                                src={membro.imagem}
-                                className="w-40 h-40 bg-gray-200 rounded-full mx-auto mb-3"
-                            />
+                            {membro.imagem ? (
+                                <img
+                                    src={membro.imagem}
+                                    alt={membro.nome}
+                                    loading="lazy"
+                                    className="mx-auto mb-3 h-40 w-40 rounded-full bg-[var(--cor-superficie-suave)] object-cover"
+                                />
+                            ) : (
+                                <div
+                                    aria-hidden="true"
+                                    className="mx-auto mb-3 h-40 w-40 rounded-full bg-[var(--cor-superficie-suave)]"
+                                />
+                            )}
 
                             <h4 className="font-semibold">
                                 {membro.nome}
                             </h4>
 
-                            <span className="text-sm text-gray-500">
+                            <span className="text-sm text-[var(--cor-texto-discreto)]">
                                 {membro.funcao}
                             </span>
 
@@ -221,20 +230,20 @@ function Sobre() {
 
 
             {/* CTA */}
-            <section className="py-20 text-center px-6">
+            <section className="px-6 py-12 text-center sm:py-16 md:py-20">
 
-                <h2 className="text-4xl text-[#306DA6] mb-4">
+                <h2 className="mb-4 text-3xl text-[var(--cor-destaque)] sm:text-4xl">
                     Pronto para entrar na Maré?
                 </h2>
 
-                <p className="text-gray-600 mb-8">
+                <p className="text-[var(--cor-texto-discreto)] mb-8">
                     Descubra músicas, compartilhe suas opiniões e encontre novos
                     artistas para ouvir.
                 </p>
 
                 <Link
                     to="/home"
-                    className="bg-[#58AAF0] text-white px-10 py-4 rounded-lg hover:scale-105 transition cursor-pointer"
+                    className="bg-[var(--cor-destaque)] text-[var(--cor-texto-principal)] px-10 py-4 rounded-lg hover:scale-105 transition cursor-pointer"
                 >
                     Explorar a Maré
                 </Link>

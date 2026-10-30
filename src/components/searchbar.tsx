@@ -39,7 +39,7 @@ export default function SearchBar() {
           e.preventDefault();
           pesquisar();
         }}
-        className="flex h-10 w-full items-center gap-3 rounded-lg border border-[#354052] bg-[#111420] px-4"
+        className="flex h-10 w-full items-center gap-3 rounded-lg border border-[var(--cor-borda)] bg-[var(--cor-superficie)] px-4"
       >
         <MagnifyingGlassIcon
           size={16}
@@ -58,7 +58,7 @@ export default function SearchBar() {
             if (e.key === "Escape") setAberta(false);
           }}
           placeholder="Buscar músicas, artistas e posts..."
-          className="w-full border-none bg-transparent text-xs text-white outline-none placeholder:text-[#718096]"
+          className="w-full border-none bg-transparent text-xs text-[var(--cor-texto-principal)] outline-none placeholder:text-[#718096]"
         />
       </form>
 
@@ -71,7 +71,7 @@ export default function SearchBar() {
             onClick={() => setAberta(false)}
           />
 
-          <div className="absolute left-0 right-0 top-full z-30 mt-2 max-h-96 overflow-y-auto rounded-xl border border-[#273349] bg-[#111420] p-3 shadow-xl">
+          <div className="absolute left-0 right-0 top-full z-30 mt-2 max-h-96 overflow-y-auto rounded-xl border border-[var(--cor-borda-suave)] bg-[var(--cor-superficie)] p-3 shadow-xl">
             {carregando ? (
               <p className="py-4 text-center text-sm text-[#718096]">
                 Buscando...
@@ -100,7 +100,7 @@ export default function SearchBar() {
                           setAberta(false);
                           navigate(`/musica/${m.id}`);
                         }}
-                        className="flex w-full cursor-pointer items-center gap-3 rounded-lg p-2 text-left hover:bg-[#202536]"
+                        className="flex w-full cursor-pointer items-center gap-3 rounded-lg p-2 text-left hover:bg-[var(--cor-superficie-menu)]"
                       >
                         <img
                           src={m.capa || "/logo.png"}
@@ -109,7 +109,7 @@ export default function SearchBar() {
                         />
 
                         <span className="min-w-0">
-                          <span className="block truncate text-sm text-white">
+                          <span className="block truncate text-sm text-[var(--cor-texto-principal)]">
                             {m.titulo}
                           </span>
                           <span className="block truncate text-xs text-[#9CA3AF]">
@@ -135,7 +135,7 @@ export default function SearchBar() {
                           setAberta(false);
                           navigate(`/artista/${a.id}`);
                         }}
-                        className="flex w-full cursor-pointer items-center gap-3 rounded-lg p-2 text-left hover:bg-[#202536]"
+                        className="flex w-full cursor-pointer items-center gap-3 rounded-lg p-2 text-left hover:bg-[var(--cor-superficie-menu)]"
                       >
                         <img
                           src={a.fotoURL || "/logo.png"}
@@ -143,7 +143,7 @@ export default function SearchBar() {
                           className="h-10 w-10 rounded-full object-cover"
                         />
 
-                        <span className="text-sm text-white">
+                        <span className="text-sm text-[var(--cor-texto-principal)]">
                           {a.nome}
                         </span>
                       </button>
@@ -165,13 +165,13 @@ export default function SearchBar() {
                           setAberta(false);
                           navigate(`/post/${p.id}`);
                         }}
-                        className="block w-full cursor-pointer rounded-lg p-2 text-left hover:bg-[#202536]"
+                        className="block w-full cursor-pointer rounded-lg p-2 text-left hover:bg-[var(--cor-superficie-menu)]"
                       >
                         <span className="block text-xs text-[#9CA3AF]">
                           {p.usuario?.nome || "Usuário"}
                         </span>
 
-                        <span className="line-clamp-2 text-sm text-white">
+                        <span className="line-clamp-2 text-sm text-[var(--cor-texto-principal)]">
                           {p.texto}
                         </span>
                       </button>
@@ -182,7 +182,7 @@ export default function SearchBar() {
                 <button
                   type="button"
                   onClick={pesquisar}
-                  className="mt-3 w-full cursor-pointer border-t border-[#273349] pt-3 text-sm text-[#58AAF0] hover:text-white"
+                  className="mt-3 w-full cursor-pointer border-t border-[var(--cor-borda-suave)] pt-3 text-sm text-[var(--cor-destaque)] hover:text-[var(--cor-texto-principal)]"
                 >
                   Ver todos os resultados
                 </button>

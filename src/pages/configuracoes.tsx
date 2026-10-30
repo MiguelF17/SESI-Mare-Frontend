@@ -53,7 +53,7 @@ function lerTema(): Tema {
 
   return salvo === "claro" || salvo === "escuro" || salvo === "sistema"
     ? salvo
-    : "sistema";
+    : "escuro";
 }
 
 function CaixaOpcao({
@@ -66,10 +66,10 @@ function CaixaOpcao({
   children?: ReactNode;
 }) {
   return (
-    <div className="w-full rounded-md border border-[#252D38] bg-[#10151F]">
+    <div className="w-full rounded-md border border-[var(--cor-borda-discreta)] bg-[var(--cor-superficie-alternativa)]">
       <div className="flex min-h-[42px] items-center gap-3 px-4 py-2">
         {icone}
-        <span className="flex-1 text-[12px] text-[#B8BECC]">{titulo}</span>
+        <span className="flex-1 text-[12px] text-[var(--cor-texto-secundario)]">{titulo}</span>
         {children}
       </div>
     </div>
@@ -119,13 +119,30 @@ export default function Configuracoes() {
   const [erroGeneros, setErroGeneros] = useState("");
   const [sucessoGeneros, setSucessoGeneros] = useState("");
   const [mostrarConfirmacaoSaida, setMostrarConfirmacaoSaida] =
-  useState(false);
-const [saindo, setSaindo] = useState(false);
+    useState(false);
+  const [saindo, setSaindo] = useState(false);
 
   // Aplica e salva o tema escolhido.
   useEffect(() => {
     localStorage.setItem("mare-tema", tema);
-    document.documentElement.dataset.theme = tema;
+    const preferenciaSistema = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    );
+    const aplicarTema = () => {
+      document.documentElement.dataset.tema =
+        tema === "sistema"
+          ? preferenciaSistema.matches
+            ? "escuro"
+            : "claro"
+          : tema;
+    };
+
+    aplicarTema();
+
+    if (tema === "sistema") {
+      preferenciaSistema.addEventListener("change", aplicarTema);
+      return () => preferenciaSistema.removeEventListener("change", aplicarTema);
+    }
   }, [tema]);
 
   // Salva as preferências de notificação neste navegador.
@@ -317,7 +334,7 @@ const [saindo, setSaindo] = useState(false);
       <PageContent>
         <div className="grid grid-cols-1 gap-10 xl:grid-cols-[minmax(0,1fr)_340px]">
           <section className="min-w-0">
-            <div className="sticky top-0 z-20 bg-[#080A10]">
+            <div className="sticky top-0 z-20 bg-[var(--cor-fundo)]">
               <div className="pt-6">
                 <SearchBar />
               </div>
@@ -325,17 +342,17 @@ const [saindo, setSaindo] = useState(false);
 
             <div className="w-full pt-5">
               <div className="mb-6">
-                <h1 className="font-serif text-[26px] text-white">
+                <h1 className="font-serif text-[26px] text-[var(--cor-texto-principal)]">
                   Configurações
                 </h1>
-                <p className="mt-1 font-serif text-[13px] text-[#697386]">
+                <p className="mt-1 font-serif text-[13px] text-[var(--cor-texto-discreto)]">
                   Gerencie suas preferências
                 </p>
               </div>
 
               {/* PREFERÊNCIAS */}
               <section className="mb-7">
-                <h2 className="mb-3 font-serif text-[18px] text-white">
+                <h2 className="mb-3 font-serif text-[18px] text-[var(--cor-texto-principal)]">
                   Preferências
                 </h2>
 
@@ -349,7 +366,7 @@ const [saindo, setSaindo] = useState(false);
                       value={tema}
                       onChange={(e) => setTema(e.target.value as Tema)}
                       aria-label="Tema da aparência"
-                      className="max-w-[125px] cursor-pointer rounded-md border border-[#252D38] bg-[#080A10] px-2 py-1.5 text-[11px] text-[#B8BECC] outline-none transition hover:border-[#3A73C4] focus:border-[#3A73C4]"
+                      className="max-w-[125px] cursor-pointer rounded-md border border-[var(--cor-borda-discreta)] bg-[var(--cor-fundo)] px-2 py-1.5 text-[11px] text-[var(--cor-texto-secundario)] outline-none transition hover:border-[var(--cor-borda-destaque)] focus:border-[var(--cor-borda-destaque)]"
                     >
                       <option value="sistema">Sistema</option>
                       <option value="escuro">Escuro</option>
@@ -364,10 +381,10 @@ const [saindo, setSaindo] = useState(false);
                       setMostrarNotificacoes((mostrar) => !mostrar)
                     }
                     aria-expanded={mostrarNotificacoes}
-                    className="flex min-h-[42px] w-full cursor-pointer items-center gap-3 rounded-md border border-[#252D38] bg-[#10151F] px-4 text-left transition hover:border-[#3A73C4]"
+                    className="flex min-h-[42px] w-full cursor-pointer items-center gap-3 rounded-md border border-[var(--cor-borda-discreta)] bg-[var(--cor-superficie-alternativa)] px-4 text-left transition hover:border-[var(--cor-borda-destaque)]"
                   >
                     <BellIcon size={16} className="text-[#8992A5]" />
-                    <span className="flex-1 text-[12px] text-[#B8BECC]">
+                    <span className="flex-1 text-[12px] text-[var(--cor-texto-secundario)]">
                       Notificações
                     </span>
                     <CaretRightIcon
@@ -378,7 +395,7 @@ const [saindo, setSaindo] = useState(false);
                   </button>
 
                   {mostrarNotificacoes && (
-                    <div className="flex flex-col gap-3 rounded-md border border-[#252D38] bg-[#10151F] p-4">
+                    <div className="flex flex-col gap-3 rounded-md border border-[var(--cor-borda-discreta)] bg-[var(--cor-superficie-alternativa)] p-4">
                       {(
                         [
                           ["curtidas", "Curtidas"],
@@ -390,7 +407,7 @@ const [saindo, setSaindo] = useState(false);
                           key={chave}
                           className="flex cursor-pointer items-center justify-between gap-3"
                         >
-                          <span className="text-[12px] text-[#B8BECC]">
+                          <span className="text-[12px] text-[var(--cor-texto-secundario)]">
                             {titulo}
                           </span>
                           <input
@@ -402,7 +419,7 @@ const [saindo, setSaindo] = useState(false);
                         </label>
                       ))}
 
-                      <p className="text-[11px] text-[#697386]">
+                      <p className="text-[11px] text-[var(--cor-texto-discreto)]">
                         Essas opções são salvas neste navegador.
                       </p>
                     </div>
@@ -413,13 +430,13 @@ const [saindo, setSaindo] = useState(false);
                     type="button"
                     onClick={() => setMostrarGeneros((mostrar) => !mostrar)}
                     aria-expanded={mostrarGeneros}
-                    className="flex min-h-[42px] w-full cursor-pointer items-center gap-3 rounded-md border border-[#252D38] bg-[#10151F] px-4 text-left transition hover:border-[#3A73C4]"
+                    className="flex min-h-[42px] w-full cursor-pointer items-center gap-3 rounded-md border border-[var(--cor-borda-discreta)] bg-[var(--cor-superficie-alternativa)] px-4 text-left transition hover:border-[var(--cor-borda-destaque)]"
                   >
                     <SlidersHorizontalIcon
                       size={16}
                       className="text-[#8992A5]"
                     />
-                    <span className="flex-1 text-[12px] text-[#B8BECC]">
+                    <span className="flex-1 text-[12px] text-[var(--cor-texto-secundario)]">
                       Preferências musicais
                     </span>
                     <CaretRightIcon
@@ -430,20 +447,20 @@ const [saindo, setSaindo] = useState(false);
                   </button>
 
                   {mostrarGeneros && (
-                    <div className="rounded-md border border-[#252D38] bg-[#10151F] p-4">
+                    <div className="rounded-md border border-[var(--cor-borda-discreta)] bg-[var(--cor-superficie-alternativa)] p-4">
                       <div className="mb-3 flex items-center gap-2">
-                        <MusicNotesIcon size={16} className="text-[#58A9E8]" />
-                        <p className="text-[12px] text-[#B8BECC]">
+                        <MusicNotesIcon size={16} className="text-[var(--cor-destaque-alternativo)]" />
+                        <p className="text-[12px] text-[var(--cor-texto-secundario)]">
                           Quais gêneros você gosta?
                         </p>
                       </div>
 
                       {carregandoGeneros ? (
-                        <p className="py-4 text-xs text-[#697386]">
+                        <p className="py-4 text-xs text-[var(--cor-texto-discreto)]">
                           Carregando gêneros...
                         </p>
                       ) : generosDisponiveis.length === 0 ? (
-                        <p className="py-4 text-xs text-[#697386]">
+                        <p className="py-4 text-xs text-[var(--cor-texto-discreto)]">
                           Nenhum gênero encontrado no catálogo.
                         </p>
                       ) : (
@@ -458,8 +475,8 @@ const [saindo, setSaindo] = useState(false);
                                 onClick={() => alternarGenero(genero)}
                                 aria-pressed={selecionado}
                                 className={`rounded-md cursor-pointer border px-3 py-1.5 text-[11px] transition ${selecionado
-                                    ? "border-[#3A73C4] bg-[#203A56] text-white"
-                                    : "border-[#252D38] bg-[#080A10] text-[#8992A5] hover:border-[#3A73C4] hover:text-white"
+                                    ? "border-[var(--cor-borda-destaque)] bg-[var(--cor-superficie-genero-selecionado)] text-[var(--cor-texto-principal)]"
+                                    : "border-[var(--cor-borda-discreta)] bg-[var(--cor-fundo)] text-[#8992A5] hover:border-[var(--cor-borda-destaque)] hover:text-[var(--cor-texto-principal)]"
                                   }`}
                               >
                                 {genero}
@@ -469,7 +486,7 @@ const [saindo, setSaindo] = useState(false);
                         </div>
                       )}
 
-                      <p className="mt-3 text-[11px] text-[#697386]">
+                      <p className="mt-3 text-[11px] text-[var(--cor-texto-discreto)]">
                         {generos.length === 0
                           ? "Nenhum gênero selecionado."
                           : `${generos.length} ${generos.length === 1
@@ -494,7 +511,7 @@ const [saindo, setSaindo] = useState(false);
                         <button
                           type="button"
                           onClick={() => navigate("/explorar")}
-                          className="text-[12px] cursor-pointer text-[#72A8DD] transition hover:text-white"
+                          className="text-[12px] cursor-pointer text-[#72A8DD] transition hover:text-[var(--cor-texto-principal)]"
                         >
                           Explorar músicas →
                         </button>
@@ -503,7 +520,7 @@ const [saindo, setSaindo] = useState(false);
                           type="button"
                           onClick={salvarGeneros}
                           disabled={carregandoGeneros || salvandoGeneros}
-                          className="rounded-md cursor-pointer bg-[#58A9E8] px-3 py-2 text-[11px] font-medium text-[#080A10] transition hover:bg-[#79BCF5] disabled:cursor-not-allowed disabled:opacity-50"
+                          className="rounded-md cursor-pointer bg-[var(--cor-destaque-alternativo)] px-3 py-2 text-[11px] font-medium text-[var(--cor-tinta)] transition hover:bg-[#79BCF5] disabled:cursor-not-allowed disabled:opacity-50"
                         >
                           {salvandoGeneros ? "Salvando..." : "Salvar preferências"}
                         </button>
@@ -515,7 +532,7 @@ const [saindo, setSaindo] = useState(false);
 
               {/* SOBRE */}
               <section className="mb-7">
-                <h2 className="mb-3 font-serif text-[18px] text-white">
+                <h2 className="mb-3 font-serif text-[18px] text-[var(--cor-texto-principal)]">
                   Sobre
                 </h2>
 
@@ -523,10 +540,10 @@ const [saindo, setSaindo] = useState(false);
                   <button
                     type="button"
                     onClick={() => navigate("/termos")}
-                    className="flex min-h-[42px] w-full items-center gap-3 rounded-md border border-[#252D38] bg-[#10151F] px-4 text-left transition hover:border-[#3A73C4]"
+                    className="flex min-h-[42px] w-full items-center gap-3 rounded-md border border-[var(--cor-borda-discreta)] bg-[var(--cor-superficie-alternativa)] px-4 text-left transition hover:border-[var(--cor-borda-destaque)]"
                   >
                     <ShieldCheckIcon size={16} className="text-[#8992A5]" />
-                    <span className="flex-1 cursor-pointer text-[12px] text-[#B8BECC]">
+                    <span className="flex-1 cursor-pointer text-[12px] text-[var(--cor-texto-secundario)]">
                       Termos de uso
                     </span>
                     <CaretRightIcon size={14} className="text-[#737C8E]" />
@@ -535,10 +552,10 @@ const [saindo, setSaindo] = useState(false);
                   <button
                     type="button"
                     onClick={() => navigate("/privacidade")}
-                    className="flex min-h-[42px] cursor-pointer w-full items-center gap-3 rounded-md border border-[#252D38] bg-[#10151F] px-4 text-left transition hover:border-[#3A73C4]"
+                    className="flex min-h-[42px] cursor-pointer w-full items-center gap-3 rounded-md border border-[var(--cor-borda-discreta)] bg-[var(--cor-superficie-alternativa)] px-4 text-left transition hover:border-[var(--cor-borda-destaque)]"
                   >
                     <FileTextIcon size={16} className="text-[#8992A5]" />
-                    <span className="flex-1 text-[12px] text-[#B8BECC]">
+                    <span className="flex-1 text-[12px] text-[var(--cor-texto-secundario)]">
                       Privacidade
                     </span>
                     <CaretRightIcon size={14} className="text-[#737C8E]" />
@@ -548,7 +565,7 @@ const [saindo, setSaindo] = useState(false);
 
               {/* SAIR */}
               <section>
-                <h2 className="mb-3 font-serif text-[18px] text-white">
+                <h2 className="mb-3 font-serif text-[18px] text-[var(--cor-texto-principal)]">
                   Sair
                 </h2>
 
@@ -569,7 +586,7 @@ const [saindo, setSaindo] = useState(false);
           {/* MÚSICAS RECOMENDADAS */}
           <aside className="hidden min-w-0 xl:block">
             <div className="fixed top-2/5 w-[340px] -translate-y-2/5">
-              <h2 className="mb-5 font-serif text-[16px] text-white">
+              <h2 className="mb-5 font-serif text-[16px] text-[var(--cor-texto-principal)]">
                 Músicas recomendadas
               </h2>
 
@@ -588,7 +605,7 @@ const [saindo, setSaindo] = useState(false);
             role="dialog"
             aria-modal="true"
             aria-labelledby="titulo-sair"
-            className="w-full max-w-sm rounded-2xl border border-[#354052] bg-[#111420] p-5 shadow-2xl shadow-black/40"
+            className="w-full max-w-sm rounded-2xl border border-[var(--cor-borda)] bg-[var(--cor-superficie)] p-5 shadow-2xl shadow-black/40"
           >
             <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-full bg-red-500/10 text-red-400">
               <SignOutIcon size={22} />
@@ -596,7 +613,7 @@ const [saindo, setSaindo] = useState(false);
 
             <h2
               id="titulo-sair"
-              className="text-base font-semibold text-white"
+              className="text-base font-semibold text-[var(--cor-texto-principal)]"
             >
               Sair da conta?
             </h2>
@@ -611,7 +628,7 @@ const [saindo, setSaindo] = useState(false);
                 type="button"
                 onClick={() => setMostrarConfirmacaoSaida(false)}
                 disabled={saindo}
-                className="cursor-pointer rounded-lg border border-[#354052] px-4 py-2.5 text-sm text-[#d1d5db] transition hover:bg-white/5 disabled:opacity-50"
+                className="cursor-pointer rounded-lg border border-[var(--cor-borda)] px-4 py-2.5 text-sm text-[#d1d5db] transition hover:bg-white/5 disabled:opacity-50"
               >
                 Cancelar
               </button>
@@ -620,7 +637,7 @@ const [saindo, setSaindo] = useState(false);
                 type="button"
                 onClick={confirmarSaida}
                 disabled={saindo}
-                className="cursor-pointer rounded-lg bg-red-500 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50"
+                className="cursor-pointer rounded-lg bg-red-500 px-5 py-2.5 text-sm font-semibold text-[var(--cor-texto-principal)] transition hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {saindo ? "Saindo..." : "Sair da conta"}
               </button>

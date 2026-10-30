@@ -227,7 +227,7 @@ export default function ListaSeguidores() {
                 <div className="grid grid-cols-1 gap-10 xl:grid-cols-[minmax(0,1fr)_340px]">
                     <section className="min-w-0">
                         {/* Busca */}
-                        <div className="sticky top-0 z-20 bg-[#080A10]">
+                        <div className="sticky top-0 z-20 bg-[var(--cor-fundo)]">
                             <div className="w-full max-w-[800px] pb-6 pt-6">
                                 <SearchBar />
                             </div>
@@ -238,20 +238,20 @@ export default function ListaSeguidores() {
                             <BotaoVoltar fallback="/explorar" />
 
                             <div className="min-w-0">
-                                <h1 className="font-serif text-[24px] text-white">
+                                <h1 className="font-serif text-[24px] text-[var(--cor-texto-principal)]">
                                     {titulo}
                                 </h1>
 
-                                <p className="mt-1 font-serif text-[13px] text-[#697386]">
+                                <p className="mt-1 font-serif text-[13px] text-[var(--cor-texto-discreto)]">
                                     {descricao}
                                 </p>
                             </div>
                         </div>
 
                         {/* Lista */}
-                        <section className="w-full overflow-hidden rounded-xl border border-[#252d38] bg-[#0d121c]">
-                            <header className="flex items-center justify-between gap-3 border-b border-[#252d38] px-5 py-4">
-                                <h2 className="font-serif text-[15px] text-gray-100">
+                        <section className="w-full overflow-hidden rounded-xl border border-[var(--cor-borda-discreta)] bg-[#0d121c]">
+                            <header className="flex items-center justify-between gap-3 border-b border-[var(--cor-borda-discreta)] px-5 py-4">
+                                <h2 className="font-serif text-[15px] text-[var(--cor-texto-cinza-100)]">
                                     {seguindo ? "Seguindo" : "Seguidores"}
                                 </h2>
 
@@ -272,14 +272,14 @@ export default function ListaSeguidores() {
                                             key={item}
                                             className="flex animate-pulse items-center gap-4 px-5 py-4"
                                         >
-                                            <div className="h-14 w-14 shrink-0 rounded-full bg-[#202737]" />
+                                            <div className="h-14 w-14 shrink-0 rounded-full bg-[var(--cor-superficie-elevada)]" />
 
                                             <div className="flex-1 space-y-2">
-                                                <div className="h-3 w-36 rounded bg-[#202737]" />
-                                                <div className="h-3 w-24 rounded bg-[#202737]" />
+                                                <div className="h-3 w-36 rounded bg-[var(--cor-superficie-elevada)]" />
+                                                <div className="h-3 w-24 rounded bg-[var(--cor-superficie-elevada)]" />
                                             </div>
 
-                                            <div className="h-8 w-20 rounded-lg bg-[#202737]" />
+                                            <div className="h-8 w-20 rounded-lg bg-[var(--cor-superficie-elevada)]" />
                                         </div>
                                     ))}
                                 </div>
@@ -294,7 +294,7 @@ export default function ListaSeguidores() {
                                         onClick={() =>
                                             setTentativa((valor) => valor + 1)
                                         }
-                                        className="mt-4 inline-flex cursor-pointer items-center gap-2 rounded-lg border border-[#354052] px-4 py-2 font-serif text-[12px] text-[#58AAF0] transition hover:border-[#58AAF0]/50 hover:bg-[#58AAF0]/10"
+                                        className="mt-4 inline-flex cursor-pointer items-center gap-2 rounded-lg border border-[var(--cor-borda)] px-4 py-2 font-serif text-[12px] text-[var(--cor-destaque)] transition hover:border-[var(--cor-destaque)]/50 hover:bg-[var(--cor-destaque)]/10"
                                     >
                                         <RefreshCw size={15} />
                                         Tentar novamente
@@ -302,14 +302,14 @@ export default function ListaSeguidores() {
                                 </div>
                             ) : usuarios.length === 0 ? (
                                 <div className="flex flex-col items-center px-6 py-14 text-center">
-                                    <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-[#354052] bg-[#111827]">
+                                    <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-[var(--cor-borda)] bg-[#111827]">
                                         <UserRound
                                             size={28}
-                                            className="text-[#697386]"
+                                            className="text-[var(--cor-texto-discreto)]"
                                         />
                                     </div>
 
-                                    <h2 className="font-serif text-[16px] text-gray-100">
+                                    <h2 className="font-serif text-[16px] text-[var(--cor-texto-cinza-100)]">
                                         {seguindo
                                             ? ehMeuPerfil
                                                 ? "Você ainda não segue ninguém"
@@ -319,7 +319,7 @@ export default function ListaSeguidores() {
                                                 : "Este perfil ainda não tem seguidores"}
                                     </h2>
 
-                                    <p className="mt-2 max-w-xs font-serif text-[13px] leading-5 text-[#697386]">
+                                    <p className="mt-2 max-w-xs font-serif text-[13px] leading-5 text-[var(--cor-texto-discreto)]">
                                         {seguindo
                                             ? "Os perfis que forem acompanhados aparecerão nesta lista."
                                             : "Quando alguém começar a seguir este perfil, aparecerá nesta lista."}
@@ -338,10 +338,10 @@ export default function ListaSeguidores() {
                                                 <img
                                                     src={usuario.foto}
                                                     alt={`Foto de ${usuario.nome}`}
-                                                    className="h-14 w-14 shrink-0 rounded-full border border-[#354052] object-cover transition-colors group-hover:border-[#58AAF0]/60"
+                                                    className="h-14 w-14 shrink-0 rounded-full border border-[var(--cor-borda)] object-cover transition-colors group-hover:border-[var(--cor-destaque)]/60"
                                                 />
                                             ) : (
-                                                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-[#354052] bg-[#171e2c] transition-colors group-hover:border-[#58AAF0]/60">
+                                                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-[var(--cor-borda)] bg-[#171e2c] transition-colors group-hover:border-[var(--cor-destaque)]/60">
                                                     <UserRound
                                                         size={25}
                                                         className="text-[#9aa6ba]"
@@ -350,22 +350,22 @@ export default function ListaSeguidores() {
                                             )}
 
                                             <div className="min-w-0 flex-1">
-                                                <p className="truncate font-serif text-[14px] text-gray-100 transition-colors group-hover:text-[#58AAF0]">
+                                                <p className="truncate font-serif text-[14px] text-[var(--cor-texto-cinza-100)] transition-colors group-hover:text-[var(--cor-destaque)]">
                                                     {usuario.nome}
                                                     {meuId !== null &&
                                                         usuario.id === meuId && (
-                                                            <span className="ml-2 text-[11px] text-[#697386]">
+                                                            <span className="ml-2 text-[11px] text-[var(--cor-texto-discreto)]">
                                                                 Você
                                                             </span>
                                                         )}
                                                 </p>
 
-                                                <p className="mt-1 truncate font-serif text-[12px] text-[#697386]">
+                                                <p className="mt-1 truncate font-serif text-[12px] text-[var(--cor-texto-discreto)]">
                                                     @{usuario.username}
                                                 </p>
                                             </div>
 
-                                            <span className="shrink-0 rounded-lg border border-[#354052] px-3 py-2 font-serif text-[11px] text-[#9aa6ba] transition-colors group-hover:border-[#58AAF0]/50 group-hover:text-[#58AAF0]">
+                                            <span className="shrink-0 rounded-lg border border-[var(--cor-borda)] px-3 py-2 font-serif text-[11px] text-[#9aa6ba] transition-colors group-hover:border-[var(--cor-destaque)]/50 group-hover:text-[var(--cor-destaque)]">
                                                 {meuId !== null &&
                                                     usuario.id === meuId
                                                     ? "Meu perfil"
@@ -381,7 +381,7 @@ export default function ListaSeguidores() {
                     {/* Músicas recomendadas */}
                     <aside className="hidden min-w-0 xl:block">
                         <div className="sticky top-6 pt-6">
-                            <h2 className="mb-5 font-serif text-[16px] text-white">
+                            <h2 className="mb-5 font-serif text-[16px] text-[var(--cor-texto-principal)]">
                                 Músicas recomendadas
                             </h2>
 

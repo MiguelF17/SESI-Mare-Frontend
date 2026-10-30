@@ -44,9 +44,13 @@ export default function Artista() {
       setPosts([]);
 
       try {
-        const [dadosArtista, todasMusicas] = await Promise.all([
+        const [dadosArtista, todasMusicas, todosPosts] = await Promise.all([
           buscarArtistaPorId(Number(id)),
           buscarMusicas(),
+          buscarPosts().catch((erroPosts) => {
+            console.error("Erro ao buscar posts do artista:", erroPosts);
+            return [] as Post[];
+          }),
         ]);
 
         const musicasDoArtista = todasMusicas.filter(
@@ -54,14 +58,6 @@ export default function Artista() {
             musica.artista?.id === Number(id) ||
             ("artistaId" in musica && musica.artistaId === Number(id))
         );
-
-        let todosPosts: Post[] = [];
-
-        try {
-          todosPosts = await buscarPosts();
-        } catch (erroPosts) {
-          console.error("Erro ao buscar posts do artista:", erroPosts);
-        }
 
         const postsDoArtista = todosPosts.filter(
           (post) => post.musica?.artista?.id === Number(id)
@@ -96,7 +92,7 @@ export default function Artista() {
     return (
       <PageLayout>
         <PageContent>
-          <div className="flex min-h-[400px] items-center justify-center text-sm text-[#697386]">
+          <div className="flex min-h-[400px] items-center justify-center text-sm text-[var(--cor-texto-discreto)]">
             Carregando artista...
           </div>
         </PageContent>
@@ -109,7 +105,7 @@ export default function Artista() {
       <PageLayout>
         <PageContent>
           <div className="flex min-h-[400px] flex-col items-center justify-center gap-4">
-            <p className="text-sm text-[#697386]">
+            <p className="text-sm text-[var(--cor-texto-discreto)]">
               Não foi possível encontrar este artista.
             </p>
 
@@ -126,7 +122,7 @@ export default function Artista() {
         <div className="grid min-w-0 grid-cols-1 gap-10 xl:grid-cols-[minmax(0,1fr)_340px]">
           <main className="min-w-0">
             {/* BUSCA E NAVEGAÇÃO */}
-            <div className="sticky top-0 z-20 border-b border-[#242b3a] bg-[#080A10]/95 backdrop-blur-md">
+            <div className="sticky top-0 z-20 border-b border-[#242b3a] bg-[var(--cor-fundo)]/95 backdrop-blur-md">
               <div className="py-3">
                 <SearchBar />
               </div>
@@ -134,14 +130,14 @@ export default function Artista() {
               <div className="flex items-center gap-4 py-3">
                 <BotaoVoltar fallback="/explorar" />
 
-                <h1 className="truncate text-base font-bold text-white">
+                <h1 className="truncate text-base font-bold text-[var(--cor-texto-principal)]">
                   {artista.nome}
                 </h1>
               </div>
             </div>
 
             {/* CAPA DO ARTISTA */}
-            <section className="relative mt-6 mb-8 h-[240px] w-full overflow-hidden rounded-xl border border-[#273349] bg-[#111824] sm:h-[300px]">
+            <section className="relative mt-6 mb-8 h-[240px] w-full overflow-hidden rounded-xl border border-[var(--cor-borda-suave)] bg-[var(--cor-superficie-cartao)] sm:h-[300px]">
               <img
                 src={artista.fotoURL || logo}
                 alt=""
@@ -155,14 +151,14 @@ export default function Artista() {
                 className="absolute inset-0 h-full w-full object-contain"
               />
 
-              <div className="absolute inset-0 bg-gradient-to-t from-[#080A10] via-black/35 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[var(--cor-gradiente-inicio)] via-black/35 to-transparent" />
 
               <div className="absolute inset-x-0 bottom-0 z-10 p-5 sm:p-7">
-                <span className="mb-2 block text-xs uppercase tracking-[0.2em] text-[#58AAF0]">
+                <span className="mb-2 block text-xs uppercase tracking-[0.2em] text-[var(--cor-destaque)]">
                   Artista
                 </span>
 
-                <h2 className="break-words font-serif text-2xl leading-tight text-white sm:text-3xl">
+                <h2 className="break-words font-serif text-2xl leading-tight text-[var(--cor-texto-principal)] sm:text-3xl">
                   {artista.nome}
                 </h2>
 
@@ -181,10 +177,10 @@ export default function Artista() {
               <div className="mb-5 flex items-center gap-2">
                 <MusicNotesIcon
                   size={20}
-                  className="text-[#58AAF0]"
+                  className="text-[var(--cor-destaque)]"
                 />
 
-                <h2 className="font-serif text-xl text-white sm:text-2xl">
+                <h2 className="font-serif text-xl text-[var(--cor-texto-principal)] sm:text-2xl">
                   Músicas de {artista.nome}
                 </h2>
               </div>
@@ -207,7 +203,7 @@ export default function Artista() {
                   ))}
                 </div>
               ) : (
-                <p className="py-5 text-sm text-[#697386]">
+                <p className="py-5 text-sm text-[var(--cor-texto-discreto)]">
                   Nenhuma música cadastrada para este artista.
                 </p>
               )}
@@ -218,9 +214,9 @@ export default function Artista() {
           <aside className="min-w-0">
             <div className="xl:sticky xl:top-40">
               <div className="mb-5 flex items-center gap-2">
-                <StarIcon size={19} className="text-[#58AAF0]" />
+                <StarIcon size={19} className="text-[var(--cor-destaque)]" />
 
-                <h2 className="font-serif text-lg text-white">
+                <h2 className="font-serif text-lg text-[var(--cor-texto-principal)]">
                   Posts sobre {artista.nome}
                 </h2>
               </div>
@@ -252,7 +248,7 @@ export default function Artista() {
                     ))}
                 </div>
               ) : (
-                <p className="rounded-xl border border-[#273349] bg-[#111420] px-4 py-6 text-sm text-[#697386]">
+                <p className="rounded-xl border border-[var(--cor-borda-suave)] bg-[var(--cor-superficie)] px-4 py-6 text-sm text-[var(--cor-texto-discreto)]">
                   Ainda não há posts sobre este artista.
                 </p>
               )}

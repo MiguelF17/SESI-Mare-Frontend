@@ -2,9 +2,9 @@
 export default function Footer() {
     return (
 
-        <footer className="bg-[#080A10] text-white px-12 py-24">
+        <footer className="bg-[var(--cor-fundo)] px-4 py-12 text-[var(--cor-texto-principal)] sm:px-8 sm:py-16 lg:px-12 lg:py-24">
 
-            <div className="flex items-start justify-center gap-20 text-center">
+            <div className="flex flex-col items-center justify-center gap-10 text-center sm:flex-row sm:items-start sm:gap-12 lg:gap-20">
 
                 {/* Logo + nome */}
                 <div>
@@ -12,7 +12,7 @@ export default function Footer() {
                         Maré
                     </h2>
 
-                    <p className="text-gray-400 mt-3 max-w-sm">
+                    <p className="text-[var(--cor-texto-cinza-400)] mt-3 max-w-sm">
                         Rede social de músicas, facilitando o compartilhamento, a comunicação e a interação entre os usuários.
                     </p>
                 </div>
@@ -23,16 +23,16 @@ export default function Footer() {
                         Navegação
                     </h3>
 
-                    <div className="flex flex-col gap-2 text-gray-300">
-                        <a href="" className="hover:text-white transition">
+                    <div className="flex flex-col gap-2 text-[var(--cor-texto-cinza-300)]">
+                        <a href="" className="hover:text-[var(--cor-texto-principal)] transition">
                             Início
                         </a>
 
-                        <a href="" className="hover:text-white transition">
+                        <a href="" className="hover:text-[var(--cor-texto-principal)] transition">
                             Sobre
                         </a>
 
-                        <a href="" className="hover:text-white transition">
+                        <a href="" className="hover:text-[var(--cor-texto-principal)] transition">
                             Contato
                         </a>
                     </div>
@@ -44,7 +44,7 @@ export default function Footer() {
                         Contato
                     </h3>
 
-                    <div className="flex flex-col gap-2 text-gray-300">
+                    <div className="flex flex-col gap-2 text-[var(--cor-texto-cinza-300)]">
                         <p>contato@mare.com</p>
                         <p>(11) 99999-9999</p>
                         <p>São Paulo - SP</p>
@@ -54,7 +54,7 @@ export default function Footer() {
             </div>
 
             {/* linha */}
-            <div className="border-t border-gray-700 mt-10 pt-6 text-center text-gray-400">
+            <div className="border-t border-gray-700 mt-10 pt-6 text-center text-[var(--cor-texto-cinza-400)]">
                 © 2026 Maré — Todos os direitos reservados
             </div>
 

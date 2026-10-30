@@ -80,7 +80,7 @@ function CarrosselRecomendadas({
           type="button"
           aria-label="Voltar músicas"
           onClick={() => mover(-1)}
-          className="absolute left-1 top-[calc(50%-8px)] cursor-pointer z-20 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-[#354052] bg-[#111420]/95 text-white shadow-lg hover:bg-[#273349] group-hover/carrossel:flex"
+          className="absolute left-1 top-[calc(50%-8px)] cursor-pointer z-20 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-[var(--cor-borda)] bg-[var(--cor-superficie)]/95 text-[var(--cor-texto-principal)] shadow-lg hover:bg-[var(--cor-superficie-borda)] group-hover/carrossel:flex"
         >
           <CaretLeftIcon size={20} weight="bold" />
         </button>
@@ -98,7 +98,7 @@ function CarrosselRecomendadas({
           type="button"
           aria-label="Avançar músicas"
           onClick={() => mover(1)}
-          className="absolute right-1 top-[calc(50%-8px)] cursor-pointer z-20 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-[#354052] bg-[#111420]/95 text-white shadow-lg hover:bg-[#273349] group-hover/carrossel:flex"
+          className="absolute right-1 top-[calc(50%-8px)] cursor-pointer z-20 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-[var(--cor-borda)] bg-[var(--cor-superficie)]/95 text-[var(--cor-texto-principal)] shadow-lg hover:bg-[var(--cor-superficie-borda)] group-hover/carrossel:flex"
         >
           <CaretRightIcon size={20} weight="bold" />
         </button>
@@ -136,7 +136,7 @@ function EstrelaNota({
           <StarIcon
             size={30}
             weight="fill"
-            className="absolute left-0 top-0 text-[#5ba4e8]"
+            className="absolute left-0 top-0 text-[var(--cor-destaque-suave)]"
           />
         </div>
       )}
@@ -343,27 +343,26 @@ export default function CriarPost() {
           <main className="min-w-0">
             <SearchBar />
 
-            <h1 className="mt-5 font-serif text-[26px] text-white">
+            <h1 className="mt-5 font-serif text-[26px] text-[var(--cor-texto-principal)]">
               Criar avaliação
             </h1>
 
             {/* Músicas recomendadas com base nas preferências */}
             <section className="mt-5">
-              <h2 className="mb-2 font-serif text-[18px] text-white">
+              <h2 className="mb-2 font-serif text-[18px] text-[var(--cor-texto-principal)]">
                 Músicas recomendadas
               </h2>
 
               {carregandoMusicas ? (
-                <p className="py-3 text-[12px] text-[#697386]">
+                <p className="py-3 text-[12px] text-[var(--cor-texto-discreto)]">
                   Carregando músicas...
                 </p>
               ) : musicasRecomendadas.length === 0 ? (
-                <p className="py-3 text-[12px] text-[#697386]">
+                <p className="py-3 text-[12px] text-[var(--cor-texto-discreto)]">
                   Nenhuma recomendação encontrada para suas preferências.
                 </p>
               ) : (
                 <div className="flex gap-3 overflow-x-hidden pb-3">
-
                   {musicasRecomendadas.length > 0 && (
                     <CarrosselRecomendadas>
                       {musicasRecomendadas.slice(0, 8).map((musica) => (
@@ -372,10 +371,11 @@ export default function CriarPost() {
                           key={musica.id}
                           onClick={() => selecionarMusica(musica)}
                           aria-pressed={musicaSelecionada?.id === musica.id}
-                          className={`w-[160px] shrink-0 snap-start rounded-lg text-left transition ${musicaSelecionada?.id === musica.id
-                              ? "ring-2 ring-[#5ba4e8]"
+                          className={`w-[160px] shrink-0 snap-start rounded-lg text-left transition ${
+                            musicaSelecionada?.id === musica.id
+                              ? "ring-2 ring-[var(--cor-destaque-suave)]"
                               : "hover:opacity-80"
-                            }`}
+                          }`}
                         >
                           <MusicCard
                             tipo="quadrado"
@@ -395,11 +395,11 @@ export default function CriarPost() {
 
             {/* Busca de músicas */}
             <section className="mt-5">
-              <h2 className="mb-2 font-serif text-[18px] text-white">
+              <h2 className="mb-2 font-serif text-[18px] text-[var(--cor-texto-principal)]">
                 Escolha uma música
               </h2>
 
-              <div className="flex h-[40px] w-full items-center gap-2 rounded-lg border border-[#273349] bg-[#111722] px-3 transition focus-within:border-[#5ba4e8]">
+              <div className="flex h-[40px] w-full items-center gap-2 rounded-lg border border-[var(--cor-borda-suave)] bg-[#111722] px-3 transition focus-within:border-[var(--cor-destaque-suave)]">
                 <MagnifyingGlassIcon
                   size={18}
                   className="text-[#66748b]"
@@ -410,7 +410,7 @@ export default function CriarPost() {
                   value={busca}
                   onChange={(e) => setBusca(e.target.value)}
                   placeholder="Buscar música ou artista..."
-                  className="w-full bg-transparent text-[12px] text-white outline-none placeholder:text-[#697386]"
+                  className="w-full bg-transparent text-[12px] text-[var(--cor-texto-principal)] outline-none placeholder:text-[var(--cor-texto-discreto)]"
                 />
               </div>
 
@@ -424,7 +424,7 @@ export default function CriarPost() {
                         selecionarMusica(musica);
                         setBusca("");
                       }}
-                      className="flex cursor-pointer items-center gap-3 rounded-lg border border-[#273349] bg-[#111722] p-2 text-left transition hover:border-[#5ba4e8]"
+                      className="flex cursor-pointer items-center gap-3 rounded-lg border border-[var(--cor-borda-suave)] bg-[#111722] p-2 text-left transition hover:border-[var(--cor-destaque-suave)]"
                     >
                       <img
                         src={musica.capa || "/logo.png"}
@@ -433,11 +433,11 @@ export default function CriarPost() {
                       />
 
                       <div className="min-w-0">
-                        <p className="truncate text-[12px] text-white">
+                        <p className="truncate text-[12px] text-[var(--cor-texto-principal)]">
                           {musica.titulo}
                         </p>
 
-                        <p className="truncate text-[10px] text-[#697386]">
+                        <p className="truncate text-[10px] text-[var(--cor-texto-discreto)]">
                           {musica.artista?.nome ?? "Artista desconhecido"}
                         </p>
                       </div>
@@ -445,7 +445,7 @@ export default function CriarPost() {
                   ))}
 
                   {musicasFiltradas.length === 0 && (
-                    <p className="py-3 text-center text-[12px] text-[#697386]">
+                    <p className="py-3 text-center text-[12px] text-[var(--cor-texto-discreto)]">
                       Nenhuma música encontrada.
                     </p>
                   )}
@@ -456,11 +456,11 @@ export default function CriarPost() {
             {/* Música selecionada */}
             {musicaSelecionada && (
               <section className="mt-5">
-                <h2 className="mb-2 font-serif text-[18px] text-white">
+                <h2 className="mb-2 font-serif text-[18px] text-[var(--cor-texto-principal)]">
                   Música selecionada
                 </h2>
 
-                <div className="flex items-center gap-3 rounded-lg border border-[#273349] bg-[#111722] p-3">
+                <div className="flex items-center gap-3 rounded-lg border border-[var(--cor-borda-suave)] bg-[#111722] p-3">
                   <img
                     src={musicaSelecionada.capa || "/logo.png"}
                     alt={musicaSelecionada.titulo}
@@ -468,11 +468,11 @@ export default function CriarPost() {
                   />
 
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-[14px] text-white">
+                    <p className="truncate text-[14px] text-[var(--cor-texto-principal)]">
                       {musicaSelecionada.titulo}
                     </p>
 
-                    <p className="mt-1 truncate text-[11px] text-[#697386]">
+                    <p className="mt-1 truncate text-[11px] text-[var(--cor-texto-discreto)]">
                       {musicaSelecionada.artista?.nome ??
                         "Artista desconhecido"}
                     </p>
@@ -481,7 +481,7 @@ export default function CriarPost() {
                       <StarIcon
                         size={14}
                         weight="fill"
-                        className="text-[#5ba4e8]"
+                        className="text-[var(--cor-destaque-suave)]"
                       />
 
                       <span className="text-[11px] text-[#b5bbc5]">
@@ -490,7 +490,7 @@ export default function CriarPost() {
                           : "Sem avaliações"}
                       </span>
 
-                      <span className="text-[10px] text-[#697386]">
+                      <span className="text-[10px] text-[var(--cor-texto-discreto)]">
                         (
                         {musicaSelecionada.avaliacoes ??
                           musicaSelecionada._count?.posts ??
@@ -507,7 +507,7 @@ export default function CriarPost() {
 
             {/* Formulário para telas menores que xl */}
             <section className="mt-6 xl:hidden">
-              <h2 className="mb-2 font-serif text-[18px] text-white">
+              <h2 className="mb-2 font-serif text-[18px] text-[var(--cor-texto-principal)]">
                 Sua nota
               </h2>
 
@@ -528,7 +528,7 @@ export default function CriarPost() {
                 </span>
               </div>
 
-              <h2 className="mb-2 mt-4 font-serif text-[18px] text-white">
+              <h2 className="mb-2 mt-4 font-serif text-[18px] text-[var(--cor-texto-principal)]">
                 Escreva sobre essa música
               </h2>
 
@@ -537,14 +537,14 @@ export default function CriarPost() {
                 onChange={(e) => setTexto(e.target.value)}
                 placeholder="Escreva algo sobre a música..."
                 maxLength={2000}
-                className="h-[115px] w-full resize-none rounded-lg border border-[#273349] bg-[#0c1017] p-3 text-[12px] text-white outline-none transition placeholder:text-[#697386] focus:border-[#5ba4e8]"
+                className="h-[115px] w-full resize-none rounded-lg border border-[var(--cor-borda-suave)] bg-[#0c1017] p-3 text-[12px] text-[var(--cor-texto-principal)] outline-none transition placeholder:text-[var(--cor-texto-discreto)] focus:border-[var(--cor-destaque-suave)]"
               />
 
               <button
                 type="button"
                 onClick={publicarAvaliacao}
                 disabled={publicando}
-                className="mt-4 flex h-12 w-full cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#5ba4e8] text-[14px] font-serif text-white transition hover:bg-[#6bb0ef] disabled:cursor-not-allowed disabled:opacity-50"
+                className="mt-4 flex h-12 w-full cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[var(--cor-destaque-suave)] text-[14px] font-serif text-[var(--cor-texto-principal)] transition hover:bg-[#6bb0ef] disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <PlusIcon size={14} weight="bold" />
                 {publicando ? "Publicando..." : "Publicar avaliação"}
@@ -555,7 +555,7 @@ export default function CriarPost() {
           {/* Nota, texto e prévia para telas grandes */}
           <aside className="hidden xl:block">
             <div className="fixed top-2/5 w-[340px] -translate-y-2/5">
-              <h2 className="mb-2 font-serif text-[18px] text-white">
+              <h2 className="mb-2 font-serif text-[18px] text-[var(--cor-texto-principal)]">
                 Sua nota
               </h2>
 
@@ -576,7 +576,7 @@ export default function CriarPost() {
                 </span>
               </div>
 
-              <h2 className="mb-2 mt-4 font-serif text-[18px] text-white">
+              <h2 className="mb-2 mt-4 font-serif text-[18px] text-[var(--cor-texto-principal)]">
                 Escreva sobre essa música
               </h2>
 
@@ -585,14 +585,14 @@ export default function CriarPost() {
                 onChange={(e) => setTexto(e.target.value)}
                 placeholder="Escreva algo sobre a música..."
                 maxLength={2000}
-                className="h-[115px] w-full resize-none rounded-lg border border-[#273349] bg-[#0c1017] p-3 text-[11px] text-white outline-none transition placeholder:text-[#697386] focus:border-[#5ba4e8]"
+                className="h-[115px] w-full resize-none rounded-lg border border-[var(--cor-borda-suave)] bg-[#0c1017] p-3 text-[11px] text-[var(--cor-texto-principal)] outline-none transition placeholder:text-[var(--cor-texto-discreto)] focus:border-[var(--cor-destaque-suave)]"
               />
 
-              <h2 className="mb-2 mt-4 font-serif text-[18px] text-white">
+              <h2 className="mb-2 mt-4 font-serif text-[18px] text-[var(--cor-texto-principal)]">
                 Prévia da avaliação
               </h2>
 
-              <div className="rounded-lg border border-[#273349] bg-[#0c1017] p-3">
+              <div className="rounded-lg border border-[var(--cor-borda-suave)] bg-[#0c1017] p-3">
                 <div className="flex items-center gap-2">
                   <img
                     src={usuario?.foto || "/logo.png"}
@@ -601,11 +601,11 @@ export default function CriarPost() {
                   />
 
                   <div className="min-w-0">
-                    <p className="truncate text-[12px] text-white">
+                    <p className="truncate text-[12px] text-[var(--cor-texto-principal)]">
                       {usuario?.nome ?? "Você"}
                     </p>
 
-                    <p className="text-[10px] text-[#697386]">
+                    <p className="text-[10px] text-[var(--cor-texto-discreto)]">
                       Avaliação
                     </p>
                   </div>
@@ -616,7 +616,7 @@ export default function CriarPost() {
                 </p>
 
                 {musicaSelecionada && (
-                  <div className="mt-4 flex items-center gap-3 rounded-lg border border-[#273349] bg-[#111722] p-2">
+                  <div className="mt-4 flex items-center gap-3 rounded-lg border border-[var(--cor-borda-suave)] bg-[#111722] p-2">
                     <img
                       src={musicaSelecionada.capa || "/logo.png"}
                       alt={musicaSelecionada.titulo}
@@ -624,11 +624,11 @@ export default function CriarPost() {
                     />
 
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-[12px] text-white">
+                      <p className="truncate text-[12px] text-[var(--cor-texto-principal)]">
                         {musicaSelecionada.titulo}
                       </p>
 
-                      <p className="mt-1 truncate text-[10px] text-[#697386]">
+                      <p className="mt-1 truncate text-[10px] text-[var(--cor-texto-discreto)]">
                         {musicaSelecionada.artista?.nome ??
                           "Artista desconhecido"}
                       </p>
@@ -637,10 +637,10 @@ export default function CriarPost() {
                         <StarIcon
                           size={13}
                           weight="fill"
-                          className="text-[#5ba4e8]"
+                          className="text-[var(--cor-destaque-suave)]"
                         />
 
-                        <span className="text-[11px] text-white">
+                        <span className="text-[11px] text-[var(--cor-texto-principal)]">
                           {nota > 0 ? nota.toFixed(1) : "Sem nota"}
                         </span>
                       </div>
@@ -653,7 +653,7 @@ export default function CriarPost() {
                 type="button"
                 onClick={publicarAvaliacao}
                 disabled={publicando}
-                className="mt-4 flex h-12 w-full cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[#5ba4e8] text-[14px] font-serif text-white transition hover:bg-[#6bb0ef] disabled:cursor-not-allowed disabled:opacity-50"
+                className="mt-4 flex h-12 w-full cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[var(--cor-destaque-suave)] text-[14px] font-serif text-[var(--cor-texto-principal)] transition hover:bg-[#6bb0ef] disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <PlusIcon size={14} weight="bold" />
                 {publicando ? "Publicando..." : "Publicar avaliação"}

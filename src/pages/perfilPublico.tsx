@@ -115,26 +115,35 @@ export default function PerfilPublico() {
         };
     }, [username]);
 
-    async function carregarComentarios() {
-        if (!usuario) return;
-
-        try {
-            const dados = await apiRequest<ComentarioPerfil[]>(
-                `/usuarios/${usuario.id}/comentarios`
-            );
-
-            setComentarios(dados);
-        } catch (error) {
-            console.error("Erro ao buscar comentários do perfil:", error);
-            toast.error("Não foi possível carregar os comentários.");
-        }
-    }
+    const usuarioId = usuario?.id;
 
     useEffect(() => {
-        if (usuario) {
-            carregarComentarios();
+        if (usuarioId == null) return;
+
+        let ativo = true;
+
+        async function carregarComentarios() {
+            try {
+                const dados = await apiRequest<ComentarioPerfil[]>(
+                    `/usuarios/${usuarioId}/comentarios`
+                );
+
+                if (ativo) setComentarios(dados);
+            } catch (error) {
+                console.error("Erro ao buscar comentários do perfil:", error);
+
+                if (ativo) {
+                    toast.error("Não foi possível carregar os comentários.");
+                }
+            }
         }
-    }, [usuario?.id]);
+
+        void carregarComentarios();
+
+        return () => {
+            ativo = false;
+        };
+    }, [usuarioId]);
 
 
     useEffect(() => {
@@ -276,7 +285,7 @@ export default function PerfilPublico() {
         return (
             <PageLayout>
                 <PageContent>
-                    <p className="py-10 text-center font-serif text-sm text-[#697386]">
+                    <p className="py-10 text-center font-serif text-sm text-[var(--cor-texto-discreto)]">
                         Carregando perfil...
                     </p>
                 </PageContent>
@@ -291,7 +300,7 @@ export default function PerfilPublico() {
                     <div className="py-12 text-center">
                         <UserCircleIcon
                             size={36}
-                            className="mx-auto mb-4 text-[#697386]"
+                            className="mx-auto mb-4 text-[var(--cor-texto-discreto)]"
                         />
 
                         <p className="font-serif text-sm text-red-400">
@@ -317,7 +326,7 @@ export default function PerfilPublico() {
                 <div className="grid grid-cols-1 gap-10 xl:grid-cols-[minmax(0,1fr)_340px]">
                     <section className="min-w-0">
                         {/* Busca */}
-                        <div className="sticky top-0 z-20 bg-[#080A10]">
+                        <div className="sticky top-0 z-20 bg-[var(--cor-fundo)]">
                             <div className="w-full max-w-[800px] pb-6 pt-6">
                                 <SearchBar />
                             </div>
@@ -328,17 +337,17 @@ export default function PerfilPublico() {
                             <BotaoVoltar fallback="/" />
 
                             <div className="min-w-0">
-                                <h1 className="font-serif text-[26px] text-gray-100">
+                                <h1 className="font-serif text-[26px] text-[var(--cor-texto-cinza-100)]">
                                     {usuario.nome}
                                 </h1>
 
-                                <p className="mt-1 truncate font-serif text-[13px] text-[#697386]">
+                                <p className="mt-1 truncate font-serif text-[13px] text-[var(--cor-texto-discreto)]">
                                     Músicas e publicações de @{usuario.username}
                                 </p>
                             </div>
                         </div>
 
-                        <section className="w-full overflow-hidden rounded-2xl border border-[#273349] bg-[#0C121D]">
+                        <section className="w-full overflow-hidden rounded-2xl border border-[var(--cor-borda-suave)] bg-[var(--cor-superficie-profunda)]">
                             {/* Capa */}
                             <div
                                 className="relative h-36 bg-gradient-to-br from-[#172a43] via-[#142033] to-[#0C121D] bg-cover bg-center sm:h-44"
@@ -373,7 +382,7 @@ export default function PerfilPublico() {
                                         </div>
 
                                         <div className="min-w-0 pb-1">
-                                            <h2 className="break-words text-lg font-semibold text-white">
+                                            <h2 className="break-words text-lg font-semibold text-[var(--cor-texto-principal)]">
                                                 {usuario.nome}
                                             </h2>
 
@@ -388,7 +397,7 @@ export default function PerfilPublico() {
                                             type="button"
                                             onClick={compartilharPerfil}
                                             aria-label="Compartilhar perfil"
-                                            className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-[#354052] px-3 py-2 text-sm text-gray-300 transition hover:border-[#58AAF0] hover:text-[#58AAF0]"
+                                            className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-[var(--cor-borda)] px-3 py-2 text-sm text-[var(--cor-texto-cinza-300)] transition hover:border-[var(--cor-destaque)] hover:text-[var(--cor-destaque)]"
                                         >
                                             <ShareNetworkIcon size={18} />
                                             <span>Compartilhar</span>
@@ -398,7 +407,7 @@ export default function PerfilPublico() {
                                             <button
                                                 type="button"
                                                 onClick={() => navigate("/perfil")}
-                                                className="flex cursor-pointer items-center gap-2 rounded-lg bg-[#58AAF0] px-3 py-2 text-sm text-[#080A10] transition hover:bg-[#80c0fa]"
+                                                className="flex cursor-pointer items-center gap-2 rounded-lg bg-[var(--cor-destaque)] px-3 py-2 text-sm text-[var(--cor-tinta)] transition hover:bg-[#80c0fa]"
                                             >
                                                 <Settings size={17} />
                                                 Editar perfil
@@ -409,8 +418,8 @@ export default function PerfilPublico() {
                                                 onClick={alternarSeguir}
                                                 disabled={processando}
                                                 className={`flex cursor-pointer items-center gap-2 rounded-lg px-4 py-2 text-sm transition disabled:cursor-not-allowed disabled:opacity-50 ${usuario.seguindoPorMim
-                                                    ? "border border-[#354052] text-gray-300 hover:border-red-400 hover:text-red-400"
-                                                    : "bg-[#58AAF0] text-[#080A10] hover:bg-[#80c0fa]"
+                                                    ? "border border-[var(--cor-borda)] text-[var(--cor-texto-cinza-300)] hover:border-red-400 hover:text-red-400"
+                                                    : "bg-[var(--cor-destaque)] text-[var(--cor-tinta)] hover:bg-[#80c0fa]"
                                                     }`}
                                             >
                                                 {usuario.seguindoPorMim ? (
@@ -430,21 +439,21 @@ export default function PerfilPublico() {
                                 </div>
 
                                 {/* Bio */}
-                                <p className="mt-5 whitespace-pre-wrap break-words text-sm leading-6 text-gray-300">
+                                <p className="mt-5 whitespace-pre-wrap break-words text-sm leading-6 text-[var(--cor-texto-cinza-300)]">
                                     {usuario.bio || (
-                                        <span className="italic text-[#697386]">
+                                        <span className="italic text-[var(--cor-texto-discreto)]">
                                             Este usuário ainda não adicionou uma bio.
                                         </span>
                                     )}
                                 </p>
 
                                 {/* Contadores */}
-                                <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-[#273349] pt-5 text-sm text-[#8793a8]">
+                                <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-[var(--cor-borda-suave)] pt-5 text-sm text-[#8793a8]">
                                     <Link
                                         to={`/usuarios/${usuario.id}/seguidores?nome=${encodeURIComponent(usuario.nome)}&username=${encodeURIComponent(usuario.username)}`}
-                                        className="transition hover:text-[#58AAF0]"
+                                        className="transition hover:text-[var(--cor-destaque)]"
                                     >
-                                        <strong className="text-white">
+                                        <strong className="text-[var(--cor-texto-principal)]">
                                             {usuario._count?.seguidores ?? 0}
                                         </strong>{" "}
                                         Seguidores
@@ -452,9 +461,9 @@ export default function PerfilPublico() {
 
                                     <Link
                                         to={`/usuarios/${usuario.id}/seguindo?nome=${encodeURIComponent(usuario.nome)}&username=${encodeURIComponent(usuario.username)}`}
-                                        className="transition hover:text-[#58AAF0]"
+                                        className="transition hover:text-[var(--cor-destaque)]"
                                     >
-                                        <strong className="text-white">
+                                        <strong className="text-[var(--cor-texto-principal)]">
                                             {usuario._count?.seguindo ?? 0}
                                         </strong>{" "}
                                         Seguindo
@@ -464,7 +473,7 @@ export default function PerfilPublico() {
                                         <MusicNoteIcon size={17} />
 
                                         <span>
-                                            <strong className="text-white">
+                                            <strong className="text-[var(--cor-texto-principal)]">
                                                 {usuario._count?.posts ?? posts.length}
                                             </strong>{" "}
                                             Avaliações
@@ -476,13 +485,13 @@ export default function PerfilPublico() {
 
                         {/* Avaliações */}
                         {/* ABAS */}
-                        <div className="mt-8 border-b border-[#252d38]">
+                        <div className="mt-8 border-b border-[var(--cor-borda-discreta)]">
                             <div className="flex gap-8 overflow-x-auto">
                                 <button
                                     type="button"
                                     onClick={() => setAba("avaliacoes")}
                                     className={`shrink-0 cursor-pointer border-b-2 px-1 pb-3 font-serif text-[14px] transition ${aba === "avaliacoes"
-                                        ? "border-blue-400 text-white"
+                                        ? "border-blue-400 text-[var(--cor-texto-principal)]"
                                         : "border-transparent text-gray-500 hover:text-blue-400"
                                         }`}
                                 >
@@ -493,7 +502,7 @@ export default function PerfilPublico() {
                                     type="button"
                                     onClick={() => setAba("comentarios")}
                                     className={`shrink-0 cursor-pointer border-b-2 px-1 pb-3 font-serif text-[14px] transition ${aba === "comentarios"
-                                        ? "border-blue-400 text-white"
+                                        ? "border-blue-400 text-[var(--cor-texto-principal)]"
                                         : "border-transparent text-gray-500 hover:text-blue-400"
                                         }`}
                                 >
@@ -507,7 +516,7 @@ export default function PerfilPublico() {
                                 <>
                                     <div className="flex items-center gap-2">
                                         <MusicNoteIcon size={18} className="text-blue-400" />
-                                        <h2 className="font-serif text-[18px] text-gray-100">
+                                        <h2 className="font-serif text-[18px] text-[var(--cor-texto-cinza-100)]">
                                             Últimas avaliações
                                         </h2>
                                     </div>
@@ -543,7 +552,7 @@ export default function PerfilPublico() {
                                             />
                                         ))
                                     ) : (
-                                        <p className="py-8 text-center text-sm text-[#697386]">
+                                        <p className="py-8 text-center text-sm text-[var(--cor-texto-discreto)]">
                                             Nenhuma avaliação publicada.
                                         </p>
                                     )}
@@ -554,7 +563,7 @@ export default function PerfilPublico() {
                                 <>
                                     <div className="flex items-center gap-2">
                                         <ChatCircleIcon size={18} className="text-blue-400" />
-                                        <h2 className="font-serif text-[18px] text-gray-100">
+                                        <h2 className="font-serif text-[18px] text-[var(--cor-texto-cinza-100)]">
                                             Comentários
                                         </h2>
                                     </div>
@@ -567,7 +576,7 @@ export default function PerfilPublico() {
                                             />
                                         ))
                                     ) : (
-                                        <p className="py-8 text-center text-sm text-[#697386]">
+                                        <p className="py-8 text-center text-sm text-[var(--cor-texto-discreto)]">
                                             Nenhum comentário publicado.
                                         </p>
                                     )}
@@ -579,7 +588,7 @@ export default function PerfilPublico() {
                     {/* RECOMENDAÇÕES */}
                     <aside className="hidden xl:block">
                         <div className="fixed top-2/5 w-[340px] -translate-y-2/5">
-                            <h2 className="mb-5 font-serif text-[16px] text-white">
+                            <h2 className="mb-5 font-serif text-[16px] text-[var(--cor-texto-principal)]">
                                 Músicas recomendadas
                             </h2>
 

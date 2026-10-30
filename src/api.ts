@@ -15,6 +15,54 @@ export class ApiError extends Error {
     }
 }
 
+const requisicoesGetEmAndamento = new Map<string, Promise<unknown>>();
+
+function executarRequisicao<T>(
+    rota: string,
+    opcoesFetch: RequestInit,
+    headers: Headers
+): Promise<T> {
+    return (async () => {
+        const resposta = await fetch(`${API_URL}${rota}`, {
+            ...opcoesFetch,
+            headers,
+        });
+
+        if (resposta.status === 204) {
+            return undefined as T;
+        }
+
+        const tipoConteudo = resposta.headers.get("content-type");
+
+        const dados: unknown = tipoConteudo?.includes("application/json")
+            ? await resposta.json()
+            : await resposta.text();
+
+        if (!resposta.ok) {
+            let mensagem = "Ocorreu um erro na requisição.";
+            let codigo: string | undefined;
+
+            if (dados && typeof dados === "object") {
+                const erro = dados as Record<string, unknown>;
+
+                mensagem = String(
+                    erro.error ?? erro.erro ?? erro.message ?? mensagem
+                );
+
+                if (typeof erro.code === "string") {
+                    codigo = erro.code;
+                }
+            } else if (typeof dados === "string" && dados.trim()) {
+                mensagem = dados;
+            }
+
+            throw new ApiError(mensagem, codigo);
+        }
+
+        return dados as T;
+    })();
+}
+
 export async function apiRequest<T = unknown>(
     rota: string,
     opcoes: ApiRequestOptions = {}
@@ -39,41 +87,46 @@ export async function apiRequest<T = unknown>(
         headers.set("Content-Type", "application/json");
     }
 
-    const resposta = await fetch(`${API_URL}${rota}`, {
-        ...opcoesFetch,
-        headers,
-    });
+    const metodo = (opcoesFetch.method ?? "GET").toUpperCase();
+    const podeCompartilhar =
+        metodo === "GET" &&
+        !opcoesFetch.body &&
+        !opcoesFetch.signal &&
+        opcoesFetch.cache !== "no-store";
 
-    if (resposta.status === 204) {
-        return undefined as T;
+    if (!podeCompartilhar) {
+        return executarRequisicao<T>(rota, opcoesFetch, headers);
     }
 
-    const tipoConteudo = resposta.headers.get("content-type");
+    const opcoesCache = [
+        opcoesFetch.cache,
+        opcoesFetch.credentials,
+        opcoesFetch.mode,
+        opcoesFetch.redirect,
+        opcoesFetch.referrer,
+        opcoesFetch.referrerPolicy,
+        opcoesFetch.integrity,
+    ];
+    const chave = JSON.stringify([
+        `${API_URL}${rota}`,
+        Array.from(headers.entries()).sort(([a], [b]) => a.localeCompare(b)),
+        opcoesCache,
+    ]);
 
-    const dados: unknown = tipoConteudo?.includes("application/json")
-        ? await resposta.json()
-        : await resposta.text();
+    let requisicao = requisicoesGetEmAndamento.get(chave) as
+        | Promise<T>
+        | undefined;
 
-    if (!resposta.ok) {
-        let mensagem = "Ocorreu um erro na requisição.";
-        let codigo: string | undefined;
+    if (!requisicao) {
+        requisicao = executarRequisicao<T>(rota, opcoesFetch, headers);
+        requisicoesGetEmAndamento.set(chave, requisicao);
+    }
 
-        if (dados && typeof dados === "object") {
-            const erro = dados as Record<string, unknown>;
-
-            mensagem = String(
-                erro.error ?? erro.erro ?? erro.message ?? mensagem
-            );
-
-            if (typeof erro.code === "string") {
-                codigo = erro.code;
-            }
-        } else if (typeof dados === "string" && dados.trim()) {
-            mensagem = dados;
+    try {
+        return await requisicao;
+    } finally {
+        if (requisicoesGetEmAndamento.get(chave) === requisicao) {
+            requisicoesGetEmAndamento.delete(chave);
         }
-
-        throw new ApiError(mensagem, codigo);
     }
-
-    return dados as T;
 }

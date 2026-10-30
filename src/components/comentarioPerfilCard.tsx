@@ -106,7 +106,7 @@ export default function ComentarioPerfilCard({
     }, [token]);
     
     return (
-        <article className="border-b border-[#273349] pb-6">
+        <article className="border-b border-[var(--cor-borda-suave)] pb-6">
             {/* Publicação original */}
             {temPostCompleto ? (
                 <div className="min-w-0">
@@ -136,7 +136,7 @@ export default function ComentarioPerfilCard({
                     />
                 </div>
             ) : (
-                <div className="rounded-xl border border-[#354052] bg-[#111420] p-4">
+                <div className="rounded-xl border border-[var(--cor-borda)] bg-[var(--cor-superficie)] p-4">
                     <p className="text-sm text-[#8793a8]">
                         A publicação original não está disponível.
                     </p>
@@ -144,7 +144,7 @@ export default function ComentarioPerfilCard({
                     {post?.id != null && (
                         <Link
                             to={`/post/${post.id}`}
-                            className="mt-2 inline-flex items-center gap-1 text-sm text-[#58AAF0] hover:underline"
+                            className="mt-2 inline-flex items-center gap-1 text-sm text-[var(--cor-destaque)] hover:underline"
                         >
                             Ver publicação
                             <ArrowUpRightIcon size={15} />
@@ -157,8 +157,8 @@ export default function ComentarioPerfilCard({
             <div className="relative ml-[34px] flex min-h-12 items-center gap-3">
                 <div className="absolute bottom-0 left-0 top-0 w-px bg-[#354052]" />
 
-                <div className="ml-4 flex items-center gap-2 rounded-full border border-[#273349] bg-[#0C121D] px-3 py-1.5">
-                    <ChatCircleIcon size={15} className="text-[#58AAF0]" />
+                <div className="ml-4 flex items-center gap-2 rounded-full border border-[var(--cor-borda-suave)] bg-[var(--cor-superficie-profunda)] px-3 py-1.5">
+                    <ChatCircleIcon size={15} className="text-[var(--cor-destaque)]" />
 
                     <span className="text-xs text-[#8793a8]">
                         Sua resposta
@@ -172,17 +172,17 @@ export default function ComentarioPerfilCard({
                     <img
                         src={autor.foto}
                         alt={autor.nome || "Foto de perfil"}
-                        className="h-10 w-10 shrink-0 rounded-full border border-[#354052] object-cover"
+                        className="h-10 w-10 shrink-0 rounded-full border border-[var(--cor-borda)] object-cover"
                     />
                 ) : (
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#354052] bg-[#202737]">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--cor-borda)] bg-[var(--cor-superficie-elevada)]">
                         <UserIcon size={21} className="text-[#9aa6ba]" />
                     </div>
                 )}
 
                 <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                        <span className="text-sm font-semibold text-[#E4EFFF]">
+                        <span className="text-sm font-semibold text-[var(--cor-texto-destaque)]">
                             {autor?.nome || "Usuário"}
                         </span>
 
@@ -192,7 +192,7 @@ export default function ComentarioPerfilCard({
                             </span>
                         )}
 
-                        <span className="text-xs text-[#697386]">
+                        <span className="text-xs text-[var(--cor-texto-discreto)]">
                             · há {calcularTempo(comentario.dataCriacao)}
                         </span>
                     </div>
@@ -204,7 +204,7 @@ export default function ComentarioPerfilCard({
                     {post?.id != null && (
                         <Link
                             to={`/post/${post.id}#comentar`}
-                            className="mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium text-[#8793a8] transition hover:bg-[#58AAF0]/10 hover:text-[#58AAF0]"
+                            className="mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium text-[#8793a8] transition hover:bg-[var(--cor-destaque)]/10 hover:text-[var(--cor-destaque)]"
                         >
                             <ChatCircleIcon size={15} />
                             Ver conversa

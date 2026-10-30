@@ -20,12 +20,13 @@ export default function RecommendedMusic({
     <button
       type="button"
       onClick={() => navigate(`/musica/${id}`)}
-      className="w-full cursor-pointer rounded-lg border border-[#354052] bg-[#111420] p-3 text-left transition-colors hover:bg-[#171d2b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#58AAF0]"
+      className="w-full cursor-pointer rounded-lg border border-[var(--cor-borda)] bg-[var(--cor-superficie)] p-3 text-left transition-colors hover:bg-[#171d2b] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cor-destaque)]"
     >
       <div className="flex items-center gap-3">
         <img
           src={capa || "/logo.png"}
           alt={`Capa de ${titulo}`}
+          loading="lazy"
           className="h-14 w-14 shrink-0 rounded-lg object-cover"
         />
 
@@ -34,7 +35,7 @@ export default function RecommendedMusic({
             {titulo}
           </p>
 
-          <p className="mt-1 truncate text-[10px] text-[#697386]">
+          <p className="mt-1 truncate text-[10px] text-[var(--cor-texto-discreto)]">
             {artist}
           </p>
         </div>

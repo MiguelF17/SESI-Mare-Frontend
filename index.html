@@ -1,9 +1,25 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      try {
+        const temaSalvo = localStorage.getItem("mare-tema") || "escuro";
+        const sistemaPrefereEscuro = window.matchMedia(
+          "(prefers-color-scheme: dark)"
+        ).matches;
+        document.documentElement.dataset.tema =
+          temaSalvo === "sistema"
+            ? sistemaPrefereEscuro
+              ? "escuro"
+              : "claro"
+            : temaSalvo;
+      } catch {
+        document.documentElement.dataset.tema = "escuro";
+      }
+    </script>
     <title>Maré</title>
   </head>
   <body>

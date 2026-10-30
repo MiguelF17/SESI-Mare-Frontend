@@ -72,28 +72,28 @@ export default function FAQ() {
 
             {/* HERO */}
             <section
-                className="relative bg-gradient-to-r from-[#080A10] to-[#1A3854] text-white w-full pt-40 pb-20 px-24 overflow-hidden"
+                className="relative w-full overflow-hidden bg-gradient-to-r from-[var(--cor-gradiente-inicio)] to-[var(--cor-gradiente-fim)] px-4 pb-16 pt-32 text-[var(--cor-texto-principal)] sm:px-8 sm:pb-20 sm:pt-40 lg:px-24"
                 style={{ fontFamily: "Inter, sans-serif" }}
             >
 
                 <div className="relative z-10 max-w-4xl mx-auto text-center">
                     <CircleHelp
-                        size={70}
-                        className="mx-auto mb-6 text-[#58AAF0]"
+                        size={56}
+                        className="mx-auto mb-5 text-[var(--cor-destaque)] sm:mb-6 sm:h-[70px] sm:w-[70px]"
                     />
 
-                    <h1 className="text-6xl font-bold">
+                    <h1 className="text-4xl font-bold sm:text-5xl lg:text-6xl">
                         Central de Ajuda
                     </h1>
 
-                    <p className="text-xl mt-5 text-[#D5E8F8]">
+                    <p className="mt-4 text-base text-[#D5E8F8] sm:mt-5 sm:text-xl">
                         Encontre respostas para as dúvidas mais frequentes sobre a Maré.
                     </p>
 
                     {/* Pesquisa */}
                     <div className="mt-10 max-w-2xl mx-auto relative">
                         <Search
-                            className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400"
+                            className="absolute left-5 top-1/2 -translate-y-1/2 text-[var(--cor-texto-cinza-400)]"
                         />
 
                         <input
@@ -105,9 +105,9 @@ export default function FAQ() {
             </section>
 
             {/* FAQ */}
-            <section className="bg-[#fafafa] py-20 px-24">
+            <section className="bg-[#fafafa] px-4 py-12 sm:px-8 sm:py-16 lg:px-24 lg:py-20">
                 <div className="max-w-5xl mx-auto">
-                    <h2 className="text-4xl font-semibold text-[#306DA6] mb-10">
+                    <h2 className="mb-8 text-3xl font-semibold text-[var(--cor-destaque-forte)] sm:mb-10 sm:text-4xl">
                         Perguntas frequentes
                     </h2>
 
@@ -123,21 +123,21 @@ export default function FAQ() {
                                             perguntaAberta === index ? null : index
                                         )
                                     }
-                                    className="w-full px-6 py-5 flex justify-between items-center text-left hover:bg-gray-50 transition cursor-pointer"
+                                    className="flex w-full items-center justify-between gap-3 px-4 py-4 text-left transition hover:bg-gray-50 sm:px-6 sm:py-5"
                                 >
-                                    <span className="text-lg font-medium text-[#2D2D2D]">
+                                    <span className="text-base font-medium text-[#2D2D2D] sm:text-lg">
                                         {item.pergunta}
                                     </span>
 
                                     {perguntaAberta === index ? (
-                                        <ChevronUp className="text-[#58AAF0]" />
+                                        <ChevronUp className="text-[var(--cor-destaque)]" />
                                     ) : (
-                                        <ChevronDown className="text-[#58AAF0]" />
+                                        <ChevronDown className="text-[var(--cor-destaque)]" />
                                     )}
                                 </button>
 
                                 {perguntaAberta === index && (
-                                    <div className="px-6 pb-6 border-t">
+                                    <div className="border-t px-4 pb-5 sm:px-6 sm:pb-6">
                                         <p className="pt-5 text-gray-600 leading-7">
                                             {item.resposta}
                                         </p>
@@ -148,16 +148,16 @@ export default function FAQ() {
                     </div>
 
                     {/* CTA */}
-                    <div className="mt-20 bg-gradient-to-r from-[#306DA6] to-[#58AAF0] rounded-3xl p-14 text-center text-white">
-                        <h2 className="text-4xl font-bold">
+                    <div className="mt-12 rounded-3xl bg-gradient-to-r from-[var(--cor-destaque-forte)] to-[var(--cor-destaque)] p-6 text-center text-[var(--cor-texto-principal)] sm:mt-16 sm:p-10 lg:mt-20 lg:p-14">
+                        <h2 className="text-2xl font-bold sm:text-4xl">
                             Ainda não encontrou sua resposta?
                         </h2>
 
-                        <p className="mt-4 mb-8 text-lg text-[#E4EFFF]">
+                        <p className="mb-8 mt-4 text-base text-[var(--cor-texto-destaque)] sm:text-lg">
                             Entre em contato com nossa equipe e tire suas dúvidas.
                         </p>
 
-                        <Link to="/contato" className="px-10 py-4 rounded-lg border border-white hover:bg-white hover:text-[#306DA6] transition cursor-pointer hover:scale-105">
+                        <Link to="/contato" className="inline-flex rounded-lg border border-white px-6 py-3 transition hover:scale-105 hover:bg-white hover:text-[var(--cor-destaque-forte)] sm:px-10 sm:py-4">
                             Entrar em contato
                         </Link>
                     </div>

@@ -291,7 +291,7 @@ export default function EscolherMusica() {
   }
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#080A10] text-[#F5F7FB]">
+    <main className="relative min-h-screen overflow-hidden bg-[var(--cor-fundo)] text-[#F5F7FB]">
       {/* Degradê do fundo */}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[45%] bg-gradient-to-t from-[#172B41] via-[#101D2C]/70 to-transparent" />
 
@@ -318,7 +318,7 @@ export default function EscolherMusica() {
         {/* Conteúdo */}
         <section className="mt-6 flex-1 sm:mt-8">
           {/* Pesquisa */}
-          <label className="mx-auto mb-6 flex w-full max-w-md items-center gap-3 rounded-lg border border-[#29384B] bg-[#0D1520]/80 px-4 transition focus-within:border-[#58AAF0]">
+          <label className="mx-auto mb-6 flex w-full max-w-md items-center gap-3 rounded-lg border border-[#29384B] bg-[#0D1520]/80 px-4 transition focus-within:border-[var(--cor-destaque)]">
             <MagnifyingGlassIcon
               size={18}
               className="shrink-0 text-[#8495A9]"
@@ -336,7 +336,7 @@ export default function EscolherMusica() {
                   ? "Buscar gênero musical..."
                   : "Buscar artista..."
               }
-              className="min-w-0 flex-1 bg-transparent py-3 text-sm text-white outline-none placeholder:text-[#738196]"
+              className="min-w-0 flex-1 bg-transparent py-3 text-sm text-[var(--cor-texto-principal)] outline-none placeholder:text-[#738196]"
             />
 
             {(etapa === 1 ? pesquisaGenero : pesquisaArtista) && (
@@ -348,7 +348,7 @@ export default function EscolherMusica() {
                     ? setPesquisaGenero("")
                     : setPesquisaArtista("")
                 }
-                className="text-[#8495A9] transition hover:text-white"
+                className="text-[#8495A9] transition hover:text-[var(--cor-texto-principal)]"
               >
                 <XIcon size={17} />
               </button>
@@ -363,7 +363,7 @@ export default function EscolherMusica() {
                   Carregando gêneros do catálogo...
                 </p>
               ) : generosFiltrados.length === 0 ? (
-                <div className="rounded-lg border border-dashed border-[#354052] px-4 py-10 text-center text-sm leading-relaxed text-[#9BA8B8]">
+                <div className="rounded-lg border border-dashed border-[var(--cor-borda)] px-4 py-10 text-center text-sm leading-relaxed text-[#9BA8B8]">
                   {generos.length === 0
                     ? "Ainda não há gêneros disponíveis no catálogo."
                     : "Nenhum gênero corresponde à sua pesquisa."}
@@ -389,7 +389,7 @@ export default function EscolherMusica() {
                         aria-pressed={selecionado}
                         onClick={() => alternarGenero(genero)}
                         className={`group cursor-pointer flex min-h-[76px] flex-col justify-between rounded-md border p-3 text-left transition duration-200 sm:min-h-[86px] ${selecionado
-                          ? "border-[#58AAF0] bg-[#1A2C40]/90 shadow-[0_0_0_1px_rgba(88,170,240,0.08)]"
+                          ? "border-[var(--cor-destaque)] bg-[var(--cor-superficie-filtro-selecionado)]/90 shadow-[0_0_0_1px_rgba(88,170,240,0.08)]"
                           : "border-[#293342] bg-[#101722]/80 hover:border-[#52718F] hover:bg-[#152131]"
                           }`}
                       >
@@ -409,8 +409,8 @@ export default function EscolherMusica() {
 
                           <span
                             className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border transition ${selecionado
-                              ? "border-[#58AAF0] bg-[#58AAF0] text-[#07111E]"
-                              : "border-[#536174] text-transparent group-hover:border-[#58AAF0]"
+                              ? "border-[var(--cor-destaque)] bg-[var(--cor-destaque)] text-[#07111E]"
+                              : "border-[#536174] text-transparent group-hover:border-[var(--cor-destaque)]"
                               }`}
                           >
                             <CheckIcon size={10} weight="bold" />
@@ -432,7 +432,7 @@ export default function EscolherMusica() {
                   Carregando artistas do catálogo...
                 </p>
               ) : artistasFiltrados.length === 0 ? (
-                <div className="rounded-lg border border-dashed border-[#354052] px-4 py-10 text-center text-sm leading-relaxed text-[#9BA8B8]">
+                <div className="rounded-lg border border-dashed border-[var(--cor-borda)] px-4 py-10 text-center text-sm leading-relaxed text-[#9BA8B8]">
                   {artistas.length === 0
                     ? "Ainda não há artistas cadastrados no catálogo."
                     : "Nenhum artista corresponde à sua pesquisa."}
@@ -451,7 +451,7 @@ export default function EscolherMusica() {
                         aria-pressed={selecionado}
                         onClick={() => alternarArtista(artista.id)}
                         className={`group cursor-pointer rounded-lg border p-3 text-center transition duration-200 ${selecionado
-                          ? "border-[#58AAF0] bg-[#1A2C40]/90"
+                          ? "border-[var(--cor-destaque)] bg-[var(--cor-superficie-filtro-selecionado)]/90"
                           : "border-[#293342] bg-[#101722]/80 hover:border-[#52718F] hover:bg-[#152131]"
                           }`}
                       >
@@ -466,12 +466,12 @@ export default function EscolherMusica() {
                           ) : (
                             <UsersThreeIcon
                               size={36}
-                              className="text-[#58AAF0]"
+                              className="text-[var(--cor-destaque)]"
                             />
                           )}
 
                           {selecionado && (
-                            <span className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-[#58AAF0] text-[#07111E]">
+                            <span className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-[var(--cor-destaque)] text-[#07111E]">
                               <CheckIcon size={14} weight="bold" />
                             </span>
                           )}
@@ -508,7 +508,7 @@ export default function EscolherMusica() {
 
             <div className="mt-2 h-1 w-32 overflow-hidden rounded-full bg-[#293342]">
               <div
-                className={`h-full rounded-full bg-[#58AAF0] transition-all duration-300 ${etapa === 2 ? "w-full" : "w-1/2"
+                className={`h-full rounded-full bg-[var(--cor-destaque)] transition-all duration-300 ${etapa === 2 ? "w-full" : "w-1/2"
                   }`}
               />
             </div>
@@ -529,7 +529,7 @@ export default function EscolherMusica() {
                   setErro("");
                   setEtapa(1);
                 }}
-                className="flex cursor-pointer h-11 items-center gap-2 rounded-full border border-[#354052] px-4 text-sm text-[#DCE3ED] transition hover:border-[#58AAF0] hover:bg-[#152131] disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex cursor-pointer h-11 items-center gap-2 rounded-full border border-[var(--cor-borda)] px-4 text-sm text-[#DCE3ED] transition hover:border-[var(--cor-destaque)] hover:bg-[#152131] disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <ArrowLeftIcon size={17} />
                 Voltar
@@ -549,7 +549,7 @@ export default function EscolherMusica() {
                   setErro("");
                   setEtapa(2);
                 }}
-                className="flex cursor-pointer h-11 items-center gap-3 rounded-full bg-[#58AAF0] px-5 text-sm font-medium text-[#07111E] transition hover:bg-[#79BCF5] disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex cursor-pointer h-11 items-center gap-3 rounded-full bg-[var(--cor-destaque)] px-5 text-sm font-medium text-[#07111E] transition hover:bg-[#79BCF5] disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Escolher artistas
                 <ArrowRightIcon size={17} />
@@ -559,7 +559,7 @@ export default function EscolherMusica() {
                 type="button"
                 disabled={carregando || salvando}
                 onClick={concluirSelecao}
-                className="flex cursor-pointer h-11 items-center gap-3 rounded-full bg-[#58AAF0] px-5 text-sm font-medium text-[#07111E] transition hover:bg-[#79BCF5] disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex cursor-pointer h-11 items-center gap-3 rounded-full bg-[var(--cor-destaque)] px-5 text-sm font-medium text-[#07111E] transition hover:bg-[#79BCF5] disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {salvando ? "Salvando..." : "Concluir"}
                 {!salvando && <CheckIcon size={17} weight="bold" />}

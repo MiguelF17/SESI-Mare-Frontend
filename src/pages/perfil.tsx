@@ -105,15 +105,6 @@ export default function Perfil() {
     }
   }
 
-  useEffect(() => {
-    buscarPerfil();
-    buscarAvaliacoes();
-    buscarComentarios();
-    buscarSalvos();
-    buscarCurtidos();
-    carregarMusicas();
-  }, []);
-
   function abrirRecorte(arquivo: File, tipo: "foto" | "capa") {
     const url = URL.createObjectURL(arquivo);
     setImagemParaRecortar({ url, tipo });
@@ -191,6 +182,28 @@ export default function Perfil() {
       console.error("Erro ao buscar músicas recomendadas:", error);
     }
   }
+
+  useEffect(() => {
+    let ativo = true;
+
+    async function carregarDadosIniciais() {
+      await Promise.resolve();
+      if (!ativo) return;
+
+      buscarPerfil();
+      buscarAvaliacoes();
+      buscarComentarios();
+      buscarSalvos();
+      buscarCurtidos();
+      carregarMusicas();
+    }
+
+    void carregarDadosIniciais();
+
+    return () => {
+      ativo = false;
+    };
+  }, []);
 
   async function compartilharPerfil() {
     if (!usuario) return;
@@ -323,7 +336,7 @@ export default function Perfil() {
     return (
       <PageLayout>
         <PageContent>
-          <p className="py-10 text-center text-sm text-[#697386]">
+          <p className="py-10 text-center text-sm text-[var(--cor-texto-discreto)]">
             Carregando perfil...
           </p>
         </PageContent>
@@ -335,7 +348,7 @@ export default function Perfil() {
     return (
       <PageLayout>
         <PageContent>
-          <p className="py-10 text-center text-sm text-[#697386]">
+          <p className="py-10 text-center text-sm text-[var(--cor-texto-discreto)]">
             Perfil não encontrado.
           </p>
         </PageContent>
@@ -347,16 +360,16 @@ export default function Perfil() {
     <>
       {editando && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
-          <div className="w-full max-w-[500px] rounded-xl border border-[#252d38] bg-[#0d121c] p-6">
+          <div className="w-full max-w-[500px] rounded-xl border border-[var(--cor-borda-discreta)] bg-[#0d121c] p-6">
             <div className="mb-6 flex items-center justify-between">
-              <h2 className="font-serif text-[20px] text-white">
+              <h2 className="font-serif text-[20px] text-[var(--cor-texto-principal)]">
                 Editar perfil
               </h2>
 
               <button
                 type="button"
                 onClick={() => setEditando(false)}
-                className="cursor-pointer text-gray-500 transition hover:text-white"
+                className="cursor-pointer text-gray-500 transition hover:text-[var(--cor-texto-principal)]"
               >
                 ✕
               </button>
@@ -364,7 +377,7 @@ export default function Perfil() {
 
             <div className="flex flex-col gap-4">
               <div>
-                <label className="mb-2 block font-serif text-[13px] text-gray-400">
+                <label className="mb-2 block font-serif text-[13px] text-[var(--cor-texto-cinza-400)]">
                   Nome
                 </label>
 
@@ -372,12 +385,12 @@ export default function Perfil() {
                   type="text"
                   value={nomeEditado}
                   onChange={(e) => setNomeEditado(e.target.value)}
-                  className="w-full rounded-lg border border-[#252d38] bg-[#0b0e16] px-3 py-2 text-[14px] text-white outline-none focus:border-blue-400"
+                  className="w-full rounded-lg border border-[var(--cor-borda-discreta)] bg-[#0b0e16] px-3 py-2 text-[14px] text-[var(--cor-texto-principal)] outline-none focus:border-blue-400"
                 />
               </div>
 
               <div>
-                <label className="mb-2 block font-serif text-[13px] text-gray-400">
+                <label className="mb-2 block font-serif text-[13px] text-[var(--cor-texto-cinza-400)]">
                   Username
                 </label>
 
@@ -385,12 +398,12 @@ export default function Perfil() {
                   type="text"
                   value={usernameEditado}
                   onChange={(e) => setUsernameEditado(e.target.value)}
-                  className="w-full rounded-lg border border-[#252d38] bg-[#0b0e16] px-3 py-2 text-[14px] text-white outline-none focus:border-blue-400"
+                  className="w-full rounded-lg border border-[var(--cor-borda-discreta)] bg-[#0b0e16] px-3 py-2 text-[14px] text-[var(--cor-texto-principal)] outline-none focus:border-blue-400"
                 />
               </div>
 
               <div>
-                <label className="mb-2 block font-serif text-[13px] text-gray-400">
+                <label className="mb-2 block font-serif text-[13px] text-[var(--cor-texto-cinza-400)]">
                   Bio
                 </label>
 
@@ -398,7 +411,7 @@ export default function Perfil() {
                   value={bioEditada}
                   onChange={(e) => setBioEditada(e.target.value)}
                   rows={3}
-                  className="w-full resize-none rounded-lg border border-[#252d38] bg-[#0b0e16] px-3 py-2 text-[14px] text-white outline-none focus:border-blue-400"
+                  className="w-full resize-none rounded-lg border border-[var(--cor-borda-discreta)] bg-[#0b0e16] px-3 py-2 text-[14px] text-[var(--cor-texto-principal)] outline-none focus:border-blue-400"
                 />
               </div>
             </div>
@@ -407,7 +420,7 @@ export default function Perfil() {
               <button
                 type="button"
                 onClick={() => setEditando(false)}
-                className="cursor-pointer rounded-lg border border-[#252d38] px-4 py-2 font-serif text-[12px] text-gray-300 transition hover:border-gray-500"
+                className="cursor-pointer rounded-lg border border-[var(--cor-borda-discreta)] px-4 py-2 font-serif text-[12px] text-[var(--cor-texto-cinza-300)] transition hover:border-gray-500"
               >
                 Cancelar
               </button>
@@ -416,7 +429,7 @@ export default function Perfil() {
                 type="button"
                 onClick={salvarPerfil}
                 disabled={salvando}
-                className="cursor-pointer rounded-lg bg-[#5ea3ee] px-4 py-2 font-serif text-[12px] text-white transition hover:bg-[#7ab4f2] disabled:opacity-50"
+                className="cursor-pointer rounded-lg bg-[#5ea3ee] px-4 py-2 font-serif text-[12px] text-[var(--cor-texto-principal)] transition hover:bg-[#7ab4f2] disabled:opacity-50"
               >
                 {salvando ? "Salvando..." : "Salvar alterações"}
               </button>
@@ -445,7 +458,7 @@ export default function Perfil() {
         <PageContent>
           <div className="grid grid-cols-1 gap-10 xl:grid-cols-[minmax(0,1fr)_340px]">
             <section className="min-w-0">
-              <div className="sticky top-0 z-20 bg-[#080A10]">
+              <div className="sticky top-0 z-20 bg-[var(--cor-fundo)]">
                 <div className="w-full max-w-[800px] pb-6 pt-6">
                   <SearchBar />
                 </div>
@@ -454,18 +467,18 @@ export default function Perfil() {
               {/* Título da página */}
               <div className="mb-6 flex items-center gap-4">
                 <div className="min-w-0">
-                  <h1 className="font-serif text-[26px] text-gray-100">
+                  <h1 className="font-serif text-[26px] text-[var(--cor-texto-cinza-100)]">
                     {usuario.nome}
                   </h1>
 
-                  <p className="mt-1 truncate font-serif text-[13px] text-[#697386]">
+                  <p className="mt-1 truncate font-serif text-[13px] text-[var(--cor-texto-discreto)]">
                     Músicas e publicações de @{usuario.username}
                   </p>
                 </div>
               </div>
 
               {/* Cabeçalho do perfil */}
-              <section className="w-full overflow-hidden rounded-2xl border border-[#273349] bg-[#0C121D]">
+              <section className="w-full overflow-hidden rounded-2xl border border-[var(--cor-borda-suave)] bg-[var(--cor-superficie-profunda)]">
                 {/* Capa */}
                 <div
                   className="relative h-36 bg-gradient-to-br from-[#172a43] via-[#142033] to-[#0C121D] bg-cover bg-center sm:h-44"
@@ -494,7 +507,7 @@ export default function Perfil() {
                   <button
                     type="button"
                     onClick={() => capaInputRef.current?.click()}
-                    className="absolute right-4 top-4 z-10 flex cursor-pointer items-center gap-2 rounded-lg border border-white/10 bg-[#080A10]/70 px-3 py-2 text-sm text-gray-200 backdrop-blur-sm transition hover:border-[#58AAF0] hover:text-[#58AAF0]"
+                    className="absolute right-4 top-4 z-10 flex cursor-pointer items-center gap-2 rounded-lg border border-white/10 bg-[var(--cor-fundo)]/70 px-3 py-2 text-sm text-[var(--cor-texto-cinza-200)] backdrop-blur-sm transition hover:border-[var(--cor-destaque)] hover:text-[var(--cor-destaque)]"
                   >
                     <CameraIcon size={18} />
                     Alterar capa
@@ -539,14 +552,14 @@ export default function Perfil() {
                             </div>
                           )}
 
-                          <span className="absolute inset-0 flex items-center justify-center bg-black/60 text-white opacity-0 transition group-hover:opacity-100">
+                          <span className="absolute inset-0 flex items-center justify-center bg-black/60 text-[var(--cor-texto-principal)] opacity-0 transition group-hover:opacity-100">
                             <CameraIcon size={22} />
                           </span>
                         </button>
                       </div>
 
                       <div className="min-w-0 pb-1">
-                        <h2 className="break-words text-lg font-semibold text-white">
+                        <h2 className="break-words text-lg font-semibold text-[var(--cor-texto-principal)]">
                           {usuario.nome}
                         </h2>
 
@@ -562,7 +575,7 @@ export default function Perfil() {
                         type="button"
                         onClick={compartilharPerfil}
                         aria-label="Compartilhar perfil"
-                        className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-[#354052] px-3 py-2 text-sm text-gray-300 transition hover:border-[#58AAF0] hover:text-[#58AAF0]"
+                        className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-[var(--cor-borda)] px-3 py-2 text-sm text-[var(--cor-texto-cinza-300)] transition hover:border-[var(--cor-destaque)] hover:text-[var(--cor-destaque)]"
                       >
                         <ShareNetworkIcon size={18} />
                         <span>Compartilhar</span>
@@ -571,7 +584,7 @@ export default function Perfil() {
                       <button
                         type="button"
                         onClick={abrirEdicao}
-                        className="flex cursor-pointer items-center gap-2 rounded-lg bg-[#58AAF0] px-3 py-2 text-sm text-[#080A10] transition hover:bg-[#80c0fa]"
+                        className="flex cursor-pointer items-center gap-2 rounded-lg bg-[var(--cor-destaque)] px-3 py-2 text-sm text-[var(--cor-tinta)] transition hover:bg-[#80c0fa]"
                       >
                         <PencilSimpleIcon size={18} />
                         Editar perfil
@@ -580,21 +593,21 @@ export default function Perfil() {
                   </div>
 
                   {/* Bio */}
-                  <p className="mt-5 whitespace-pre-wrap break-words text-sm leading-6 text-gray-300">
+                  <p className="mt-5 whitespace-pre-wrap break-words text-sm leading-6 text-[var(--cor-texto-cinza-300)]">
                     {usuario.bio || (
-                      <span className="italic text-[#697386]">
+                      <span className="italic text-[var(--cor-texto-discreto)]">
                         Este usuário ainda não adicionou uma bio.
                       </span>
                     )}
                   </p>
 
                   {/* Contadores */}
-                  <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-[#273349] pt-5 text-sm text-[#8793a8]">
+                  <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-[var(--cor-borda-suave)] pt-5 text-sm text-[#8793a8]">
                     <Link
                       to={`/usuarios/${usuario.id}/seguidores?nome=${encodeURIComponent(usuario.nome)}&username=${encodeURIComponent(usuario.username)}`}
-                      className="transition hover:text-[#58AAF0]"
+                      className="transition hover:text-[var(--cor-destaque)]"
                     >
-                      <strong className="text-white">
+                      <strong className="text-[var(--cor-texto-principal)]">
                         {usuario._count?.seguidores ?? 0}
                       </strong>{" "}
                       Seguidores
@@ -602,9 +615,9 @@ export default function Perfil() {
 
                     <Link
                       to={`/usuarios/${usuario.id}/seguindo?nome=${encodeURIComponent(usuario.nome)}&username=${encodeURIComponent(usuario.username)}`}
-                      className="transition hover:text-[#58AAF0]"
+                      className="transition hover:text-[var(--cor-destaque)]"
                     >
-                      <strong className="text-white">
+                      <strong className="text-[var(--cor-texto-principal)]">
                         {usuario._count?.seguindo ?? 0}
                       </strong>{" "}
                       Seguindo
@@ -614,7 +627,7 @@ export default function Perfil() {
                       <MusicNoteIcon size={17} />
 
                       <span>
-                        <strong className="text-white">
+                        <strong className="text-[var(--cor-texto-principal)]">
                           {usuario._count?.posts ?? avaliacoes.length}
                         </strong>{" "}
                         Avaliações
@@ -625,13 +638,13 @@ export default function Perfil() {
               </section>
 
               {/* ABAS */}
-              <div className="mt-8 border-b border-[#252d38]">
+              <div className="mt-8 border-b border-[var(--cor-borda-discreta)]">
                 <div className="flex gap-8 overflow-x-auto">
                   <button
                     type="button"
                     onClick={() => setAba("avaliacoes")}
                     className={`shrink-0 cursor-pointer border-b-2 px-1 pb-3 font-serif text-[14px] transition ${aba === "avaliacoes"
-                      ? "border-blue-400 text-white"
+                      ? "border-blue-400 text-[var(--cor-texto-principal)]"
                       : "border-transparent text-gray-500 hover:text-blue-400"
                       }`}
                   >
@@ -642,7 +655,7 @@ export default function Perfil() {
                     type="button"
                     onClick={() => setAba("comentarios")}
                     className={`shrink-0 cursor-pointer border-b-2 px-1 pb-3 font-serif text-[14px] transition ${aba === "comentarios"
-                      ? "border-blue-400 text-white"
+                      ? "border-blue-400 text-[var(--cor-texto-principal)]"
                       : "border-transparent text-gray-500 hover:text-blue-400"
                       }`}
                   >
@@ -653,7 +666,7 @@ export default function Perfil() {
                     type="button"
                     onClick={() => setAba("curtidos")}
                     className={`shrink-0 cursor-pointer border-b-2 px-1 pb-3 font-serif text-[14px] transition ${aba === "curtidos"
-                      ? "border-blue-400 text-white"
+                      ? "border-blue-400 text-[var(--cor-texto-principal)]"
                       : "border-transparent text-gray-500 hover:text-blue-400"
                       }`}
                   >
@@ -664,7 +677,7 @@ export default function Perfil() {
                     type="button"
                     onClick={() => setAba("salvos")}
                     className={`shrink-0 cursor-pointer border-b-2 px-1 pb-3 font-serif text-[14px] transition ${aba === "salvos"
-                      ? "border-blue-400 text-white"
+                      ? "border-blue-400 text-[var(--cor-texto-principal)]"
                       : "border-transparent text-gray-500 hover:text-blue-400"
                       }`}
                   >
@@ -684,7 +697,7 @@ export default function Perfil() {
                         className="text-blue-400"
                       />
 
-                      <h2 className="font-serif text-[18px] text-gray-100">
+                      <h2 className="font-serif text-[18px] text-[var(--cor-texto-cinza-100)]">
                         Últimas avaliações
                       </h2>
                     </div>
@@ -722,7 +735,7 @@ export default function Perfil() {
                           />
                         ))
                     ) : (
-                      <p className="py-8 text-center text-[14px] text-[#697386]">
+                      <p className="py-8 text-center text-[14px] text-[var(--cor-texto-discreto)]">
                         Nenhuma avaliação feita.
                       </p>
                     )}
@@ -738,7 +751,7 @@ export default function Perfil() {
                         className="text-blue-400"
                       />
 
-                      <h2 className="font-serif text-[18px] text-gray-100">
+                      <h2 className="font-serif text-[18px] text-[var(--cor-texto-cinza-100)]">
                         Comentários
                       </h2>
                     </div>
@@ -751,7 +764,7 @@ export default function Perfil() {
                         />
                       ))
                     ) : (
-                      <p className="py-8 text-center text-sm text-[#697386]">
+                      <p className="py-8 text-center text-sm text-[var(--cor-texto-discreto)]">
                         Nenhum comentário feito.
                       </p>
                     )}
@@ -764,7 +777,7 @@ export default function Perfil() {
                     <div className="flex items-center gap-2">
                       <ChatCircleIcon size={18} className="text-blue-400" />
 
-                      <h2 className="font-serif text-[18px] text-gray-100">
+                      <h2 className="font-serif text-[18px] text-[var(--cor-texto-cinza-100)]">
                         Posts curtidos
                       </h2>
                     </div>
@@ -800,7 +813,7 @@ export default function Perfil() {
                           />
                         ))
                     ) : (
-                      <p className="py-8 text-center text-sm text-[#697386]">
+                      <p className="py-8 text-center text-sm text-[var(--cor-texto-discreto)]">
                         Você ainda não curtiu nenhuma publicação.
                       </p>
                     )}
@@ -816,7 +829,7 @@ export default function Perfil() {
                         className="text-blue-400"
                       />
 
-                      <h2 className="font-serif text-[18px] text-gray-100">
+                      <h2 className="font-serif text-[18px] text-[var(--cor-texto-cinza-100)]">
                         Músicas salvas
                       </h2>
                     </div>
@@ -850,7 +863,7 @@ export default function Perfil() {
                         );
                       })
                     ) : (
-                      <p className="py-8 text-center text-[14px] text-[#697386]">
+                      <p className="py-8 text-center text-[14px] text-[var(--cor-texto-discreto)]">
                         Nenhuma música salva.
                       </p>
                     )}
@@ -862,7 +875,7 @@ export default function Perfil() {
             {/* RECOMENDAÇÕES */}
             <aside className="hidden xl:block">
               <div className="fixed top-2/5 w-[340px] -translate-y-2/5">
-                <h2 className="mb-5 font-serif text-[16px] text-white">
+                <h2 className="mb-5 font-serif text-[16px] text-[var(--cor-texto-principal)]">
                   Músicas recomendadas
                 </h2>
 

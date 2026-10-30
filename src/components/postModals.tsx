@@ -41,7 +41,7 @@ export default function PostModals({
       <div
         role="dialog"
         aria-modal="true"
-        className="w-full max-w-md rounded-xl border border-[#354052] bg-[#111420] p-5 shadow-2xl"
+        className="w-full max-w-md rounded-xl border border-[var(--cor-borda)] bg-[var(--cor-superficie)] p-5 shadow-2xl"
         onClick={(event) => event.stopPropagation()}
       >
         {modalAcao === "excluir" && (
@@ -50,7 +50,7 @@ export default function PostModals({
               <Trash2 size={21} />
             </div>
 
-            <h2 className="text-lg font-semibold text-white">
+            <h2 className="text-lg font-semibold text-[var(--cor-texto-principal)]">
               Excluir publicação?
             </h2>
 
@@ -63,7 +63,7 @@ export default function PostModals({
                 type="button"
                 disabled={salvandoAcao}
                 onClick={() => setModalAcao(null)}
-                className="rounded-lg px-4 py-2 text-sm text-[#b5bbc5] hover:bg-[#202737] disabled:opacity-50"
+                className="rounded-lg px-4 py-2 text-sm text-[#b5bbc5] hover:bg-[var(--cor-superficie-elevada)] disabled:opacity-50"
               >
                 Cancelar
               </button>
@@ -72,7 +72,7 @@ export default function PostModals({
                 type="button"
                 disabled={salvandoAcao}
                 onClick={onExcluir}
-                className="rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600 disabled:opacity-50"
+                className="rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-[var(--cor-texto-principal)] hover:bg-red-600 disabled:opacity-50"
               >
                 {salvandoAcao ? "Excluindo..." : "Excluir"}
               </button>
@@ -82,11 +82,11 @@ export default function PostModals({
 
         {modalAcao === "denunciar" && (
           <>
-            <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-full bg-[#58AAF0]/10 text-[#58AAF0]">
+            <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-full bg-[var(--cor-destaque)]/10 text-[var(--cor-destaque)]">
               <Flag size={21} />
             </div>
 
-            <h2 className="text-lg font-semibold text-white">
+            <h2 className="text-lg font-semibold text-[var(--cor-texto-principal)]">
               Denunciar publicação
             </h2>
 
@@ -100,10 +100,10 @@ export default function PostModals({
               maxLength={500}
               rows={4}
               placeholder="Descreva o motivo da denúncia..."
-              className="mt-4 w-full resize-none rounded-lg border border-[#354052] bg-[#0C121D] p-3 text-sm text-white outline-none placeholder:text-[#697386] focus:border-[#58AAF0]"
+              className="mt-4 w-full resize-none rounded-lg border border-[var(--cor-borda)] bg-[var(--cor-superficie-profunda)] p-3 text-sm text-[var(--cor-texto-principal)] outline-none placeholder:text-[var(--cor-texto-discreto)] focus:border-[var(--cor-destaque)]"
             />
 
-            <p className="mt-1 text-right text-xs text-[#697386]">
+            <p className="mt-1 text-right text-xs text-[var(--cor-texto-discreto)]">
               {motivoDenuncia.length}/500
             </p>
 
@@ -112,7 +112,7 @@ export default function PostModals({
                 type="button"
                 disabled={salvandoAcao}
                 onClick={() => setModalAcao(null)}
-                className="rounded-lg cursor-pointer px-4 py-2 text-sm text-[#b5bbc5] hover:bg-[#202737] disabled:opacity-50"
+                className="rounded-lg cursor-pointer px-4 py-2 text-sm text-[#b5bbc5] hover:bg-[var(--cor-superficie-elevada)] disabled:opacity-50"
               >
                 Cancelar
               </button>
@@ -121,7 +121,7 @@ export default function PostModals({
                 type="button"
                 disabled={salvandoAcao || !motivoDenuncia.trim()}
                 onClick={onDenunciar}
-                className="rounded-lg cursor-pointer bg-[#58AAF0] px-4 py-2 text-sm font-medium text-[#080A10] hover:bg-[#72b7f5] disabled:opacity-50"
+                className="rounded-lg cursor-pointer bg-[var(--cor-destaque)] px-4 py-2 text-sm font-medium text-[var(--cor-tinta)] hover:bg-[#72b7f5] disabled:opacity-50"
               >
                 {salvandoAcao ? "Enviando..." : "Enviar denúncia"}
               </button>
@@ -131,7 +131,7 @@ export default function PostModals({
 
         {modalAcao === "mensagem" && (
           <>
-            <h2 className="text-lg font-semibold text-white">Maré</h2>
+            <h2 className="text-lg font-semibold text-[var(--cor-texto-principal)]">Maré</h2>
 
             <p className="mt-3 text-sm leading-6 text-[#b5bbc5]">
               {mensagemModal}
@@ -141,7 +141,7 @@ export default function PostModals({
               <button
                 type="button"
                 onClick={() => setModalAcao(null)}
-                className="rounded-lg bg-[#58AAF0] px-4 py-2 text-sm font-medium text-[#080A10] hover:bg-[#72b7f5]"
+                className="rounded-lg bg-[var(--cor-destaque)] px-4 py-2 text-sm font-medium text-[var(--cor-tinta)] hover:bg-[#72b7f5]"
               >
                 Entendi
               </button>

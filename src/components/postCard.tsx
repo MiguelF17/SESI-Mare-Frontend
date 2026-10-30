@@ -254,7 +254,7 @@ export default function PostCard({
             <StarIcon
               size={22}
               weight="fill"
-              className="absolute left-0 top-0 text-[#5ba4e8]"
+              className="absolute left-0 top-0 text-[var(--cor-destaque-suave)]"
             />
           </div>
         )}
@@ -292,7 +292,7 @@ export default function PostCard({
           navigate(`/post/${postId}`);
         }
       }}
-      className="cursor-pointer rounded-xl border border-[#354052] bg-[#111420] p-4 transition-colors hover:border-[#46536a]"
+      className="cursor-pointer rounded-xl border border-[var(--cor-borda)] bg-[var(--cor-superficie)] p-4 transition-colors hover:border-[#46536a]"
     >
       {/* Cabeçalho da publicação */}
       <div className="mb-4 flex items-start gap-3">
@@ -310,10 +310,11 @@ export default function PostCard({
             <img
               src={foto}
               alt={name || "Foto de perfil"}
-              className="h-11 w-11 rounded-full border border-[#354052] object-cover transition-opacity hover:opacity-80"
+              loading="lazy"
+              className="h-11 w-11 rounded-full border border-[var(--cor-borda)] object-cover transition-opacity hover:opacity-80"
             />
           ) : (
-            <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border border-[#354052] bg-[#202737]">
+            <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border border-[var(--cor-borda)] bg-[var(--cor-superficie-elevada)]">
               <UserIcon size={23} className="text-[#9aa6ba]" />
             </div>
           )}
@@ -328,7 +329,7 @@ export default function PostCard({
                 abrirPerfil();
               }}
               disabled={!username}
-              className="max-w-full truncate text-left text-sm hover:underline font-semibold text-[#E4EFFF]"
+              className="max-w-full truncate text-left text-sm hover:underline font-semibold text-[var(--cor-texto-destaque)]"
             >
               {name || "Usuário"}
             </button>
@@ -347,7 +348,7 @@ export default function PostCard({
             )}
           </div>
 
-          <p className="mt-1 text-xs text-[#697386]">
+          <p className="mt-1 text-xs text-[var(--cor-texto-discreto)]">
             há {calcularTempo(time)}
           </p>
         </div>
@@ -365,7 +366,7 @@ export default function PostCard({
                 event.stopPropagation();
                 setMenuAberto((aberto) => !aberto);
               }}
-              className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-[#697386] transition-colors hover:bg-[#202737] hover:text-white"
+              className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-[var(--cor-texto-discreto)] transition-colors hover:bg-[var(--cor-superficie-elevada)] hover:text-[var(--cor-texto-principal)]"
             >
               <MoreHorizontal size={20} />
             </button>
@@ -384,7 +385,7 @@ export default function PostCard({
 
                 <div
                   onClick={(event) => event.stopPropagation()}
-                  className="absolute right-0 top-9 z-40 w-48 overflow-hidden rounded-lg border border-[#354052] bg-[#171c29] py-1 shadow-xl"
+                  className="absolute right-0 top-9 z-40 w-48 overflow-hidden rounded-lg border border-[var(--cor-borda)] bg-[#171c29] py-1 shadow-xl"
                 >
 
                   {ehMeuPost && (
@@ -447,7 +448,7 @@ export default function PostCard({
             handleEditar();
           }}
           onClick={(event) => event.stopPropagation()}
-          className="mb-4 space-y-4 rounded-lg border border-[#354052] bg-[#0C121D] p-3"
+          className="mb-4 space-y-4 rounded-lg border border-[var(--cor-borda)] bg-[var(--cor-superficie-profunda)] p-3"
         >
           <label className="block text-sm text-[#d4d9e2]">
             Texto da publicação
@@ -455,7 +456,7 @@ export default function PostCard({
               value={textoEditado}
               onChange={(event) => setTextoEditado(event.target.value)}
               rows={3}
-              className="mt-2 w-full resize-y rounded-md border border-[#354052] bg-[#111420] p-2 text-sm text-white outline-none focus:border-[#58AAF0]"
+              className="mt-2 w-full resize-y rounded-md border border-[var(--cor-borda)] bg-[var(--cor-superficie)] p-2 text-sm text-[var(--cor-texto-principal)] outline-none focus:border-[var(--cor-destaque)]"
             />
           </label>
 
@@ -484,7 +485,7 @@ export default function PostCard({
             <button
               type="button"
               onClick={() => setEditando(false)}
-              className="cursor-pointer rounded-md px-3 py-2 text-sm text-[#a0aabc] hover:bg-[#202737]"
+              className="cursor-pointer rounded-md px-3 py-2 text-sm text-[#a0aabc] hover:bg-[var(--cor-superficie-elevada)]"
             >
               Cancelar
             </button>
@@ -492,7 +493,7 @@ export default function PostCard({
             <button
               type="submit"
               disabled={salvandoAcao}
-              className="cursor-pointer rounded-md bg-[#58AAF0] px-3 py-2 text-sm font-medium text-[#080A10] disabled:opacity-50"
+              className="cursor-pointer rounded-md bg-[var(--cor-destaque)] px-3 py-2 text-sm font-medium text-[var(--cor-tinta)] disabled:opacity-50"
             >
               {salvandoAcao ? "Salvando..." : "Salvar alterações"}
             </button>
@@ -549,7 +550,7 @@ export default function PostCard({
 
       {/* Curtidas e comentários */}
       {!modoNotificacao && (
-        <div className="mt-4 flex items-center border-t border-[#252d3c] pt-3 text-[#697386]">
+        <div className="mt-4 flex items-center border-t border-[#252d3c] pt-3 text-[var(--cor-texto-discreto)]">
           <div className="flex items-center gap-5">
             <button
               type="button"
@@ -583,7 +584,7 @@ export default function PostCard({
               }}
               disabled={postId === undefined}
               aria-label="Comentar nesta publicação"
-              className="flex cursor-pointer items-center gap-1.5 transition-colors hover:text-[#58AAF0] disabled:cursor-not-allowed"
+              className="flex cursor-pointer items-center gap-1.5 transition-colors hover:text-[var(--cor-destaque)] disabled:cursor-not-allowed"
             >
               <MessageCircle size={17} />
               <span className="text-xs">{comments}</span>

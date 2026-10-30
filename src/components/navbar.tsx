@@ -91,18 +91,18 @@ function Navbar() {
   }
 
   const navLinkClass = ({ isActive }: { isActive: boolean }) =>
-    `relative text-[16px] transition duration-300
+    `relative inline-flex min-h-10 items-center text-sm transition duration-300 sm:text-base
     ${
       isActive
-        ? "text-[#58AAF0]"
-        : "text-[#E4EFFF] hover:text-[#58AAF0]"
+        ? "text-[var(--cor-destaque)]"
+        : "text-[var(--cor-texto-secundario)] hover:text-[var(--cor-destaque)]"
     }
     after:content-['']
     after:absolute
     after:left-0
     after:bottom-[-6px]
     after:h-[2px]
-    after:bg-[#58AAF0]
+    after:bg-[var(--cor-destaque)]
     after:transition-all
     after:duration-300
     ${
@@ -119,12 +119,15 @@ function Navbar() {
         left-0
         w-full
         z-50
-        h-[100px]
-        bg-[#080A10]
-        px-8
+        min-h-[76px]
+        h-auto
+        bg-[var(--cor-fundo)]
+        px-3
+        py-2
         flex
         items-center
         justify-between
+        gap-3
         transition-transform
         duration-300
         ${showNavbar ? "translate-y-0" : "-translate-y-full"}
@@ -134,11 +137,11 @@ function Navbar() {
         <img
           src={logo}
           alt="Logo Maré"
-          className="h-[80px] w-[100px] object-contain"
+          className="h-14 w-16 shrink-0 object-contain sm:h-[80px] sm:w-[100px]"
         />
       </Link>
 
-      <nav className="flex items-center gap-16">
+      <nav className="flex flex-wrap items-center justify-end gap-x-2 gap-y-2 sm:gap-x-5 lg:gap-x-16">
         <NavLink to="/" end className={navLinkClass}>
           Início
         </NavLink>
@@ -159,14 +162,14 @@ function Navbar() {
           to="/perfil"
           onClick={abrirPerfil}
           className={({ isActive }) =>
-            `flex gap-4 transition duration-300 ${
+            `flex min-h-10 items-center gap-2 transition duration-300 sm:gap-4 ${
               isActive
-                ? "text-[#58AAF0]"
-                : "text-[#E4EFFF] hover:text-[#58AAF0]"
+                ? "text-[var(--cor-destaque)]"
+                : "text-[var(--cor-texto-secundario)] hover:text-[var(--cor-destaque)]"
             }`
           }
         >
-          {usuario && <p>Olá, {usuario.username}</p>}
+          {usuario && <p className="hidden sm:block">Olá, {usuario.username}</p>}
 
           <UserIcon size={24} weight="regular" />
         </NavLink>

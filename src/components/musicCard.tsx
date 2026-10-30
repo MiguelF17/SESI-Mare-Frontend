@@ -171,20 +171,22 @@ export default function MusicCard({
     return (
       <div
         onClick={() => id && navigate(`/musica/${id}`)}
-        className="h-[160px] w-[320px] shrink-0 cursor-pointer overflow-hidden rounded-lg border border-[#354052] bg-[#111420]"
+        className="h-[160px] w-[320px] shrink-0 cursor-pointer overflow-hidden rounded-lg border border-[var(--cor-borda)] bg-[var(--cor-superficie)]"
       >
         <div className="relative h-full w-full">
           <img
             src={capa || logo}
             alt={titulo}
-            className="absolute inset-0 h-full w-full object-cover" draggable={false}
+            loading="lazy"
+            className="absolute inset-0 h-full w-full object-cover"
+            draggable={false}
           />
 
           <div className="absolute inset-0 bg-black/60" />
 
           <div className="relative z-10 flex h-full w-full flex-col justify-end p-4">
             <div>
-              <p className="truncate text-lg text-white">{titulo}</p>
+              <p className="truncate text-lg text-[var(--cor-texto-principal)]">{titulo}</p>
 
               <p className="mt-1 truncate text-xs text-[#D0D0D5]">
                 {artista}
@@ -196,10 +198,10 @@ export default function MusicCard({
                     <StarIcon
                       size={13}
                       weight="fill"
-                      className="text-[#58AAF0]"
+                      className="text-[var(--cor-destaque)]"
                     />
 
-                    <span className="ml-1 text-[11px] text-white">
+                    <span className="ml-1 text-[11px] text-[var(--cor-texto-principal)]">
                       {Number(nota).toFixed(1)}
                     </span>
 
@@ -230,17 +232,19 @@ export default function MusicCard({
     return (
       <div
         onClick={() => id && navigate(`/musica/${id}`)}
-        className={`cursor-pointer rounded-lg border border-[#354052] bg-[#111420] p-2 transition hover:bg-[#171C2A] ${
+        className={`cursor-pointer rounded-lg border border-[var(--cor-borda)] bg-[var(--cor-superficie)] p-2 transition hover:bg-[#171C2A] ${
           larguraFixa ? "w-[180px] shrink-0" : "w-full min-w-0"
         }`}
       >
         <img
           src={capa || logo}
           alt={titulo}
-          className="mx-auto aspect-square w-full rounded-xl object-cover" draggable={false}
+          loading="lazy"
+          className="mx-auto aspect-square w-full rounded-xl object-cover"
+          draggable={false}
         />
 
-        <p className="mt-2 truncate text-xs text-white">{titulo}</p>
+        <p className="mt-2 truncate text-xs text-[var(--cor-texto-principal)]">{titulo}</p>
 
         <p className="mt-1 truncate text-[11px] text-[#8B93A3]">
           {artista}
@@ -252,7 +256,7 @@ export default function MusicCard({
               <Star
                 size={12}
                 weight="fill"
-                className="text-[#58AAF0]"
+                className="text-[var(--cor-destaque)]"
               />
 
               <span className="ml-1 text-[10px] text-[#D0D0D5]">
@@ -273,17 +277,19 @@ export default function MusicCard({
   return (
     <div
       onClick={() => id && navigate(`/musica/${id}`)}
-      className="w-full cursor-pointer rounded-lg border border-[#354052] bg-[#111420] p-3 transition hover:border-[#40516b]"
+      className="w-full cursor-pointer rounded-lg border border-[var(--cor-borda)] bg-[var(--cor-superficie)] p-3 transition hover:border-[#40516b]"
     >
       <div className="flex w-full items-center">
         <img
           src={capa || logo}
           alt={titulo}
-          className="h-16 w-16 shrink-0 rounded-xl object-cover" draggable={false}
+          loading="lazy"
+          className="h-16 w-16 shrink-0 rounded-xl object-cover"
+          draggable={false}
         />
 
         <div className="ml-3 min-w-0 flex-1">
-          <p className="truncate text-sm text-white">{titulo}</p>
+          <p className="truncate text-sm text-[var(--cor-texto-principal)]">{titulo}</p>
 
           <p className="mt-1 truncate text-xs text-[#8B93A3]">
             {artista}
@@ -295,10 +301,10 @@ export default function MusicCard({
                 <StarIcon
                   size={13}
                   weight="fill"
-                  className="shrink-0 text-[#58AAF0]"
+                  className="shrink-0 text-[var(--cor-destaque)]"
                 />
 
-                <span className="ml-1 text-[11px] text-white">
+                <span className="ml-1 text-[11px] text-[var(--cor-texto-principal)]">
                   {Number(nota).toFixed(1)}
                 </span>
 
@@ -322,7 +328,7 @@ export default function MusicCard({
         </div>
       </div>
 
-      <div className="mt-3 flex items-center justify-between border-t border-[#354052] pt-3">
+      <div className="mt-3 flex items-center justify-between border-t border-[var(--cor-borda)] pt-3">
         <button
           type="button"
           onClick={(e) => {
@@ -336,12 +342,12 @@ export default function MusicCard({
           <BookmarkSimpleIcon
             size={17}
             weight={salva ? "fill" : "regular"}
-            className={salva ? "text-[#58AAF0]" : "text-[#687386]"}
+            className={salva ? "text-[var(--cor-destaque)]" : "text-[#687386]"}
           />
 
           <span
             className={`ml-1 text-[11px] ${
-              salva ? "text-[#58AAF0]" : "text-[#687386]"
+              salva ? "text-[var(--cor-destaque)]" : "text-[#687386]"
             }`}
           >
             {salvando ? "Salvando..." : salva ? "Salva" : "Salvar"}
@@ -360,8 +366,8 @@ export default function MusicCard({
             aria-expanded={menuAberto}
             className={`flex h-8 w-8 cursor-pointer items-center justify-center rounded-full transition ${
               menuAberto
-                ? "bg-[#273349] text-[#58AAF0]"
-                : "text-[#D0D0D5] hover:bg-[#202536]"
+                ? "bg-[var(--cor-superficie-borda)] text-[var(--cor-destaque)]"
+                : "text-[#D0D0D5] hover:bg-[var(--cor-superficie-menu)]"
             }`}
           >
             <DotsThreeIcon size={22} weight="bold" />
@@ -381,18 +387,18 @@ export default function MusicCard({
 
               <div
                 onClick={(e) => e.stopPropagation()}
-                className="absolute bottom-10 right-0 z-40 w-56 overflow-hidden rounded-xl border border-[#354052] bg-[#111420] p-1.5 shadow-xl"
+                className="absolute bottom-10 right-0 z-40 w-56 overflow-hidden rounded-xl border border-[var(--cor-borda)] bg-[var(--cor-superficie)] p-1.5 shadow-xl"
               >
                 <button
                   type="button"
                   onClick={alternarSalvamento}
                   disabled={salvando}
-                  className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm text-[#D0D0D5] transition hover:bg-[#202536] hover:text-white disabled:opacity-50"
+                  className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm text-[#D0D0D5] transition hover:bg-[var(--cor-superficie-menu)] hover:text-[var(--cor-texto-principal)] disabled:opacity-50"
                 >
                   <BookmarkSimpleIcon
                     size={18}
                     weight={salva ? "fill" : "regular"}
-                    className={salva ? "text-[#58AAF0]" : ""}
+                    className={salva ? "text-[var(--cor-destaque)]" : ""}
                   />
 
                   <span className="flex-1">
@@ -407,7 +413,7 @@ export default function MusicCard({
                 <button
                   type="button"
                   onClick={abrirMusica}
-                  className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm text-[#D0D0D5] transition hover:bg-[#202536] hover:text-white"
+                  className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm text-[#D0D0D5] transition hover:bg-[var(--cor-superficie-menu)] hover:text-[var(--cor-texto-principal)]"
                 >
                   <ArrowSquareOutIcon size={18} />
                   Abrir página da música
@@ -417,24 +423,24 @@ export default function MusicCard({
                   <button
                     type="button"
                     onClick={abrirArtista}
-                    className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm text-[#D0D0D5] transition hover:bg-[#202536] hover:text-white"
+                    className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm text-[#D0D0D5] transition hover:bg-[var(--cor-superficie-menu)] hover:text-[var(--cor-texto-principal)]"
                   >
                     <UserCircleIcon size={18} />
                     Ver artista
                   </button>
                 )}
 
-                <div className="my-1 border-t border-[#273349]" />
+                <div className="my-1 border-t border-[var(--cor-borda-suave)]" />
 
                 <button
                   type="button"
                   onClick={compartilharMusica}
-                  className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm text-[#D0D0D5] transition hover:bg-[#202536] hover:text-white"
+                  className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm text-[#D0D0D5] transition hover:bg-[var(--cor-superficie-menu)] hover:text-[var(--cor-texto-principal)]"
                 >
                   {copiado ? (
                     <CheckIcon
                       size={18}
-                      className="text-[#58AAF0]"
+                      className="text-[var(--cor-destaque)]"
                     />
                   ) : (
                     <ShareNetworkIcon size={18} />

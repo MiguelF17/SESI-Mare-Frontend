@@ -2,7 +2,7 @@
 import Navbar from "../components/navbar"
 import Footer from "../components/footer"
 
-import fundo from "../assets/fundoHero.png"
+import fundo from "../assets/fundoHero.jpg"
 import app_store from "../assets/app_store.png"
 import play_store from "../assets/play_store.png"
 import qrcode from "../assets/qrcode.png"
@@ -39,13 +39,17 @@ function Hero() {
 
       <div
         className="
+          destaque-inicial
           relative
-          bg-[#080A10]
-          text-white
-          h-[100vh]
+          bg-[var(--cor-fundo)]
+          text-[var(--cor-texto-principal)]
+          min-h-[100svh]
           flex
           items-center
-          px-24
+          px-5
+          py-28
+          sm:px-10
+          lg:px-24
           overflow-hidden
         "
         style={{ fontFamily: "Inter, sans-serif" }}
@@ -60,9 +64,9 @@ function Hero() {
 
         {/* Texto */}
 
-        <div className="relative z-10 max-w-2xl mt-24">
+        <div className="relative z-10 mt-8 w-full max-w-2xl sm:mt-24">
 
-          <h1 className="text-6xl font-bold leading-tight">
+          <h1 className="text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl">
 
             DESCUBRA, AVALIE E
             <br />
@@ -72,17 +76,17 @@ function Hero() {
           </h1>
 
 
-          <h2 className="text-3xl font-light mt-3 text-[#58AAF0]">
+          <h2 className="mt-3 text-2xl font-light text-[var(--cor-destaque)] sm:text-3xl">
 
             que combinam com você
 
           </h2>
 
 
-          <div className="w-[520px] h-1 bg-[#58AAF0] my-6 rounded-full"></div>
+          <div className="my-6 h-1 w-full max-w-[520px] rounded-full bg-[var(--cor-destaque)]"></div>
 
 
-          <p className="text-[16px] leading-6 max-w-[500px] text-gray-300">
+          <p className="text-[16px] leading-6 max-w-[500px] text-[var(--cor-texto-cinza-300)]">
 
             Encontre novas músicas, compartilhe suas descobertas
             e descubra o que outras pessoas estão ouvindo.
@@ -99,13 +103,14 @@ function Hero() {
               border
               text-lg
               border-[white]
-              text-white
-              px-20
+              text-[var(--cor-texto-principal)]
+              px-8
+              sm:px-20
               py-4
               rounded-lg
-              hover:bg-[#58AAF0]
+              hover:bg-[var(--cor-destaque)]
               hover:text-[#080D14]
-              hover:border-[#58AAF0]
+              hover:border-[var(--cor-destaque)]
               cursor-pointer
               hover:scale-105
               transition
@@ -126,10 +131,10 @@ function Hero() {
 
       {/* ================= DESTAQUES ================= */}
 
-      <div className="bg-[#080D14] py-28 px-24">
+      <div className="bg-[var(--cor-fundo-alternativo)] px-4 py-16 sm:px-8 sm:py-20 lg:px-24 lg:py-28">
 
         <h2
-          className="text-5xl text-center text-[#58AAF0] mb-10"
+          className="mb-8 text-center text-3xl text-[var(--cor-destaque)] sm:mb-10 sm:text-5xl"
           style={{ fontFamily: "Inter, sans-serif" }}
         >
 
@@ -156,13 +161,13 @@ function Hero() {
 
           <div className="text-center">
 
-            <p className="text-3xl font-semibold text-white">
+            <p className="text-2xl font-semibold text-[var(--cor-texto-principal)] sm:text-3xl">
 
               Descubra novas músicas
 
             </p>
 
-            <p className="text-gray-400 mt-3 text-lg">
+            <p className="mt-3 px-3 text-base text-[var(--cor-texto-cinza-400)] sm:text-lg">
 
               Encontre artistas e músicas que combinam com você.
 
@@ -180,27 +185,31 @@ function Hero() {
 
       <div
         className="
-          bg-[#1d3653]
-          px-24
+          bg-[var(--cor-secao-aplicativo)]
+          px-4
           py-12
+          sm:px-8
+          lg:px-16
           flex
+          flex-col
           items-center
           gap-10
+          lg:flex-row
         "
       >
 
         {/* espaço da esquerda */}
 
-        <div className="flex-1 text-white text-center">
+        <div className="flex-1 text-[var(--cor-texto-principal)] text-center">
 
-          <p className="text-3xl text-[#9FC5F3]">
+          <p className="text-2xl text-[#9FC5F3] sm:text-3xl">
 
             ACESSE DE QUALQUER LUGAR
 
           </p>
 
 
-          <h2 className="text-5xl font-bold mt-2">
+          <h2 className="mt-2 text-3xl font-bold sm:text-5xl">
 
             Leve a Maré com você
 
@@ -218,23 +227,24 @@ function Hero() {
             items-center
             justify-center
             text-center
-            text-white
+            text-[var(--cor-texto-principal)]
             flex-1
           "
         >
 
-          <h2 className="text-2xl mt-2">
+          <h2 className="mt-2 text-2xl">
 
-           Acesse a Maré pelo seu celular.
+            Acesse a Maré pelo seu celular.
           </h2>
 
-          <div className="flex gap-4 justify-center mt-6">
+          <div className="mt-6 flex flex-wrap justify-center gap-3 sm:gap-4">
 
             <img
               src={app_store}
               alt="App Store"
               className="
-                w-[190px]
+                w-40
+                sm:w-[190px]
                 h-auto
                 cursor-pointer
                 hover:scale-105
@@ -247,8 +257,9 @@ function Hero() {
               src={play_store}
               alt="Google Play"
               className="
-                w-[180px]
-                h-[54px]
+                w-40
+                sm:w-[180px]
+                h-auto
                 cursor-pointer
                 hover:scale-105
                 transition
@@ -270,7 +281,7 @@ function Hero() {
             items-center
             justify-center
             text-center
-            text-white
+            text-[var(--cor-texto-principal)]
             flex-1
           "
         >
@@ -285,7 +296,7 @@ function Hero() {
           <img
             src={qrcode}
             alt="QR Code"
-            className="w-[180px]"
+            className="w-36 sm:w-[180px]"
           />
 
         </div>

@@ -7,10 +7,7 @@ import SearchBar from "../components/searchbar";
 import MusicCard from "../components/musicCard";
 
 import { apiRequest } from "../api";
-import {
-  buscarMusicas,
-  type Musica,
-} from "../services/musicaService";
+import type { Musica } from "../services/musicaService";
 import RecommendedMusicList from "../components/recommendedMusicList";
 
 interface MusicaSalva {
@@ -24,7 +21,6 @@ interface MusicaSalva {
 export default function Salvos() {
   const [musicas, setMusicas] = useState<MusicaSalva[]>([]);
   const [carregando, setCarregando] = useState(true);
-  const [, setRecomendadas] = useState<Musica[]>([]);
   
 
   useEffect(() => {
@@ -37,17 +33,13 @@ export default function Salvos() {
           return;
         }
 
-        const [dadosSalvos, dadosMusicas] = await Promise.all([
-          apiRequest<unknown>("/usuarios/me/salvos"),
-          buscarMusicas(),
-        ]);
+        const dadosSalvos = await apiRequest<unknown>("/usuarios/me/salvos");
 
         if (!Array.isArray(dadosSalvos)) {
           throw new Error("A API retornou uma lista de músicas salvas inválida.");
         }
 
         setMusicas(dadosSalvos as MusicaSalva[]);
-        setRecomendadas(dadosMusicas);
       } catch (error) {
         console.error("Erro ao buscar músicas salvas:", error);
       } finally {
@@ -69,29 +61,29 @@ export default function Salvos() {
       <PageContent>
         <div className="grid grid-cols-1 gap-10 xl:grid-cols-[minmax(0,1fr)_340px]">
           <div className="flex flex-col">
-            <div className="sticky top-0 z-20 bg-[#080A10]">
+            <div className="sticky top-0 z-20 bg-[var(--cor-fundo)]">
               <div className="w-full pb-6">
                 <SearchBar />
               </div>
             </div>
 
             <div className="mb-6">
-              <h1 className="font-serif text-[26px] text-gray-100">
+              <h1 className="font-serif text-[26px] text-[var(--cor-texto-cinza-100)]">
                 Músicas salvas
               </h1>
 
-              <p className="mt-1 font-serif text-[13px] text-[#697386]">
+              <p className="mt-1 font-serif text-[13px] text-[var(--cor-texto-discreto)]">
                 Músicas que você não quer deixar passar.
               </p>
             </div>
 
             <section className="flex flex-col gap-4">
               {carregando ? (
-                <p className="py-8 text-center text-[14px] text-[#697386]">
+                <p className="py-8 text-center text-[14px] text-[var(--cor-texto-discreto)]">
                   Carregando músicas...
                 </p>
               ) : musicas.length === 0 ? (
-                <p className="py-8 text-center text-[14px] text-[#697386]">
+                <p className="py-8 text-center text-[14px] text-[var(--cor-texto-discreto)]">
                   Você ainda não salvou nenhuma música.
                 </p>
               ) : (
@@ -122,7 +114,7 @@ export default function Salvos() {
 
           <aside className="hidden xl:block">
             <div className="fixed top-2/5 w-[340px] -translate-y-2/5">
-              <h2 className="mb-5 font-serif text-[16px] text-white">
+              <h2 className="mb-5 font-serif text-[16px] text-[var(--cor-texto-principal)]">
                 Músicas recomendadas
               </h2>
 

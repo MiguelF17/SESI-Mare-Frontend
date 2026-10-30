@@ -46,18 +46,18 @@ function VerificarEmail() {
     }, [token]);
 
     return (
-        <main className="min-h-screen bg-[#080A10] flex items-center justify-center px-4">
-            <div className="w-full max-w-md rounded-2xl border border-[#354052] bg-[#111420] p-8 text-center">
+        <main className="min-h-screen bg-[var(--cor-fundo)] flex items-center justify-center px-4">
+            <div className="w-full max-w-md rounded-2xl border border-[var(--cor-borda)] bg-[var(--cor-superficie)] p-8 text-center">
                 {status === "carregando" && (
                     <>
                         <LoaderCircle
                             size={48}
-                            className="mx-auto mb-5 animate-spin text-[#58AAF0]"
+                            className="mx-auto mb-5 animate-spin text-[var(--cor-destaque)]"
                         />
-                        <h1 className="text-xl font-semibold text-white">
+                        <h1 className="text-xl font-semibold text-[var(--cor-texto-principal)]">
                             Verificando seu e-mail...
                         </h1>
-                        <p className="mt-2 text-sm text-gray-400">
+                        <p className="mt-2 text-sm text-[var(--cor-texto-cinza-400)]">
                             Aguarde enquanto confirmamos sua conta.
                         </p>
                     </>
@@ -69,16 +69,16 @@ function VerificarEmail() {
                             size={48}
                             className="mx-auto mb-5 text-green-400"
                         />
-                        <h1 className="text-xl font-semibold text-white">
+                        <h1 className="text-xl font-semibold text-[var(--cor-texto-principal)]">
                             E-mail confirmado!
                         </h1>
-                        <p className="mt-2 text-sm text-gray-400">
+                        <p className="mt-2 text-sm text-[var(--cor-texto-cinza-400)]">
                             {mensagem}
                         </p>
 
                         <Link
                             to="/login"
-                            className="mt-6 inline-block rounded-lg bg-[#58AAF0] px-6 py-3 font-medium text-[#080A10] transition hover:bg-[#72A8DD]"
+                            className="mt-6 inline-block rounded-lg bg-[var(--cor-destaque)] px-6 py-3 font-medium text-[var(--cor-tinta)] transition hover:bg-[#72A8DD]"
                         >
                             Ir para o login
                         </Link>
@@ -91,16 +91,16 @@ function VerificarEmail() {
                             size={48}
                             className="mx-auto mb-5 text-red-400"
                         />
-                        <h1 className="text-xl font-semibold text-white">
+                        <h1 className="text-xl font-semibold text-[var(--cor-texto-principal)]">
                             Não foi possível confirmar
                         </h1>
-                        <p className="mt-2 text-sm text-gray-400">
+                        <p className="mt-2 text-sm text-[var(--cor-texto-cinza-400)]">
                             {mensagem}
                         </p>
 
                         <Link
                             to="/login"
-                            className="mt-6 inline-block rounded-lg border border-[#354052] px-6 py-3 font-medium text-white transition hover:bg-[#1b2230]"
+                            className="mt-6 inline-block rounded-lg border border-[var(--cor-borda)] px-6 py-3 font-medium text-[var(--cor-texto-principal)] transition hover:bg-[#1b2230]"
                         >
                             Voltar para o login
                         </Link>

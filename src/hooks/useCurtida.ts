@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { alternarCurtidaAPI } from "../services/curtidaService";
@@ -17,17 +17,16 @@ export function useCurtida({
 }: UseCurtidaProps) {
   const navigate = useNavigate();
 
-  const [curtido, setCurtido] = useState(curtidoPorMim);
-  const [quantidadeCurtidas, setQuantidadeCurtidas] = useState(likes);
+  const [estadoLocal, setEstadoLocal] = useState<{
+    postId: number | undefined;
+    curtido: boolean;
+    quantidade: number;
+  } | null>(null);
   const [carregandoCurtida, setCarregandoCurtida] = useState(false);
 
-  useEffect(() => {
-    setCurtido(curtidoPorMim);
-  }, [postId, curtidoPorMim]);
-
-  useEffect(() => {
-    setQuantidadeCurtidas(likes);
-  }, [postId, likes]);
+  const estadoDoPost = estadoLocal?.postId === postId ? estadoLocal : null;
+  const curtido = estadoDoPost?.curtido ?? curtidoPorMim;
+  const quantidadeCurtidas = estadoDoPost?.quantidade ?? likes;
 
   async function alternarCurtida() {
     if (postId === undefined || carregandoCurtida) return;
@@ -45,18 +44,21 @@ export function useCurtida({
     const novoEstado = !estadoAnterior;
 
     // Atualização imediata da interface.
-    setCurtido(novoEstado);
-    setQuantidadeCurtidas(
-      Math.max(0, quantidadeAnterior + (novoEstado ? 1 : -1))
-    );
+    setEstadoLocal({
+      postId,
+      curtido: novoEstado,
+      quantidade: Math.max(
+        0,
+        quantidadeAnterior + (novoEstado ? 1 : -1)
+      ),
+    });
     setCarregandoCurtida(true);
 
     try {
       await alternarCurtidaAPI(postId, estadoAnterior);
     } catch (error) {
       // Restaura o estado caso a API falhe.
-      setCurtido(estadoAnterior);
-      setQuantidadeCurtidas(quantidadeAnterior);
+      setEstadoLocal(null);
 
       toast.error(
         error instanceof Error

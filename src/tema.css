@@ -1,0 +1,79 @@
+/* Paleta principal da Maré. O tema escuro mantém os valores originais do site. */
+:root {
+  color-scheme: dark;
+  --cor-fundo: #080a10;
+  --cor-fundo-alternativo: #080d14;
+  --cor-superficie: #111420;
+  --cor-superficie-alternativa: #10151f;
+  --cor-superficie-cartao: #111824;
+  --cor-superficie-elevada: #202737;
+  --cor-superficie-menu: #202536;
+  --cor-superficie-suave: #172131;
+  --cor-superficie-profunda: #0c121d;
+  --cor-superficie-borda: #273349;
+  --cor-texto-principal: #ffffff;
+  --cor-texto-secundario: #b8becc;
+  --cor-texto-discreto: #697386;
+  --cor-texto-destaque: #e4efff;
+  --cor-texto-cinza-100: #f3f4f6;
+  --cor-texto-cinza-200: #e5e7eb;
+  --cor-texto-cinza-300: #d1d5db;
+  --cor-texto-cinza-400: #9ca3af;
+  --cor-superficie-genero-selecionado: #203a56;
+  --cor-superficie-filtro-selecionado: #1a2c40;
+  --cor-tinta: #080a10;
+  --cor-destaque: #58aaf0;
+  --cor-destaque-forte: #306da6;
+  --cor-destaque-alternativo: #58a9e8;
+  --cor-destaque-suave: #5ba4e8;
+  --cor-borda: #354052;
+  --cor-borda-suave: #273349;
+  --cor-borda-discreta: #252d38;
+  --cor-borda-destaque: #3a73c4;
+  --cor-gradiente-inicio: #080a10;
+  --cor-gradiente-fim: #1a3854;
+  --cor-secao-aplicativo: #1d3653;
+  --cor-barra-rolagem: #355675;
+}
+
+:root[data-tema="claro"] {
+  color-scheme: light;
+  --cor-fundo: #f5f7fb;
+  --cor-fundo-alternativo: #edf3f9;
+  --cor-superficie: #ffffff;
+  --cor-superficie-alternativa: #f0f4f8;
+  --cor-superficie-cartao: #ffffff;
+  --cor-superficie-elevada: #e9eff6;
+  --cor-superficie-menu: #eef3f8;
+  --cor-superficie-suave: #e3edf6;
+  --cor-superficie-profunda: #f0f4f8;
+  --cor-superficie-borda: #e6edf4;
+  --cor-texto-principal: #182334;
+  --cor-texto-secundario: #40516b;
+  --cor-texto-discreto: #66748b;
+  --cor-texto-destaque: #294560;
+  --cor-texto-cinza-100: #182334;
+  --cor-texto-cinza-200: #40516b;
+  --cor-texto-cinza-300: #40516b;
+  --cor-texto-cinza-400: #66748b;
+  --cor-superficie-genero-selecionado: #dcecff;
+  --cor-superficie-filtro-selecionado: #e5f1fc;
+  --cor-tinta: #080a10;
+  --cor-destaque: #246ca8;
+  --cor-destaque-forte: #1e5c94;
+  --cor-destaque-alternativo: #307bad;
+  --cor-destaque-suave: #3f84bb;
+  --cor-borda: #c8d3df;
+  --cor-borda-suave: #dbe3ec;
+  --cor-borda-discreta: #d2dce7;
+  --cor-borda-destaque: #76a9d2;
+  --cor-gradiente-inicio: #eaf3fc;
+  --cor-gradiente-fim: #dcecff;
+  --cor-secao-aplicativo: #dcecff;
+  --cor-barra-rolagem: #a8bacd;
+}
+
+/* Mantém o texto branco legível sobre a imagem escura da chamada inicial. */
+.destaque-inicial {
+  --cor-texto-principal: #ffffff;
+}

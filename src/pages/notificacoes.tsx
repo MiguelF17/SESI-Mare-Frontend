@@ -64,6 +64,37 @@ interface Notificacao {
 
 type Filtro = "todas" | "naoLidas";
 
+function tempoNotificacao(data: string) {
+    const dataNotificacao = new Date(data);
+
+    if (Number.isNaN(dataNotificacao.getTime())) {
+        return "";
+    }
+
+    const diferenca = Date.now() - dataNotificacao.getTime();
+
+    if (diferenca < 0) {
+        return "Agora";
+    }
+
+    const minutos = Math.floor(diferenca / 60000);
+
+    if (minutos < 1) return "Agora";
+    if (minutos < 60) return `Há ${minutos} min`;
+
+    const horas = Math.floor(minutos / 60);
+
+    if (horas < 24) return `Há ${horas} h`;
+
+    const dias = Math.floor(horas / 24);
+
+    if (dias < 7) {
+        return `Há ${dias} dia${dias > 1 ? "s" : ""}`;
+    }
+
+    return dataNotificacao.toLocaleDateString("pt-BR");
+}
+
 export default function Notificacoes() {
     const navigate = useNavigate();
 
@@ -76,10 +107,9 @@ export default function Notificacoes() {
     const [marcandoTodas, setMarcandoTodas] = useState(false);
 
     const carregarNotificacoes = useCallback(async () => {
-        try {
-            setCarregando(true);
-            setErro("");
+        await Promise.resolve();
 
+        try {
             const dados = await apiRequest<Notificacao[]>("/notificacoes");
 
             if (!Array.isArray(dados)) {
@@ -101,7 +131,7 @@ export default function Notificacoes() {
     }, []);
 
     useEffect(() => {
-        carregarNotificacoes();
+        void Promise.resolve().then(carregarNotificacoes);
     }, [carregarNotificacoes, tentativa]);
 
     const naoLidas = notificacoes.filter(
@@ -112,6 +142,12 @@ export default function Notificacoes() {
         (notificacao) =>
             filtro === "todas" || !notificacao.lida
     );
+
+    function tentarNovamente() {
+        setCarregando(true);
+        setErro("");
+        setTentativa((valor) => valor + 1);
+    }
 
     function iconeNotificacao(tipo: string) {
         switch (tipo) {
@@ -131,36 +167,6 @@ export default function Notificacoes() {
             default:
                 return <BellIcon size={20} />;
         }
-    }
-
-    function tempoNotificacao(data: string) {
-        const dataNotificacao = new Date(data);
-        const diferenca = Date.now() - dataNotificacao.getTime();
-
-        if (Number.isNaN(dataNotificacao.getTime())) {
-            return "";
-        }
-
-        if (diferenca < 0) {
-            return "Agora";
-        }
-
-        const minutos = Math.floor(diferenca / 60000);
-
-        if (minutos < 1) return "Agora";
-        if (minutos < 60) return `Há ${minutos} min`;
-
-        const horas = Math.floor(minutos / 60);
-
-        if (horas < 24) return `Há ${horas} h`;
-
-        const dias = Math.floor(horas / 24);
-
-        if (dias < 7) {
-            return `Há ${dias} dia${dias > 1 ? "s" : ""}`;
-        }
-
-        return dataNotificacao.toLocaleDateString("pt-BR");
     }
 
     async function marcarComoLida(id: number) {
@@ -247,7 +253,7 @@ export default function Notificacoes() {
                 <div className="grid grid-cols-1 gap-10 xl:grid-cols-[minmax(0,1fr)_340px]">
                     <section className="min-w-0">
                         {/* Barra de busca */}
-                        <div className="sticky top-0 z-20 bg-[#080A10]">
+                        <div className="sticky top-0 z-20 bg-[var(--cor-fundo)]">
                             <div className="pt-6">
                                 <SearchBar />
                             </div>
@@ -258,7 +264,7 @@ export default function Notificacoes() {
                             <BotaoVoltar fallback="/" />
 
                             <div className="min-w-0 flex-1">
-                                <h1 className="font-serif text-2xl text-[#E4EFFF]">
+                                <h1 className="font-serif text-2xl text-[var(--cor-texto-destaque)]">
                                     Notificações
                                 </h1>
 
@@ -268,14 +274,14 @@ export default function Notificacoes() {
                             </div>
 
                             {naoLidas > 0 && (
-                                <span className="flex h-7 min-w-7 items-center justify-center rounded-full bg-[#58AAF0]/15 px-2 text-xs font-medium text-[#58AAF0]">
+                                <span className="flex h-7 min-w-7 items-center justify-center rounded-full bg-[var(--cor-destaque)]/15 px-2 text-xs font-medium text-[var(--cor-destaque)]">
                                     {naoLidas}
                                 </span>
                             )}
                         </div>
 
                         {/* Lista de notificações */}
-                        <section className="overflow-hidden rounded-xl border border-[#354052] bg-[#111420]">
+                        <section className="overflow-hidden rounded-xl border border-[var(--cor-borda)] bg-[var(--cor-superficie)]">
                             <header className="flex flex-wrap items-center justify-between gap-3 border-b border-[#252d3c] px-4 py-4 sm:px-5">
                                 <div className="flex items-center gap-2">
                                     <button
@@ -283,8 +289,8 @@ export default function Notificacoes() {
                                         onClick={() => setFiltro("todas")}
                                         className={`cursor-pointer rounded-lg px-4 py-2 text-xs transition ${
                                             filtro === "todas"
-                                                ? "bg-[#202737] text-[#58AAF0]"
-                                                : "text-[#718096] hover:bg-[#202737] hover:text-[#E4EFFF]"
+                                                ? "bg-[var(--cor-superficie-elevada)] text-[var(--cor-destaque)]"
+                                                : "text-[#718096] hover:bg-[var(--cor-superficie-elevada)] hover:text-[var(--cor-texto-destaque)]"
                                         }`}
                                     >
                                         Todas
@@ -295,8 +301,8 @@ export default function Notificacoes() {
                                         onClick={() => setFiltro("naoLidas")}
                                         className={`cursor-pointer rounded-lg px-4 py-2 text-xs transition ${
                                             filtro === "naoLidas"
-                                                ? "bg-[#202737] text-[#58AAF0]"
-                                                : "text-[#718096] hover:bg-[#202737] hover:text-[#E4EFFF]"
+                                                ? "bg-[var(--cor-superficie-elevada)] text-[var(--cor-destaque)]"
+                                                : "text-[#718096] hover:bg-[var(--cor-superficie-elevada)] hover:text-[var(--cor-texto-destaque)]"
                                         }`}
                                     >
                                         Não lidas
@@ -307,7 +313,7 @@ export default function Notificacoes() {
                                     type="button"
                                     onClick={marcarTodasComoLidas}
                                     disabled={naoLidas === 0 || marcandoTodas}
-                                    className="inline-flex text-[12px] cursor-pointer items-center gap-2 rounded-lg px-2 py-2 text-xs text-[#58AAF0] transition hover:bg-[#202737] disabled:cursor-not-allowed disabled:opacity-40"
+                                    className="inline-flex text-[12px] cursor-pointer items-center gap-2 rounded-lg px-2 py-2 text-xs text-[var(--cor-destaque)] transition hover:bg-[var(--cor-superficie-elevada)] disabled:cursor-not-allowed disabled:opacity-40"
                                 >
                                     <CheckIcon size={20} />
 
@@ -325,11 +331,11 @@ export default function Notificacoes() {
                                             key={item}
                                             className="flex animate-pulse items-center gap-4 px-5 py-5"
                                         >
-                                            <div className="h-11 w-11 shrink-0 rounded-full bg-[#202737]" />
+                                            <div className="h-11 w-11 shrink-0 rounded-full bg-[var(--cor-superficie-elevada)]" />
 
                                             <div className="flex-1 space-y-2">
-                                                <div className="h-3 w-3/4 rounded bg-[#202737]" />
-                                                <div className="h-3 w-20 rounded bg-[#202737]" />
+                                                <div className="h-3 w-3/4 rounded bg-[var(--cor-superficie-elevada)]" />
+                                                <div className="h-3 w-20 rounded bg-[var(--cor-superficie-elevada)]" />
                                             </div>
                                         </div>
                                     ))}
@@ -343,10 +349,8 @@ export default function Notificacoes() {
 
                                     <button
                                         type="button"
-                                        onClick={() =>
-                                            setTentativa((valor) => valor + 1)
-                                        }
-                                        className="mt-4 inline-flex cursor-pointer items-center gap-2 rounded-lg border border-[#354052] px-4 py-2 text-xs text-[#58AAF0] transition hover:bg-[#202737]"
+                                        onClick={tentarNovamente}
+                                        className="mt-4 inline-flex cursor-pointer items-center gap-2 rounded-lg border border-[var(--cor-borda)] px-4 py-2 text-xs text-[var(--cor-destaque)] transition hover:bg-[var(--cor-superficie-elevada)]"
                                     >
                                         <ArrowClockwiseIcon size={16} />
                                         Tentar novamente
@@ -355,14 +359,14 @@ export default function Notificacoes() {
                             ) : notificacoesFiltradas.length === 0 ? (
                                 /* Lista vazia */
                                 <div className="flex flex-col items-center px-6 py-14 text-center">
-                                    <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-[#354052] bg-[#202737]">
+                                    <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-[var(--cor-borda)] bg-[var(--cor-superficie-elevada)]">
                                         <BellIcon
                                             size={28}
                                             className="text-[#718096]"
                                         />
                                     </div>
 
-                                    <h2 className="text-base font-medium text-[#E4EFFF]">
+                                    <h2 className="text-base font-medium text-[var(--cor-texto-destaque)]">
                                         {filtro === "naoLidas"
                                             ? "Tudo em dia"
                                             : "Nenhuma notificação por enquanto"}
@@ -380,9 +384,9 @@ export default function Notificacoes() {
                                     {notificacoesFiltradas.map((notificacao) => (
                                         <div
                                             key={notificacao.id}
-                                            className={`group flex items-start gap-3 px-4 py-4 transition-colors hover:bg-[#202737]/50 sm:gap-4 sm:px-5 ${
+                                            className={`group flex items-start gap-3 px-4 py-4 transition-colors hover:bg-[var(--cor-superficie-elevada)]/50 sm:gap-4 sm:px-5 ${
                                                 !notificacao.lida
-                                                    ? "bg-[#58AAF0]/[0.035]"
+                                                    ? "bg-[var(--cor-destaque)]/[0.035]"
                                                     : ""
                                             }`}
                                         >
@@ -399,10 +403,10 @@ export default function Notificacoes() {
                                                     <img
                                                         src={notificacao.usuario.foto}
                                                         alt=""
-                                                        className="h-11 w-11 shrink-0 rounded-full border border-[#354052] object-cover"
+                                                        className="h-11 w-11 shrink-0 rounded-full border border-[var(--cor-borda)] object-cover"
                                                     />
                                                 ) : (
-                                                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#354052] bg-[#202737] text-[#58AAF0]">
+                                                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[var(--cor-borda)] bg-[var(--cor-superficie-elevada)] text-[var(--cor-destaque)]">
                                                         {iconeNotificacao(notificacao.tipo)}
                                                     </div>
                                                 )}
@@ -410,7 +414,7 @@ export default function Notificacoes() {
                                                 <div className="min-w-0 flex-1">
                                                     {/* Nome e ação */}
                                                     <p className="break-words text-[14px] leading-5 text-[#d1d5db]">
-                                                        <span className="font-semibold text-[#E4EFFF]">
+                                                        <span className="font-semibold text-[var(--cor-texto-destaque)]">
                                                             {notificacao.usuario?.nome ?? "Alguém"}
                                                         </span>{" "}
                                                         {notificacao.mensagem}
@@ -468,7 +472,7 @@ export default function Notificacoes() {
                                             <div className="flex shrink-0 items-center gap-2 pt-1">
                                                 {!notificacao.lida && (
                                                     <span
-                                                        className="h-2 w-2 rounded-full bg-[#58AAF0]"
+                                                        className="h-2 w-2 rounded-full bg-[var(--cor-destaque)]"
                                                         title="Não lida"
                                                     />
                                                 )}
@@ -482,7 +486,7 @@ export default function Notificacoes() {
                                                         disabled={atualizando !== null}
                                                         title="Marcar como lida"
                                                         aria-label="Marcar como lida"
-                                                        className="cursor-pointer rounded-lg p-2 text-[#718096] transition hover:bg-[#202737] hover:text-[#58AAF0] disabled:cursor-not-allowed disabled:opacity-40"
+                                                        className="cursor-pointer rounded-lg p-2 text-[#718096] transition hover:bg-[var(--cor-superficie-elevada)] hover:text-[var(--cor-destaque)] disabled:cursor-not-allowed disabled:opacity-40"
                                                     >
                                                         <CheckIcon size={17} />
                                                     </button>
@@ -504,7 +508,7 @@ export default function Notificacoes() {
                     {/* Músicas recomendadas */}
                     <aside className="hidden min-w-0 xl:block">
                         <div className="fixed top-2/5 w-[340px] -translate-y-2/5">
-                            <h2 className="mb-5 font-serif text-base text-[#E4EFFF]">
+                            <h2 className="mb-5 font-serif text-base text-[var(--cor-texto-destaque)]">
                                 Músicas recomendadas
                             </h2>
 

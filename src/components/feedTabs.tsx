@@ -13,8 +13,8 @@ export default function FeedTabs({
         onClick={() => setAbaAtiva("paraVoce")}
         className={`pb-2 text-lg cursor-pointer ${
           abaAtiva === "paraVoce"
-            ? "border-b-2 border-[#58a9e8] text-white"
-            : "text-[#697386]"
+            ? "border-b-2 border-[var(--cor-destaque-alternativo)] text-[var(--cor-texto-principal)]"
+            : "text-[var(--cor-texto-discreto)]"
         }`}
       >
         Para você
@@ -24,8 +24,8 @@ export default function FeedTabs({
         onClick={() => setAbaAtiva("seguindo")}
         className={`pb-2 text-lg cursor-pointer ${
           abaAtiva === "seguindo"
-            ? "border-b-2 border-[#58a9e8] text-white"
-            : "text-[#697386]"
+            ? "border-b-2 border-[var(--cor-destaque-alternativo)] text-[var(--cor-texto-principal)]"
+            : "text-[var(--cor-texto-discreto)]"
         }`}
       >
         Seguindo

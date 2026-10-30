@@ -125,24 +125,24 @@ export default function Resultados() {
           {/* COLUNA PRINCIPAL */}
           <section className="min-w-0">
             {/* BUSCA FIXA */}
-            <div className="sticky top-0 z-20 bg-[#080A10]">
+            <div className="sticky top-0 z-20 bg-[var(--cor-fundo)]">
               <div className="pt-6">
                 <SearchBar />
               </div>
 
               <div className="border-b border-[#202536] pb-4 pt-5">
-                <h1 className="font-serif text-2xl text-white">
+                <h1 className="font-serif text-2xl text-[var(--cor-texto-principal)]">
                   Resultados da pesquisa
                 </h1>
 
-                <p className="mt-2 text-sm text-[#697386]">
+                <p className="mt-2 text-sm text-[var(--cor-texto-discreto)]">
                   Resultados para "{termo}"
                 </p>
               </div>
             </div>
 
             {carregando ? (
-              <p className="py-10 text-center text-sm text-[#697386]">
+              <p className="py-10 text-center text-sm text-[var(--cor-texto-discreto)]">
                 Buscando resultados...
               </p>
             ) : erro ? (
@@ -150,16 +150,16 @@ export default function Resultados() {
                 Não foi possível carregar os resultados. Tente novamente.
               </p>
             ) : !q ? (
-              <p className="py-10 text-center text-sm text-[#697386]">
+              <p className="py-10 text-center text-sm text-[var(--cor-texto-discreto)]">
                 Digite algo na barra de pesquisa.
               </p>
             ) : (
               <div className="mb-5 flex flex-col gap-10 pt-6">
                 {/* MÚSICAS */}
                 <section>
-                  <h2 className="mb-5 font-serif text-lg text-white">
+                  <h2 className="mb-5 font-serif text-lg text-[var(--cor-texto-principal)]">
                     Músicas
-                    <span className="ml-2 text-sm text-[#697386]">
+                    <span className="ml-2 text-sm text-[var(--cor-texto-discreto)]">
                       {musicasFiltradas.length}
                     </span>
                   </h2>
@@ -180,7 +180,7 @@ export default function Resultados() {
                       ))}
                     </div>
                   ) : (
-                    <p className="text-sm text-[#697386]">
+                    <p className="text-sm text-[var(--cor-texto-discreto)]">
                       Nenhuma música encontrada.
                     </p>
                   )}
@@ -188,9 +188,9 @@ export default function Resultados() {
 
                 {/* ARTISTAS */}
                 <section>
-                  <h2 className="mb-5 font-serif text-lg text-white">
+                  <h2 className="mb-5 font-serif text-lg text-[var(--cor-texto-principal)]">
                     Artistas
-                    <span className="ml-2 text-sm text-[#697386]">
+                    <span className="ml-2 text-sm text-[var(--cor-texto-discreto)]">
                       {artistasFiltrados.length}
                     </span>
                   </h2>
@@ -201,22 +201,22 @@ export default function Resultados() {
                         <Link
                           key={artista.id}
                           to={`/artistas/${artista.id}`}
-                          className="flex items-center gap-3 rounded-xl border border-[#273349] bg-[#111420] p-3 transition hover:border-[#58AAF0]/50 hover:bg-[#171C2A]"
+                          className="flex items-center gap-3 rounded-xl border border-[var(--cor-borda-suave)] bg-[var(--cor-superficie)] p-3 transition hover:border-[var(--cor-destaque)]/50 hover:bg-[#171C2A]"
                         >
                           <img
                             src={artista.fotoURL || "/logo.png"}
                             alt=""
-                            className="h-12 w-12 shrink-0 rounded-full bg-[#202536] object-cover"
+                            className="h-12 w-12 shrink-0 rounded-full bg-[var(--cor-superficie-menu)] object-cover"
                           />
 
-                          <span className="text-sm font-medium text-white">
+                          <span className="text-sm font-medium text-[var(--cor-texto-principal)]">
                             {artista.nome}
                           </span>
                         </Link>
                       ))}
                     </div>
                   ) : (
-                    <p className="text-sm text-[#697386]">
+                    <p className="text-sm text-[var(--cor-texto-discreto)]">
                       Nenhum artista encontrado.
                     </p>
                   )}
@@ -224,9 +224,9 @@ export default function Resultados() {
 
                 {/* POSTS */}
                 <section>
-                  <h2 className="mb-5 font-serif text-lg text-white">
+                  <h2 className="mb-5 font-serif text-lg text-[var(--cor-texto-principal)]">
                     Posts
-                    <span className="ml-2 text-sm text-[#697386]">
+                    <span className="ml-2 text-sm text-[var(--cor-texto-discreto)]">
                       {postsFiltrados.length}
                     </span>
                   </h2>
@@ -261,7 +261,7 @@ export default function Resultados() {
                       ))}
                     </div>
                   ) : (
-                    <p className="text-sm text-[#697386]">
+                    <p className="text-sm text-[var(--cor-texto-discreto)]">
                       Nenhum post encontrado.
                     </p>
                   )}
@@ -273,7 +273,7 @@ export default function Resultados() {
           {/* COLUNA DIREITA: RECOMENDAÇÕES */}
           <aside className="hidden xl:block">
             <div className="fixed top-2/5 w-[340px] -translate-y-2/5">
-              <h2 className="mb-5 font-serif text-base text-white">
+              <h2 className="mb-5 font-serif text-base text-[var(--cor-texto-principal)]">
                 Músicas recomendadas
               </h2>
 

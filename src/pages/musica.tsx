@@ -241,7 +241,7 @@ export default function Musica() {
     return (
       <PageLayout>
         <PageContent>
-          <div className="flex min-h-[400px] items-center justify-center text-[#697386]">
+          <div className="flex min-h-[400px] items-center justify-center text-[var(--cor-texto-discreto)]">
             Carregando música...
           </div>
         </PageContent>
@@ -254,7 +254,7 @@ export default function Musica() {
     return (
       <PageLayout>
         <PageContent>
-          <div className="flex min-h-[400px] flex-col items-center justify-center gap-4 text-[#697386]">
+          <div className="flex min-h-[400px] flex-col items-center justify-center gap-4 text-[var(--cor-texto-discreto)]">
             <p>Música não encontrada.</p>
 
             <BotaoVoltar fallback="/explorar" />
@@ -270,7 +270,7 @@ export default function Musica() {
         <div className="grid grid-cols-1 gap-10 xl:grid-cols-[minmax(0,1fr)_340px]">
           <main className="min-w-0">
             {/* BUSCA E NAVEGAÇÃO */}
-            <div className="sticky top-0 z-20 border-b border-[#242b3a] bg-[#080A10]/95 backdrop-blur-md">
+            <div className="sticky top-0 z-20 border-b border-[#242b3a] bg-[var(--cor-fundo)]/95 backdrop-blur-md">
               <div className="py-3">
                 <SearchBar />
               </div>
@@ -278,14 +278,14 @@ export default function Musica() {
               <div className="flex items-center gap-4 py-3">
                 <BotaoVoltar fallback="/explorar" />
 
-                <h1 className="truncate text-base font-bold text-white">
+                <h1 className="truncate text-base font-bold text-[var(--cor-texto-principal)]">
                   {musica.titulo}
                 </h1>
               </div>
             </div>
 
             {/* CAPA DA MÚSICA */}
-            <div className="relative mt-6 mb-4 h-[280px] w-full overflow-hidden rounded-xl border border-[#273349] bg-[#111824]">
+            <div className="relative mt-6 mb-4 h-[280px] w-full overflow-hidden rounded-xl border border-[var(--cor-borda-suave)] bg-[var(--cor-superficie-cartao)]">
               <img
                 src={musica.capa || logo}
                 alt=""
@@ -298,7 +298,7 @@ export default function Musica() {
                 className="absolute inset-0 h-full w-full object-contain"
               />
 
-              <div className="absolute inset-0 bg-gradient-to-t from-[#080A10] via-black/40 to-black/10" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[var(--cor-gradiente-inicio)] via-black/40 to-black/10" />
 
               <div className="relative z-10 flex h-full flex-col justify-between p-5">
                 {/* AÇÕES E NOTA */}
@@ -313,11 +313,11 @@ export default function Musica() {
                     <BookmarkSimpleIcon
                       size={20}
                       weight={salva ? "fill" : "regular"}
-                      className={salva ? "text-[#58AAF0]" : "text-white"}
+                      className={salva ? "text-[var(--cor-destaque)]" : "text-[var(--cor-texto-principal)]"}
                     />
 
                     <span
-                      className={`text-[13px] ${salva ? "text-[#58AAF0]" : "text-white"
+                      className={`text-[13px] ${salva ? "text-[var(--cor-destaque)]" : "text-[var(--cor-texto-principal)]"
                         }`}
                     >
                       {salvando
@@ -332,10 +332,10 @@ export default function Musica() {
                     <StarIcon
                       size={20}
                       weight="fill"
-                      className="text-[#58AAF0]"
+                      className="text-[var(--cor-destaque)]"
                     />
 
-                    <span className="text-[18px] text-white">
+                    <span className="text-[18px] text-[var(--cor-texto-principal)]">
                       {Number(musica.nota || 0).toFixed(1)}
                     </span>
                   </div>
@@ -343,14 +343,14 @@ export default function Musica() {
 
                 {/* INFORMAÇÕES */}
                 <div className="max-w-[70%]">
-                  <h2 className="truncate font-serif text-[30px] leading-tight text-white">
+                  <h2 className="truncate font-serif text-[30px] leading-tight text-[var(--cor-texto-principal)]">
                     {musica.titulo}
                   </h2>
 
                   {musica.artista && (
                     <Link
                       to={`/artista/${musica.artista.id}`}
-                      className="mt-1 block truncate text-[14px] text-[#d0d0d0] transition hover:text-[#58AAF0]"
+                      className="mt-1 block truncate text-[14px] text-[#d0d0d0] transition hover:text-[var(--cor-destaque)]"
                     >
                       {musica.artista.fotoURL && (
                         <img
@@ -396,12 +396,12 @@ export default function Musica() {
 
             {/* MÚSICAS RELACIONADAS */}
             <section className="mt-8">
-              <h2 className="mb-3 font-serif text-[24px] text-white">
+              <h2 className="mb-3 font-serif text-[24px] text-[var(--cor-texto-principal)]">
                 Músicas relacionadas
               </h2>
 
               {carregandoRelacionadas ? (
-                <p className="text-[14px] text-[#697386]">
+                <p className="text-[14px] text-[var(--cor-texto-discreto)]">
                   Carregando músicas relacionadas...
                 </p>
               ) : musicasRelacionadas.length > 0 ? (
@@ -420,7 +420,7 @@ export default function Musica() {
                   ))}
                 </div>
               ) : (
-                <p className="text-[14px] text-[#697386]">
+                <p className="text-[14px] text-[var(--cor-texto-discreto)]">
                   Nenhuma música relacionada encontrada.
                 </p>
               )}
@@ -430,7 +430,7 @@ export default function Musica() {
             <button
               type="button"
               onClick={() => navigate(`/criarpost?musica=${musica.id}`)}
-              className="mt-12 flex h-14 w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-[#5ba4e8] font-serif text-[18px] text-white transition hover:bg-[#6bb0ef]"
+              className="mt-12 flex h-14 w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-[var(--cor-destaque-suave)] font-serif text-[18px] text-[var(--cor-texto-principal)] transition hover:bg-[#6bb0ef]"
             >
               <PlusIcon weight="bold" size={18} />
               Adicionar um post
@@ -440,7 +440,7 @@ export default function Musica() {
           {/* POSTS RELACIONADOS */}
           <aside className="hidden xl:block">
             <div className="sticky top-40">
-              <h2 className="mb-5 font-serif text-[16px] text-white">
+              <h2 className="mb-5 font-serif text-[16px] text-[var(--cor-texto-principal)]">
                 Posts relacionados
               </h2>
 
@@ -469,7 +469,7 @@ export default function Musica() {
                     />
                   ))
                 ) : (
-                  <p className="py-8 text-center text-[14px] text-[#697386]">
+                  <p className="py-8 text-center text-[14px] text-[var(--cor-texto-discreto)]">
                     Nenhum post feito.
                   </p>
                 )}

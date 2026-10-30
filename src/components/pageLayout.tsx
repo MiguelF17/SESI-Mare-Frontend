@@ -6,10 +6,10 @@ interface PageLayoutProps {
 
 export default function PageLayout({ children }: PageLayoutProps) {
   return (
-    <div className="min-h-screen bg-[#080A10] text-white">
+    <div className="min-h-screen bg-[var(--cor-fundo)] text-[var(--cor-texto-principal)]">
       <Sidebar />
 
-      <main className="ml-0 md:ml-[340px] min-h-screen">
+      <main className="ml-16 min-h-screen min-w-0 md:ml-[clamp(220px,30vw,340px)]">
         {children}
       </main>
     </div>

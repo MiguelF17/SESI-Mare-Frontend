@@ -4,10 +4,29 @@
 
 @import "tailwindcss";
 
+/* Evita que dimensões rígidas em componentes criem rolagem horizontal global. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  width: 100%;
+}
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+}
+
 /* Barra de rolagem da Maré */
 .scrollbar-mare {
   scrollbar-width: thin;
-  scrollbar-color: #355675 transparent;
+  scrollbar-color: var(--cor-barra-rolagem) transparent;
 }
 
 .scrollbar-mare::-webkit-scrollbar {
@@ -19,12 +38,12 @@
 }
 
 .scrollbar-mare::-webkit-scrollbar-thumb {
-  background-color: #355675;
+  background-color: var(--cor-barra-rolagem);
   border-radius: 999px;
 }
 
 .scrollbar-mare::-webkit-scrollbar-thumb:hover {
-  background-color: #58aaf0;
+  background-color: var(--cor-destaque);
 }
 
 /* curtida */

@@ -56,12 +56,12 @@ export default function RecommendedMusicList() {
   );
 
   if (carregando) {
-    return <p className="text-sm text-[#697386]">Carregando recomendações...</p>;
+    return <p className="text-sm text-[var(--cor-texto-discreto)]">Carregando recomendações...</p>;
   }
 
   if (musicasRecomendadas.length === 0) {
     return (
-      <p className="text-sm text-[#697386]">
+      <p className="text-sm text-[var(--cor-texto-discreto)]">
         Nenhuma recomendação encontrada para suas preferências.
       </p>
     );

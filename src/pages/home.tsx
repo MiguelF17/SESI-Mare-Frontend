@@ -31,19 +31,26 @@ export default function Home() {
     null
   );
 
+  function selecionarAba(aba: "paraVoce" | "seguindo") {
+    if (aba === "seguindo" && !localStorage.getItem("token")) {
+      setErroSeguindo(
+        "Faça login para ver as publicações de quem você segue."
+      );
+      setPostsSeguindo([]);
+    } else {
+      setErroSeguindo("");
+    }
+
+    setAbaAtiva(aba);
+  }
+
 
 
   // Busca as publicações de quem o usuário segue.
   useEffect(() => {
     if (abaAtiva !== "seguindo") return;
 
-    if (!localStorage.getItem("token")) {
-      setErroSeguindo(
-        "Faça login para ver as publicações de quem você segue."
-      );
-      setPostsSeguindo([]);
-      return;
-    }
+    if (!localStorage.getItem("token")) return;
 
     async function buscarPostsSeguindo() {
       setCarregandoSeguindo(true);
@@ -96,7 +103,7 @@ export default function Home() {
       <PageContent>
         <div className="grid grid-cols-1 gap-10 xl:grid-cols-[minmax(0,1fr)_340px]">
           <section className="min-w-0">
-            <div className="sticky top-0 z-20 bg-[#080A10]">
+            <div className="sticky top-0 z-20 bg-[var(--cor-fundo)]">
               <div className="pt-6">
                 <SearchBar />
               </div>
@@ -104,14 +111,14 @@ export default function Home() {
               <div className="flex justify-center pb-2 pt-4">
                 <FeedTabs
                   abaAtiva={abaAtiva}
-                  setAbaAtiva={setAbaAtiva}
+                  setAbaAtiva={selecionarAba}
                 />
               </div>
             </div>
 
             <div className="flex flex-col gap-6 pt-4">
               {feedCarregando ? (
-                <p className="py-8 text-center text-sm text-[#697386]">
+                <p className="py-8 text-center text-sm text-[var(--cor-texto-discreto)]">
                   Carregando publicações...
                 </p>
               ) : erroFeed ? (
@@ -150,7 +157,7 @@ export default function Home() {
                   />
                 ))
               ) : (
-                <p className="py-8 text-center text-sm text-[#697386]">
+                <p className="py-8 text-center text-sm text-[var(--cor-texto-discreto)]">
                   {abaAtiva === "seguindo"
                     ? "Nenhuma publicação de quem você segue."
                     : "Nenhum post feito."}
@@ -161,7 +168,7 @@ export default function Home() {
 
           <aside className="hidden xl:block">
             <div className="fixed top-2/5 w-[340px] -translate-y-2/5">
-              <h2 className="mb-5 font-serif text-[16px] text-white">
+              <h2 className="mb-5 font-serif text-[16px] text-[var(--cor-texto-principal)]">
                 Músicas recomendadas
               </h2>
 

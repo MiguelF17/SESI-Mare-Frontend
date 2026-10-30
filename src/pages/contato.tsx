@@ -3,7 +3,7 @@ import Footer from "../components/footer"
 
 import { FaPhone, FaEnvelope, FaClock } from "react-icons/fa"
 
-import fundo from "../assets/fundoHero.png"
+import fundo from "../assets/fundoHero.jpg"
 
 
 function Contato() {
@@ -23,9 +23,11 @@ function Contato() {
             px-6
             md:px-12
             lg:px-24
-            py-16
+            pt-28
+            pb-12
+            sm:py-16
             overflow-hidden
-             bg-[#080A10]
+             bg-[var(--cor-fundo)]
              "
             >
 
@@ -55,21 +57,22 @@ function Contato() {
     bg-[#111A25]
     shadow-xl
     rounded-2xl
-    p-8
+    p-5
+    sm:p-8
     my-12
 "
                     >
 
                         {/* TÍTULO */}
 
-                        <h1 className="text-3xl font-bold text-[#58AAF0] mb-2">
+                        <h1 className="text-3xl font-bold text-[var(--cor-destaque)] mb-2">
 
                             Fale conosco
 
                         </h1>
 
 
-                        <p className="text-[#E4EFFF] mb-6">
+                        <p className="text-[var(--cor-texto-destaque)] mb-6">
 
                             Tem alguma dúvida, sugestão ou quer saber mais sobre a Maré?
                             Nossa equipe está pronta para te atender.
@@ -87,16 +90,16 @@ function Contato() {
                                 placeholder="Seu nome"
                                 required
                                 className="
-                                    bg-[#080D14]
+                                    bg-[var(--cor-fundo-alternativo)]
                                     border
                                     border-[#445264]
-                                    text-white
+                                    text-[var(--cor-texto-principal)]
                                     placeholder-[#445264]
                                     p-3
                                     rounded-lg
                                     focus:outline-none
                                     focus:ring-1
-                                    focus:ring-[#58AAF0]
+                                    focus:ring-[var(--cor-destaque)]
                                 "
                             />
 
@@ -107,16 +110,16 @@ function Contato() {
                                 placeholder="Seu e-mail"
                                 required
                                 className="
-                                    bg-[#080D14]
+                                    bg-[var(--cor-fundo-alternativo)]
                                     border
                                     border-[#445264]
-                                    text-white
+                                    text-[var(--cor-texto-principal)]
                                     placeholder-[#445264]
                                     p-3
                                     rounded-lg
                                     focus:outline-none
                                     focus:ring-1
-                                    focus:ring-[#58AAF0]
+                                    focus:ring-[var(--cor-destaque)]
                                 "
                             />
 
@@ -127,16 +130,16 @@ function Contato() {
                                 placeholder="Seu telefone"
                                 required
                                 className="
-                                    bg-[#080D14]
+                                    bg-[var(--cor-fundo-alternativo)]
                                     border
                                     border-[#445264]
-                                    text-white
+                                    text-[var(--cor-texto-principal)]
                                     placeholder-[#445264]
                                     p-3
                                     rounded-lg
                                     focus:outline-none
                                     focus:ring-1
-                                    focus:ring-[#58AAF0]
+                                    focus:ring-[var(--cor-destaque)]
                                 "
                             />
 
@@ -146,10 +149,10 @@ function Contato() {
                                 placeholder="Sua mensagem..."
                                 required
                                 className="
-                                    bg-[#080D14]
+                                    bg-[var(--cor-fundo-alternativo)]
                                     border
                                     border-[#445264]
-                                    text-white
+                                    text-[var(--cor-texto-principal)]
                                     placeholder-[#445264]
                                     p-3
                                     rounded-lg
@@ -157,7 +160,7 @@ function Contato() {
                                     resize-none
                                     focus:outline-none
                                     focus:ring-1
-                                    focus:ring-[#58AAF0]
+                                    focus:ring-[var(--cor-destaque)]
                                 "
                             />
 
@@ -173,13 +176,13 @@ function Contato() {
                                 type="submit"
                                 className="
                                     mt-2
-                                    bg-[#58AAF0]
+                                    bg-[var(--cor-destaque)]
                                     text-[#0E192A]
                                     py-3
                                     rounded-lg
                                     font-semibold
-                                    hover:bg-[#306DA6]
-                                    hover:text-white
+                                    hover:bg-[var(--cor-destaque-forte)]
+                                    hover:text-[var(--cor-texto-principal)]
                                     hover:scale-105
                                     transition
                                     duration-300
@@ -199,25 +202,25 @@ function Contato() {
 
                         <div className="text-center mt-8">
 
-                            <h2 className="text-2xl font-bold text-[#58AAF0] mb-2">
+                            <h2 className="text-2xl font-bold text-[var(--cor-destaque)] mb-2">
 
                                 Atendimento
 
                             </h2>
 
 
-                            <p className="text-[#E4EFFF] mb-4">
+                            <p className="text-[var(--cor-texto-destaque)] mb-4">
 
                                 Você pode falar com a gente pelos canais abaixo:
 
                             </p>
 
 
-                            <div className="space-y-3 text-[#E4EFFF]">
+                            <div className="space-y-3 text-[var(--cor-texto-destaque)]">
 
                                 <p className="flex items-center justify-center gap-2">
 
-                                    <FaPhone className="text-[#58AAF0]" />
+                                    <FaPhone className="text-[var(--cor-destaque)]" />
 
                                     (11) 99999-9999
 
@@ -226,7 +229,7 @@ function Contato() {
 
                                 <p className="flex items-center justify-center gap-2">
 
-                                    <FaEnvelope className="text-[#58AAF0]" />
+                                    <FaEnvelope className="text-[var(--cor-destaque)]" />
 
                                     contato@mare.com
 
@@ -235,7 +238,7 @@ function Contato() {
 
                                 <p className="flex items-center justify-center gap-2">
 
-                                    <FaClock className="text-[#58AAF0]" />
+                                    <FaClock className="text-[var(--cor-destaque)]" />
 
                                     Segunda a sexta, 9h às 18h
 
