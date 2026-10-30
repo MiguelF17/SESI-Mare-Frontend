@@ -5,7 +5,7 @@ import { toast } from "react-hot-toast";
 import { useAuth } from "../hooks/useAuth";
 
 import fundoCadastro from "../assets/fundoLogin.png";
-import logo from "../assets/mare.png";
+import logo from "../assets/logomare.png";
 
 function Cadastro() {
   const navigate = useNavigate();

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import fundoLogin from "../assets/fundoLogin.png";
-import logo from "../assets/mare.png";
+import logo from "../assets/logomare.png";
 import toast from "react-hot-toast";
 import { useAuth } from "../hooks/useAuth";
 import { ApiError } from "../api";
