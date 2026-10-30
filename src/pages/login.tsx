@@ -5,8 +5,6 @@ import fundoLogin from "../assets/fundoLogin.jpg";
 import logo from "../assets/logomare.png";
 import toast from "react-hot-toast";
 import { useAuth } from "../hooks/useAuth";
-import { ApiError } from "../api";
-import { reenviarVerificacao } from "../services/authService";
 
 function Login() {
   const navigate = useNavigate();
@@ -15,35 +13,7 @@ function Login() {
   const [senha, setSenha] = useState("");
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const location = useLocation();
-  const [emailNaoVerificado, setEmailNaoVerificado] = useState(false);
-  const [reenviando, setReenviando] = useState(false);
-
   const mensagemCadastro = location.state?.mensagem;
-
-  const handleReenviarVerificacao = async () => {
-    if (!login.trim()) {
-      toast.error("Informe seu e-mail ou username.");
-      return;
-    }
-
-    try {
-      setReenviando(true);
-
-      const resposta = await reenviarVerificacao(
-        login.trim().toLowerCase()
-      );
-
-      toast.success(resposta.message);
-    } catch (error) {
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Não foi possível reenviar o e-mail."
-      );
-    } finally {
-      setReenviando(false);
-    }
-  };
 
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement>
@@ -60,15 +30,6 @@ function Login() {
       );
     } catch (error) {
       console.error("Erro ao fazer login:", error);
-
-      if (
-        error instanceof ApiError &&
-        error.code === "EMAIL_NAO_VERIFICADO"
-      ) {
-        setEmailNaoVerificado(true);
-        toast.error("Confirme seu e-mail antes de entrar.");
-        return;
-      }
 
       toast.error(
         error instanceof Error
@@ -226,7 +187,6 @@ function Login() {
                 value={login}
                 onChange={(e) => {
                   setLogin(e.target.value.toLowerCase());
-                  setEmailNaoVerificado(false);
                 }}
                 placeholder="Digite seu e-mail ou usuário"
                 className="
@@ -345,34 +305,6 @@ function Login() {
             >
               {carregando ? "Entrando..." : "Entrar"}
             </button>
-
-            {emailNaoVerificado && (
-              <div className="text-center space-y-2">
-                <p className="text-sm text-[#B8C7D9]">
-                  Seu e-mail ainda não foi confirmado.
-                </p>
-
-                <button
-                  type="button"
-                  onClick={handleReenviarVerificacao}
-                  disabled={reenviando || !login.trim()}
-                  className="
-        text-sm
-        text-[var(--cor-destaque)]
-        hover:text-[#7BC3FF]
-        hover:underline
-        transition
-        cursor-pointer
-        disabled:opacity-50
-        disabled:cursor-not-allowed
-      "
-                >
-                  {reenviando
-                    ? "Enviando e-mail..."
-                    : "Reenviar e-mail de verificação"}
-                </button>
-              </div>
-            )}
 
             {/* CADASTRO */}
 

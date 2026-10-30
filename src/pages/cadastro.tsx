@@ -76,7 +76,7 @@ function Cadastro() {
     try {
       await cadastrar(formData);
 
-      toast.success("Cadastro realizado! Verifique seu e-mail para confirmar a conta.");
+      toast.success("Cadastro realizado com sucesso!");
 
       setFormData({
         username: "",
@@ -87,7 +87,7 @@ function Cadastro() {
 
       navigate("/login", {
         state: {
-          mensagem: "Enviamos um link de confirmação para seu e-mail. Verifique sua caixa de entrada.",
+          mensagem: "Sua conta foi criada. Faça login para continuar.",
         },
       });
     } catch (error) {

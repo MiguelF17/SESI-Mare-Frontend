@@ -24,7 +24,6 @@ const Filtrar = lazy(() => import("./pages/filtrar"));
 const PerfilPublico = lazy(() => import("./pages/perfilPublico"));
 const ListaSeguidores = lazy(() => import("./pages/listaSeguidores"));
 const Notificacoes = lazy(() => import("./pages/notificacoes"));
-const VerificarEmail = lazy(() => import("./pages/verificarEmail"));
 
 function App() {
   return (
@@ -54,7 +53,6 @@ function App() {
           {/* Páginas públicas */}
           <Route path="/contato" element={<Contato />} />
           <Route path="/faq" element={<Faq />} />
-          <Route path="/verificar-email" element={<VerificarEmail />} />
 
           <Route element={<ProtectedRoute />}>
             <Route path="/home" element={<Home />} />
