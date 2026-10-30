@@ -4,15 +4,10 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   HouseLineIcon,
   PlaylistIcon,
-  PlaylistIcon as PlaylistFilledIcon,
   BookmarkSimpleIcon,
-  BookmarkSimpleIcon as BookmarkFilledIcon,
   UserIcon,
-  UserCircleIcon,
   GearIcon,
-  GearIcon as GearFilledIcon,
   BellIcon,
-  BellRingingIcon,
 } from "@phosphor-icons/react";
 
 import logo from "../assets/logoSidebar.png";

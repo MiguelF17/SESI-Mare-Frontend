@@ -16,7 +16,6 @@ import PageLayout from "../components/pageLayout";
 import PageContent from "../components/pageContent";
 import SearchBar from "../components/searchbar";
 import PostCard from "../components/postCard";
-import RecommendedMusic from "../components/recommendedMusic";
 import MusicCard from "../components/musicCard";
 import ImageCropModal from "../components/imageCropModal";
 

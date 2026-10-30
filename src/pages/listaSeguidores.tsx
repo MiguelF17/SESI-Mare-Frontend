@@ -8,7 +8,6 @@ import {
 import PageLayout from "../components/pageLayout";
 import PageContent from "../components/pageContent";
 import SearchBar from "../components/searchbar";
-import RecommendedMusic from "../components/recommendedMusic";
 import BotaoVoltar from "../components/botaoVoltar";
 
 import { apiRequest } from "../api";

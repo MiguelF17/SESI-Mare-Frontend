@@ -5,7 +5,6 @@ import PageLayout from "../components/pageLayout";
 import PageContent from "../components/pageContent";
 import SearchBar from "../components/searchbar";
 import MusicCard from "../components/musicCard";
-import RecommendedMusic from "../components/recommendedMusic";
 
 import { apiRequest } from "../api";
 import {

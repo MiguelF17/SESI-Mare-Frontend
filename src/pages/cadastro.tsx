@@ -19,7 +19,7 @@ function Cadastro() {
   });
 
   const [mostrarSenha, setMostrarSenha] = useState(false);
-  const [mostrarConfirmarSenha, setMostrarConfirmarSenha] =
+  const [mostrarConfirmarSenha] =
     useState(false);
 
   const requisitosSenha = [

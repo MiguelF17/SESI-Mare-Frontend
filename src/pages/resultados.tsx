@@ -6,7 +6,6 @@ import PageContent from "../components/pageContent";
 import SearchBar from "../components/searchbar";
 import MusicCard from "../components/musicCard";
 import PostCard from "../components/postCard";
-import RecommendedMusic from "../components/recommendedMusic";
 
 import { buscarArtistas, type Artista } from "../services/artistaService";
 import { buscarMusicas, type Musica } from "../services/musicaService";
