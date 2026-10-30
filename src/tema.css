@@ -46,14 +46,14 @@
   color-scheme: light;
 
   /* Fundos */
-  --cor-fundo: #F3F7FC;
-  --cor-fundo-alternativo: #EAF1F8;
+  --cor-fundo: #E8EEF5;
+  --cor-fundo-alternativo: #DDE6F0;
 
   /* Superfícies */
   --cor-superficie: #FFFFFF;
-  --cor-superficie-alternativa: #F0F5FA;
+  --cor-superficie-alternativa: #F4F7FA;
   --cor-superficie-cartao: #FFFFFF;
-  --cor-superficie-elevada: #E8F0F8;
+  --cor-superficie-elevada: #DCE6F0;
   --cor-superficie-menu: #F0F5FA;
   --cor-superficie-suave: #DFEAF5;
   --cor-superficie-profunda: #EAF1F8;
@@ -62,7 +62,7 @@
   /* Textos */
   --cor-texto-principal: #142338;
   --cor-texto-secundario: #405570;
-  --cor-texto-discreto: #657991;
+  --cor-texto-discreto: #52677F;
   --cor-texto-destaque: #234B70;
 
   --cor-texto-cinza-100: #142338;
@@ -76,10 +76,10 @@
 
   /* Identidade Maré */
   --cor-tinta: #080A10;
-  --cor-destaque: #246DA8;
-  --cor-destaque-forte: #195783;
-  --cor-destaque-alternativo: #347FB5;
-  --cor-destaque-suave: #5596C5;
+  --cor-destaque: #155B91;
+  --cor-destaque-forte: #12466F;
+  --cor-destaque-alternativo: #236895;
+  --cor-destaque-suave: #3479A8;
 
   /* Bordas */
   --cor-borda: #C5D3E1;
@@ -88,8 +88,8 @@
   --cor-borda-destaque: #77A9D2;
 
   /* Gradientes */
-  --cor-gradiente-inicio: #EAF4FD;
-  --cor-gradiente-fim: #D9EAFE;
+  --cor-gradiente-inicio: #DDEAF5;
+  --cor-gradiente-fim: #C8DCEC;
 
   /* Aplicação */
   --cor-secao-aplicativo: #E4EFFA;

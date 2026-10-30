@@ -10,16 +10,16 @@ function Sobre() {
 
             {/* HERO */}
             <section
-                className="relative w-full overflow-hidden bg-gradient-to-r from-[var(--cor-gradiente-inicio)] to-[var(--cor-gradiente-fim)] px-5 py-24 text-[var(--cor-texto-principal)] sm:px-10 sm:py-36 lg:px-24 lg:py-60"
+                className="relative w-full overflow-hidden bg-gradient-to-r from-[var(--cor-gradiente-inicio)] to-[var(--cor-gradiente-fim)] px-5 py-16 text-[var(--cor-texto-principal)] sm:px-10 sm:py-28 lg:px-24 lg:py-40"
                 style={{ fontFamily: "Inter, sans-serif" }}
             >
 
                 <div className="relative z-10 max-w-4xl mx-auto text-center">
-                    <h1 className="mb-4 text-4xl font-bold sm:text-5xl md:text-6xl">
+                    <h1 className="mb-3 text-3xl font-bold leading-tight sm:mb-4 sm:text-5xl md:text-6xl">
                         Sobre a Maré
                     </h1>
 
-                    <p className="text-lg md:text-xl max-w-2xl mx-auto text-[var(--cor-texto-secundario)]">
+                    <p className="mx-auto max-w-2xl text-base leading-relaxed text-[var(--cor-texto-secundario)] sm:text-lg md:text-xl">
                         Um espaço para descobrir músicas, compartilhar opiniões e
                         conectar pessoas através da música.
                     </p>
@@ -30,7 +30,7 @@ function Sobre() {
 
 
             {/* HISTÓRIA */}
-            <section className="mx-auto max-w-4xl px-6 py-12 text-center sm:py-16 md:px-12 md:py-20 lg:px-24">
+            <section className="mx-auto max-w-4xl px-5 py-9 text-center sm:px-8 sm:py-16 md:px-12 md:py-20 lg:px-24">
 
                 <h2 className="mb-8 text-3xl font-semibold text-[var(--cor-destaque)] sm:mb-10 sm:text-4xl">
                     Nossa História

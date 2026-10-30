@@ -48,7 +48,7 @@ export default function Sidebar() {
   }
 
   const estiloLink = (ativo: boolean) =>
-    `flex flex-1 flex-col items-center justify-center gap-1 px-0 py-2 transition md:flex-none md:flex-row md:justify-start md:gap-4 md:px-6 md:py-5 ${
+    `flex flex-1 flex-col items-center justify-center gap-1 rounded-xl px-0 py-1.5 text-[10px] transition md:flex-none md:flex-row md:justify-start md:gap-4 md:rounded-none md:px-6 md:py-5 md:text-base ${
       ativo
         ? "bg-[var(--cor-destaque)]/10 font-medium text-[var(--cor-destaque)] md:bg-transparent"
         : "text-[var(--cor-texto-principal)] hover:bg-white/5"
@@ -56,7 +56,7 @@ export default function Sidebar() {
 
   return (
     <aside
-      className="fixed inset-x-0 bottom-0 top-auto z-50 flex h-[calc(68px+env(safe-area-inset-bottom))] w-full flex-row border-t border-[var(--cor-borda)] bg-[var(--cor-superficie)]/95 pb-[env(safe-area-inset-bottom)] text-[var(--cor-texto-principal)] shadow-[0_-8px_30px_rgba(0,0,0,0.12)] backdrop-blur-xl md:inset-y-0 md:left-0 md:right-auto md:top-0 md:h-dvh md:w-[clamp(220px,30vw,340px)] md:flex-col md:border-r md:border-t-0 md:pb-0 md:shadow-none md:backdrop-blur-none"
+      className="fixed inset-x-0 bottom-0 top-auto z-50 flex h-[calc(84px+env(safe-area-inset-bottom))] w-full flex-row items-center border-t border-[var(--cor-borda)] bg-[var(--cor-superficie)] px-1.5 pb-[env(safe-area-inset-bottom)] text-[var(--cor-texto-principal)] shadow-[0_-8px_30px_rgba(0,0,0,0.12)] backdrop-blur-xl md:inset-y-0 md:left-0 md:right-auto md:top-0 md:h-dvh md:w-[clamp(220px,30vw,340px)] md:flex-col md:items-stretch md:border-r md:border-t-0 md:px-0 md:pb-0 md:shadow-none md:backdrop-blur-none"
       style={{ fontFamily: "Inter, sans-serif", fontWeight: 300 }}
     >
       <div className="flex min-h-0 flex-1 items-center justify-around overflow-hidden md:block md:flex-1">
@@ -98,7 +98,7 @@ export default function Sidebar() {
         <hr className="hidden border-[var(--cor-borda)] md:block" />
 
         {/* Menu */}
-        <nav className="flex min-w-0 flex-1 items-center justify-around py-0 md:flex-col md:items-stretch md:py-2">
+        <nav className="flex min-w-0 flex-1 items-center justify-around gap-0.5 py-0 md:flex-col md:items-stretch md:gap-0 md:py-2">
           <Link
             to="/home"
             aria-label="Início"
@@ -111,7 +111,7 @@ export default function Sidebar() {
             ) : (
               <HouseLineIcon size={22} />
             )}
-            <span className="hidden md:inline">Início</span>
+            <span className="md:inline">Início</span>
           </Link>
 
           <Link
@@ -123,8 +123,10 @@ export default function Sidebar() {
             <PlaylistIcon
               size={22}
             />
-            <span className="hidden md:inline">Explorar</span>
+            <span className="md:inline">Explorar</span>
           </Link>
+
+          <span aria-hidden="true" className="w-12 shrink-0 md:hidden" />
 
           <Link
             to="/notificacoes"
@@ -136,7 +138,7 @@ export default function Sidebar() {
               size={22}
               weight={linkAtivo("/notificacoes") ? "fill" : "regular"}
             />
-            <span className="hidden flex-1 md:inline">Notificações</span>
+            <span className="md:flex-1 md:inline">Notificações</span>
 
             {naoLidas > 0 && (
               <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--cor-destaque)] px-1.5 text-[11px] text-[var(--cor-texto-principal)]">
@@ -155,7 +157,7 @@ export default function Sidebar() {
               size={22}
               weight={linkAtivo("/salvos") ? "fill" : "regular"}
             />
-            <span className="hidden md:inline">Salvos</span>
+            <span className="md:inline">Salvos</span>
           </Link>
 
           <Link to="/perfil" aria-label="Perfil" title="Perfil" className={estiloLink(linkAtivo("/perfil"))}>
@@ -163,17 +165,17 @@ export default function Sidebar() {
               size={22}
               weight={linkAtivo("/perfil") ? "fill" : "regular"}
             />
-            <span className="hidden md:inline">Perfil</span>
+            <span className="md:inline">Perfil</span>
           </Link>
         </nav>
 
         {/* Criar publicação */}
-        <div className="shrink-0 px-1 py-1 md:px-6 md:py-4">
+        <div className="absolute left-1/2 top-0 z-10 -translate-x-1/2 -translate-y-1/2 md:static md:block md:translate-x-0 md:translate-y-0 md:px-6 md:py-4">
           <button
             onClick={handlePost}
             aria-label="Criar publicação"
             title="Criar publicação"
-            className="h-10 w-10 cursor-pointer rounded-xl bg-[var(--cor-destaque)] text-lg font-medium text-white shadow-md shadow-[var(--cor-destaque)]/20 transition hover:bg-[var(--cor-destaque-forte)] md:h-auto md:w-full md:rounded-lg md:py-3 md:text-sm md:text-white md:shadow-none"
+            className="h-12 w-12 cursor-pointer rounded-full border-4 border-[var(--cor-superficie)] bg-[var(--cor-destaque)] text-2xl font-medium text-white shadow-lg shadow-[var(--cor-destaque)]/30 transition hover:bg-[var(--cor-destaque-forte)] md:h-auto md:w-full md:rounded-lg md:border-0 md:py-3 md:text-sm md:text-white md:shadow-none"
           >
             <span className="hidden md:inline">Post</span>
             <span className="md:hidden" aria-hidden="true">+</span>
@@ -182,7 +184,7 @@ export default function Sidebar() {
       </div>
 
       {/* Configurações */}
-      <div className="flex shrink-0 items-center border-l border-[var(--cor-borda)] md:border-l-0 md:border-t">
+      <div className="flex w-[52px] shrink-0 items-center border-l border-[var(--cor-borda)] md:w-full md:border-l-0 md:border-t">
         <Link
           to="/configuracoes"
           aria-label="Configurações"
@@ -193,7 +195,7 @@ export default function Sidebar() {
             size={22}
             weight={linkAtivo("/configuracoes") ? "fill" : "regular"}
           />
-          <span className="hidden md:inline">Configurações</span>
+          <span className="md:inline">Config.</span>
         </Link>
       </div>
     </aside>

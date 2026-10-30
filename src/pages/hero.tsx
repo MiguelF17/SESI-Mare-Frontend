@@ -43,11 +43,11 @@ function Hero() {
           relative
           bg-[var(--cor-fundo)]
           text-[var(--cor-texto-principal)]
-          min-h-[100svh]
+          min-h-[82svh] sm:min-h-[100svh]
           flex
           items-center
           px-5
-          py-28
+          py-24
           sm:px-10
           lg:px-24
           overflow-hidden
@@ -58,7 +58,7 @@ function Hero() {
         {/* imagem de fundo */}
 
         <div
-          className="absolute inset-0 bg-cover bg-[center_56%] opacity-60 sm:bg-center"
+          className="absolute inset-0 bg-[length:auto_100%] bg-right-center opacity-55 sm:bg-cover sm:bg-center sm:opacity-60"
           style={{ backgroundImage: `url(${fundo})` }}
         />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[var(--cor-fundo)]/55 via-transparent to-[var(--cor-fundo)]/70" />
@@ -67,7 +67,7 @@ function Hero() {
 
         <div className="relative z-10 mt-8 w-full max-w-2xl sm:mt-24">
 
-          <h1 className="text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl">
+          <h1 className="text-3xl font-bold leading-tight sm:text-5xl lg:text-6xl">
 
             DESCUBRA, AVALIE E
             <br />
@@ -77,7 +77,7 @@ function Hero() {
           </h1>
 
 
-          <h2 className="mt-3 text-2xl font-light text-[var(--cor-destaque)] sm:text-3xl">
+          <h2 className="mt-2 text-xl font-light text-[var(--cor-destaque)] sm:mt-3 sm:text-3xl">
 
             que combinam com você
 

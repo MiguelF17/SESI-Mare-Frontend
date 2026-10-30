@@ -16,15 +16,15 @@ function Contato() {
             <main
                 className="
             relative
-            min-h-[100vh]
+            min-h-[100svh]
             flex
             items-center
             justify-center
             px-6
             md:px-12
             lg:px-24
-            pt-28
-            pb-12
+            pt-24
+            pb-8
             sm:py-16
             overflow-hidden
              bg-[var(--cor-fundo)]
@@ -57,7 +57,7 @@ function Contato() {
     bg-[#111A25]
     shadow-xl
     rounded-2xl
-    p-5
+    p-4
     sm:p-8
     my-12
 "
@@ -65,7 +65,7 @@ function Contato() {
 
                         {/* TÍTULO */}
 
-                        <h1 className="text-3xl font-bold text-[var(--cor-destaque)] mb-2">
+                        <h1 className="mb-2 text-2xl font-bold text-[var(--cor-destaque)] sm:text-3xl">
 
                             Fale conosco
 

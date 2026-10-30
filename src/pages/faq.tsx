@@ -72,21 +72,21 @@ export default function FAQ() {
 
             {/* HERO */}
             <section
-                className="relative w-full overflow-hidden bg-gradient-to-r from-[var(--cor-gradiente-inicio)] to-[var(--cor-gradiente-fim)] px-4 pb-16 pt-32 text-[var(--cor-texto-principal)] sm:px-8 sm:pb-20 sm:pt-40 lg:px-24"
+                className="relative w-full overflow-hidden bg-gradient-to-r from-[var(--cor-gradiente-inicio)] to-[var(--cor-gradiente-fim)] px-4 pb-10 pt-24 text-[var(--cor-texto-principal)] sm:px-8 sm:pb-20 sm:pt-36 lg:px-24"
                 style={{ fontFamily: "Inter, sans-serif" }}
             >
 
                 <div className="relative z-10 max-w-4xl mx-auto text-center">
                     <CircleHelp
-                        size={56}
-                        className="mx-auto mb-5 text-[var(--cor-destaque)] sm:mb-6 sm:h-[70px] sm:w-[70px]"
+                        size={42}
+                        className="mx-auto mb-3 text-[var(--cor-destaque)] sm:mb-6 sm:h-[70px] sm:w-[70px]"
                     />
 
-                    <h1 className="text-4xl font-bold sm:text-5xl lg:text-6xl">
+                    <h1 className="text-3xl font-bold sm:text-5xl lg:text-6xl">
                         Central de Ajuda
                     </h1>
 
-                    <p className="mt-4 text-base text-[#D5E8F8] sm:mt-5 sm:text-xl">
+                    <p className="mt-3 text-sm text-[var(--cor-texto-secundario)] sm:mt-5 sm:text-xl">
                         Encontre respostas para as dúvidas mais frequentes sobre a Maré.
                     </p>
 

@@ -67,8 +67,10 @@ function Login() {
         className="
                     absolute
                     inset-0
-                    bg-cover
-                    bg-[center_42%]
+                    bg-[length:auto_100%]
+                    bg-left-center
+                    sm:bg-cover
+                    sm:bg-center
                     bg-no-repeat
                 "
         style={{
