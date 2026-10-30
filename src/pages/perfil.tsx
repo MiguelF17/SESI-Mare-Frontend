@@ -51,7 +51,7 @@ export default function Perfil() {
   const [avaliacoes, setAvaliacoes] = useState<Post[]>([]);
   const [comentarios, setComentarios] = useState<ComentarioPerfil[]>([]);
   const [salvos, setSalvos] = useState<MusicaSalva[]>([]);
-  const [musicas, setMusicas] = useState<Musica[]>([]);
+  const [, setMusicas] = useState<Musica[]>([]);
 
 
   const [editando, setEditando] = useState(false);

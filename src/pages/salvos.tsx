@@ -24,7 +24,7 @@ interface MusicaSalva {
 export default function Salvos() {
   const [musicas, setMusicas] = useState<MusicaSalva[]>([]);
   const [carregando, setCarregando] = useState(true);
-  const [recomendadas, setRecomendadas] = useState<Musica[]>([]);
+  const [, setRecomendadas] = useState<Musica[]>([]);
   
 
   useEffect(() => {

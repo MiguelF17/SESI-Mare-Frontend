@@ -8,7 +8,7 @@ import {
     ShareNetworkIcon,
     ChatCircleIcon,
 } from "@phosphor-icons/react";
-import { Settings, User } from "lucide-react";
+import { Settings } from "lucide-react";
 import toast from "react-hot-toast";
 
 import PageLayout from "../components/pageLayout";
@@ -41,7 +41,7 @@ export default function PerfilPublico() {
     const navigate = useNavigate();
 
     const [usuario, setUsuario] = useState<PerfilPublicoTipo | null>(null);
-    const [musicas, setMusicas] = useState<Musica[]>([]);
+    const [, setMusicas] = useState<Musica[]>([]);
     const [meuId, setMeuId] = useState<number | null>(null);
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState("");

@@ -42,7 +42,7 @@ export default function ListaSeguidores() {
     const navigate = useNavigate();
 
     const [usuarios, setUsuarios] = useState<UsuarioLista[]>([]);
-    const [musicas, setMusicas] = useState<Musica[]>([]);
+    const [, setMusicas] = useState<Musica[]>([]);
     const [meuId, setMeuId] = useState<number | null>(null);
     const [carregando, setCarregando] = useState(true);
     const [carregandoMeuPerfil, setCarregandoMeuPerfil] = useState(true);
