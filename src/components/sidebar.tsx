@@ -50,7 +50,7 @@ export default function Sidebar() {
   const estiloLink = (ativo: boolean) =>
     `flex flex-1 flex-col items-center justify-center gap-1 rounded-xl px-0 py-1.5 text-[10px] transition md:flex-none md:flex-row md:justify-start md:gap-4 md:rounded-none md:px-6 md:py-5 md:text-base ${
       ativo
-        ? "bg-[var(--cor-destaque)]/10 font-medium text-[var(--cor-destaque)] md:bg-transparent"
+        ? "bg-[var(--cor-destaque)]/10 font-medium text-[var(--cor-destaque)] md:bg-transparent hover:bg-white/5"
         : "text-[var(--cor-texto-principal)] hover:bg-white/5"
     }`;
 
@@ -184,18 +184,18 @@ export default function Sidebar() {
       </div>
 
       {/* Configurações */}
-      <div className="flex w-[52px] shrink-0 items-center border-l border-[var(--cor-borda)] md:w-full md:border-l-0 md:border-t">
+      <div className="flex w-[60px] shrink-0 items-center border-l border-[var(--cor-borda)] md:w-full md:border-l-0 md:border-t">
         <Link
           to="/configuracoes"
           aria-label="Configurações"
           title="Configurações"
-          className={estiloLink(linkAtivo("/configuracoes"))}
+          className={`${estiloLink(linkAtivo("/configuracoes"))} w-full`}
         >
           <GearIcon
             size={22}
             weight={linkAtivo("/configuracoes") ? "fill" : "regular"}
           />
-          <span className="md:inline">Config.</span>
+          <span className="md:inline">Configurações</span>
         </Link>
       </div>
     </aside>
