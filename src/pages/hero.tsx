@@ -58,9 +58,10 @@ function Hero() {
         {/* imagem de fundo */}
 
         <div
-          className="absolute inset-0 bg-cover bg-center opacity-60"
+          className="absolute inset-0 bg-cover bg-[center_56%] opacity-60 sm:bg-center"
           style={{ backgroundImage: `url(${fundo})` }}
         />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[var(--cor-fundo)]/55 via-transparent to-[var(--cor-fundo)]/70" />
 
         {/* Texto */}
 

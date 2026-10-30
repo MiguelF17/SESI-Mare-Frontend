@@ -34,44 +34,73 @@
   --cor-gradiente-fim: #1a3854;
   --cor-secao-aplicativo: #1d3653;
   --cor-barra-rolagem: #355675;
+  --cor-cartao-autenticacao: rgba(17, 26, 37, 0.95);
+  --cor-texto-autenticacao-suave: #b8c7d9;
+  --cor-fundo-perigo: #160d12;
+  --cor-borda-perigo: #6b2632;
+  --cor-texto-perigo: #c94b55;
 }
+
 
 :root[data-tema="claro"] {
   color-scheme: light;
-  --cor-fundo: #f5f7fb;
-  --cor-fundo-alternativo: #edf3f9;
-  --cor-superficie: #ffffff;
-  --cor-superficie-alternativa: #f0f4f8;
-  --cor-superficie-cartao: #ffffff;
-  --cor-superficie-elevada: #e9eff6;
-  --cor-superficie-menu: #eef3f8;
-  --cor-superficie-suave: #e3edf6;
-  --cor-superficie-profunda: #f0f4f8;
-  --cor-superficie-borda: #e6edf4;
-  --cor-texto-principal: #182334;
-  --cor-texto-secundario: #40516b;
-  --cor-texto-discreto: #66748b;
-  --cor-texto-destaque: #294560;
-  --cor-texto-cinza-100: #182334;
-  --cor-texto-cinza-200: #40516b;
-  --cor-texto-cinza-300: #40516b;
-  --cor-texto-cinza-400: #66748b;
-  --cor-superficie-genero-selecionado: #dcecff;
-  --cor-superficie-filtro-selecionado: #e5f1fc;
-  --cor-tinta: #080a10;
-  --cor-destaque: #246ca8;
-  --cor-destaque-forte: #1e5c94;
-  --cor-destaque-alternativo: #307bad;
-  --cor-destaque-suave: #3f84bb;
-  --cor-borda: #c8d3df;
-  --cor-borda-suave: #dbe3ec;
-  --cor-borda-discreta: #d2dce7;
-  --cor-borda-destaque: #76a9d2;
-  --cor-gradiente-inicio: #eaf3fc;
-  --cor-gradiente-fim: #dcecff;
-  --cor-secao-aplicativo: #dcecff;
-  --cor-barra-rolagem: #a8bacd;
+
+  /* Fundos */
+  --cor-fundo: #F3F7FC;
+  --cor-fundo-alternativo: #EAF1F8;
+
+  /* Superfícies */
+  --cor-superficie: #FFFFFF;
+  --cor-superficie-alternativa: #F0F5FA;
+  --cor-superficie-cartao: #FFFFFF;
+  --cor-superficie-elevada: #E8F0F8;
+  --cor-superficie-menu: #F0F5FA;
+  --cor-superficie-suave: #DFEAF5;
+  --cor-superficie-profunda: #EAF1F8;
+  --cor-superficie-borda: #E3EBF3;
+
+  /* Textos */
+  --cor-texto-principal: #142338;
+  --cor-texto-secundario: #405570;
+  --cor-texto-discreto: #657991;
+  --cor-texto-destaque: #234B70;
+
+  --cor-texto-cinza-100: #142338;
+  --cor-texto-cinza-200: #405570;
+  --cor-texto-cinza-300: #526780;
+  --cor-texto-cinza-400: #657991;
+
+  /* Seleções */
+  --cor-superficie-genero-selecionado: #D9EAFE;
+  --cor-superficie-filtro-selecionado: #E3EFFB;
+
+  /* Identidade Maré */
+  --cor-tinta: #080A10;
+  --cor-destaque: #246DA8;
+  --cor-destaque-forte: #195783;
+  --cor-destaque-alternativo: #347FB5;
+  --cor-destaque-suave: #5596C5;
+
+  /* Bordas */
+  --cor-borda: #C5D3E1;
+  --cor-borda-suave: #D5E0EC;
+  --cor-borda-discreta: #E3EBF3;
+  --cor-borda-destaque: #77A9D2;
+
+  /* Gradientes */
+  --cor-gradiente-inicio: #EAF4FD;
+  --cor-gradiente-fim: #D9EAFE;
+
+  /* Aplicação */
+  --cor-secao-aplicativo: #E4EFFA;
+  --cor-barra-rolagem: #A4B8CC;
+  --cor-cartao-autenticacao: rgba(255, 255, 255, 0.94);
+  --cor-texto-autenticacao-suave: #526780;
+  --cor-fundo-perigo: #fff1f2;
+  --cor-borda-perigo: #fecdd3;
+  --cor-texto-perigo: #be123c;
 }
+
 
 /* Mantém o texto branco legível sobre a imagem escura da chamada inicial. */
 .destaque-inicial {

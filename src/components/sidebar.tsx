@@ -48,20 +48,20 @@ export default function Sidebar() {
   }
 
   const estiloLink = (ativo: boolean) =>
-    `flex items-center justify-center gap-4 px-2 py-4 transition md:justify-start md:px-6 md:py-5 ${
+    `flex flex-1 flex-col items-center justify-center gap-1 px-0 py-2 transition md:flex-none md:flex-row md:justify-start md:gap-4 md:px-6 md:py-5 ${
       ativo
-        ? "text-[#72B8F5] font-medium"
+        ? "bg-[var(--cor-destaque)]/10 font-medium text-[var(--cor-destaque)] md:bg-transparent"
         : "text-[var(--cor-texto-principal)] hover:bg-white/5"
     }`;
 
   return (
     <aside
-      className="fixed left-0 top-0 z-50 flex h-dvh w-16 flex-col border-r border-[var(--cor-borda)] bg-[var(--cor-superficie)] text-[var(--cor-texto-principal)] md:w-[clamp(220px,30vw,340px)]"
+      className="fixed inset-x-0 bottom-0 top-auto z-50 flex h-[calc(68px+env(safe-area-inset-bottom))] w-full flex-row border-t border-[var(--cor-borda)] bg-[var(--cor-superficie)]/95 pb-[env(safe-area-inset-bottom)] text-[var(--cor-texto-principal)] shadow-[0_-8px_30px_rgba(0,0,0,0.12)] backdrop-blur-xl md:inset-y-0 md:left-0 md:right-auto md:top-0 md:h-dvh md:w-[clamp(220px,30vw,340px)] md:flex-col md:border-r md:border-t-0 md:pb-0 md:shadow-none md:backdrop-blur-none"
       style={{ fontFamily: "Inter, sans-serif", fontWeight: 300 }}
     >
-      <div className="min-h-0 flex-1 overflow-hidden">
+      <div className="flex min-h-0 flex-1 items-center justify-around overflow-hidden md:block md:flex-1">
         {/* Logo */}
-        <div className="flex items-center justify-center gap-2 px-2 py-4 md:justify-start md:px-6">
+        <div className="hidden items-center justify-center gap-2 px-2 py-4 md:flex md:justify-start md:px-6">
           <Link to="/">
             <img
               src={logo}
@@ -72,7 +72,7 @@ export default function Sidebar() {
         </div>
 
         {/* Usuário */}
-        <div className="mb-4 flex items-center justify-center gap-3 px-2 md:mb-6 md:justify-start md:px-6">
+        <div className="mb-4 hidden items-center justify-center gap-3 px-2 md:flex md:mb-6 md:justify-start md:px-6">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#1a2130] md:h-16 md:w-16">
             {usuario?.foto ? (
               <img
@@ -95,14 +95,15 @@ export default function Sidebar() {
           </div>
         </div>
 
-        <hr className="border-[var(--cor-borda)]" />
+        <hr className="hidden border-[var(--cor-borda)] md:block" />
 
         {/* Menu */}
-        <nav className="flex flex-col py-2">
+        <nav className="flex min-w-0 flex-1 items-center justify-around py-0 md:flex-col md:items-stretch md:py-2">
           <Link
             to="/home"
             aria-label="Início"
             title="Início"
+            aria-current={linkAtivo("/home") ? "page" : undefined}
             className={estiloLink(linkAtivo("/home"))}
           >
             {linkAtivo("/home") ? (
@@ -167,12 +168,12 @@ export default function Sidebar() {
         </nav>
 
         {/* Criar publicação */}
-        <div className="px-2 py-3 md:px-6 md:py-4">
+        <div className="shrink-0 px-1 py-1 md:px-6 md:py-4">
           <button
             onClick={handlePost}
             aria-label="Criar publicação"
             title="Criar publicação"
-            className="w-full cursor-pointer rounded-lg bg-[var(--cor-destaque)] py-3 font-medium text-[var(--cor-texto-principal)] transition hover:bg-[#4a8bc2]"
+            className="h-10 w-10 cursor-pointer rounded-xl bg-[var(--cor-destaque)] text-lg font-medium text-white shadow-md shadow-[var(--cor-destaque)]/20 transition hover:bg-[var(--cor-destaque-forte)] md:h-auto md:w-full md:rounded-lg md:py-3 md:text-sm md:text-white md:shadow-none"
           >
             <span className="hidden md:inline">Post</span>
             <span className="md:hidden" aria-hidden="true">+</span>
@@ -181,7 +182,7 @@ export default function Sidebar() {
       </div>
 
       {/* Configurações */}
-      <div className="shrink-0 border-t border-[var(--cor-borda)]">
+      <div className="flex shrink-0 items-center border-l border-[var(--cor-borda)] md:border-l-0 md:border-t">
         <Link
           to="/configuracoes"
           aria-label="Configurações"

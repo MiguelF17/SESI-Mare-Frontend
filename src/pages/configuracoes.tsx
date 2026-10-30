@@ -572,10 +572,10 @@ export default function Configuracoes() {
                 <button
                   type="button"
                   onClick={sairDaConta}
-                  className="flex min-h-[42px] w-full cursor-pointer items-center gap-3 rounded-md border border-[#6B2632] bg-[#160D12] px-4 text-left transition hover:border-[#E5484D]"
+                  className="flex min-h-[42px] w-full cursor-pointer items-center gap-3 rounded-md border border-[var(--cor-borda-perigo)] bg-[var(--cor-fundo-perigo)] px-4 text-left transition hover:border-red-500 hover:bg-red-500/10"
                 >
-                  <SignOutIcon size={16} className="text-[#C94B55]" />
-                  <span className="text-[12px] text-[#C94B55]">
+                  <SignOutIcon size={16} className="text-[var(--cor-texto-perigo)]" />
+                  <span className="text-[12px] text-[var(--cor-texto-perigo)]">
                     Sair da conta
                   </span>
                 </button>
@@ -618,7 +618,7 @@ export default function Configuracoes() {
               Sair da conta?
             </h2>
 
-            <p className="mt-2 text-sm leading-6 text-[#9ca3af]">
+            <p className="mt-2 text-sm leading-6 text-[var(--cor-texto-secundario)]">
               Você precisará entrar novamente para acessar sua conta. Deseja
               continuar?
             </p>
@@ -628,7 +628,7 @@ export default function Configuracoes() {
                 type="button"
                 onClick={() => setMostrarConfirmacaoSaida(false)}
                 disabled={saindo}
-                className="cursor-pointer rounded-lg border border-[var(--cor-borda)] px-4 py-2.5 text-sm text-[#d1d5db] transition hover:bg-white/5 disabled:opacity-50"
+                className="cursor-pointer rounded-lg border border-[var(--cor-borda)] px-4 py-2.5 text-sm text-[var(--cor-texto-principal)] transition hover:bg-[var(--cor-superficie-elevada)] disabled:opacity-50"
               >
                 Cancelar
               </button>
@@ -637,7 +637,7 @@ export default function Configuracoes() {
                 type="button"
                 onClick={confirmarSaida}
                 disabled={saindo}
-                className="cursor-pointer rounded-lg bg-red-500 px-5 py-2.5 text-sm font-semibold text-[var(--cor-texto-principal)] transition hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50"
+                className="cursor-pointer rounded-lg bg-red-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {saindo ? "Saindo..." : "Sair da conta"}
               </button>

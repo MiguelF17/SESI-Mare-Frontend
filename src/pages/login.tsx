@@ -68,13 +68,14 @@ function Login() {
                     absolute
                     inset-0
                     bg-cover
-                    bg-center
+                    bg-[center_42%]
                     bg-no-repeat
                 "
         style={{
           backgroundImage: `url(${fundoLogin})`,
         }}
       />
+      <div className="absolute inset-0 bg-gradient-to-b from-[var(--cor-fundo)]/35 via-[var(--cor-fundo)]/65 to-[var(--cor-fundo)]/90 lg:bg-gradient-to-l lg:from-[var(--cor-fundo)]/5 lg:via-[var(--cor-fundo)]/30 lg:to-[var(--cor-fundo)]/80" />
 
       {/* LOGO */}
 
@@ -115,7 +116,7 @@ function Login() {
         <div
           className="
   w-full
-  bg-[#111A25]/95
+  bg-[var(--cor-cartao-autenticacao)]
   backdrop-blur-md
   border
   border-[var(--cor-borda)]
@@ -142,7 +143,7 @@ function Login() {
             <p
               className="
                                 text-sm
-                                text-[#B8C7D9]
+                                text-[var(--cor-texto-autenticacao-suave)]
                                 mt-1
                             "
             >
@@ -312,7 +313,7 @@ function Login() {
               className="
                                 text-center
                                 text-sm
-                                text-[#8FA1B5]
+                                text-[var(--cor-texto-autenticacao-suave)]
                                 pt-2
                             "
             >
