@@ -98,7 +98,7 @@ export default function Sidebar() {
         <hr className="hidden border-[var(--cor-borda)] md:block" />
 
         {/* Menu */}
-        <nav className="flex min-w-0 flex-1 items-center justify-around gap-0.5 py-0 md:flex-col md:items-stretch md:gap-0 md:py-2">
+        <nav className="flex min-w-0 flex-1 items-center justify-around gap-0 py-0 md:flex-col md:items-stretch md:gap-0 md:py-2">
           <Link
             to="/home"
             aria-label="Início"
@@ -126,13 +126,11 @@ export default function Sidebar() {
             <span className="md:inline">Explorar</span>
           </Link>
 
-          <span aria-hidden="true" className="w-12 shrink-0 md:hidden" />
-
           <Link
             to="/notificacoes"
             aria-label="Notificações"
             title="Notificações"
-            className={estiloLink(linkAtivo("/notificacoes"))}
+            className={`${estiloLink(linkAtivo("/notificacoes"))} hidden md:flex`}
           >
             <BellIcon
               size={22}
@@ -160,6 +158,17 @@ export default function Sidebar() {
             <span className="md:inline">Salvos</span>
           </Link>
 
+          {/* Ação central da navegação mobile */}
+          <button
+            onClick={handlePost}
+            aria-label="Criar post"
+            title="Criar post"
+            className="flex flex-1 flex-col items-center justify-center gap-1 rounded-xl py-1.5 text-[10px] text-[var(--cor-texto-principal)] transition hover:bg-white/5 md:hidden"
+          >
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--cor-destaque)] text-2xl leading-none text-white shadow-lg shadow-[var(--cor-destaque)]/30">+</span>
+            <span>Criar post</span>
+          </button>
+
           <Link to="/perfil" aria-label="Perfil" title="Perfil" className={estiloLink(linkAtivo("/perfil"))}>
             <UserIcon
               size={22}
@@ -170,7 +179,7 @@ export default function Sidebar() {
         </nav>
 
         {/* Criar publicação */}
-        <div className="absolute left-1/2 top-0 z-10 -translate-x-1/2 -translate-y-1/2 md:static md:block md:translate-x-0 md:translate-y-0 md:px-6 md:py-4">
+        <div className="hidden absolute left-1/2 top-0 z-10 -translate-x-1/2 -translate-y-1/2 md:static md:block md:translate-x-0 md:translate-y-0 md:px-6 md:py-4">
           <button
             onClick={handlePost}
             aria-label="Criar publicação"
@@ -184,7 +193,7 @@ export default function Sidebar() {
       </div>
 
       {/* Configurações */}
-      <div className="flex w-[60px] shrink-0 items-center border-l border-[var(--cor-borda)] md:w-full md:border-l-0 md:border-t">
+      <div className="hidden w-[60px] shrink-0 items-center border-l border-[var(--cor-borda)] md:flex md:w-full md:border-l-0 md:border-t">
         <Link
           to="/configuracoes"
           aria-label="Configurações"
@@ -196,6 +205,27 @@ export default function Sidebar() {
             weight={linkAtivo("/configuracoes") ? "fill" : "regular"}
           />
           <span className="md:inline">Configurações</span>
+        </Link>
+      </div>
+
+      {/* Atalhos utilitários no topo da tela mobile */}
+      <div className="fixed right-4 top-[max(12px,env(safe-area-inset-top))] z-[60] flex items-center gap-2 md:hidden">
+        <Link
+          to="/notificacoes"
+          aria-label="Notificações"
+          title="Notificações"
+          className={`relative flex h-11 w-11 items-center justify-center rounded-full border border-[var(--cor-borda)] bg-[var(--cor-superficie)] text-[var(--cor-texto-principal)] shadow-md ${linkAtivo("/notificacoes") ? "text-[var(--cor-destaque)]" : ""}`}
+        >
+          <BellIcon size={22} weight={linkAtivo("/notificacoes") ? "fill" : "regular"} />
+          {naoLidas > 0 && <span className="absolute right-0 top-0 flex h-4 min-w-4 -translate-y-1/4 translate-x-1/4 items-center justify-center rounded-full bg-[var(--cor-destaque)] px-1 text-[10px] text-white">{naoLidas > 99 ? "99+" : naoLidas}</span>}
+        </Link>
+        <Link
+          to="/configuracoes"
+          aria-label="Configurações"
+          title="Configurações"
+          className={`flex h-11 w-11 items-center justify-center rounded-full border border-[var(--cor-borda)] bg-[var(--cor-superficie)] text-[var(--cor-texto-principal)] shadow-md ${linkAtivo("/configuracoes") ? "text-[var(--cor-destaque)]" : ""}`}
+        >
+          <GearIcon size={22} weight={linkAtivo("/configuracoes") ? "fill" : "regular"} />
         </Link>
       </div>
     </aside>
