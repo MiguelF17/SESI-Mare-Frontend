@@ -27,7 +27,7 @@ export default function FAQ() {
         {
             pergunta: "Como faço uma avaliação?",
             resposta:
-                "Escolha uma música e crie um post compartilhando sua opinião. Você pode adicionar uma avaliação de 1 a 5 estrelas e escrever um comentário sobre a música.",
+                "Escolha uma música e crie um post compartilhando sua opinião. Você pode dar uma nota de 1 a 5 estrelas, em intervalos de meia estrela, e escrever um comentário sobre a música.",
         },
         {
             pergunta: "Como salvar uma música?",

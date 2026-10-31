@@ -28,7 +28,24 @@ const Notificacoes = lazy(() => import("./pages/notificacoes"));
 function App() {
   return (
     <BrowserRouter>
-      <Toaster position="bottom-right" />
+      <Toaster
+        position="bottom-right"
+        toastOptions={{
+          duration: 3500,
+          className: "mare-toast",
+          style: {
+            background: "#151d2b",
+            color: "#f3f6fb",
+            border: "1px solid #2d3a4f",
+            borderRadius: "14px",
+            padding: "12px 16px",
+            boxShadow: "0 12px 36px rgba(0,0,0,.35)",
+            fontFamily: "Inter, sans-serif",
+          },
+          success: { iconTheme: { primary: "#58a9e8", secondary: "#151d2b" } },
+          error: { iconTheme: { primary: "#fb7185", secondary: "#151d2b" } },
+        }}
+      />
 
       <Suspense
         fallback={

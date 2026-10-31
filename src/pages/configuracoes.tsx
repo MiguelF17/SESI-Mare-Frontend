@@ -335,7 +335,7 @@ export default function Configuracoes() {
         <div className="grid grid-cols-1 gap-10 xl:grid-cols-[minmax(0,1fr)_340px]">
           <section className="min-w-0">
             <div className="sticky top-0 z-20 bg-[var(--cor-fundo)]">
-              <div className="pt-6">
+              <div className="pt-14 sm:pt-6">
                 <SearchBar />
               </div>
             </div>

@@ -118,7 +118,7 @@ function Navbar() {
         top-0
         left-0
         w-full
-        z-50
+        z-20
         min-h-[76px]
         h-auto
         bg-[var(--cor-fundo)]

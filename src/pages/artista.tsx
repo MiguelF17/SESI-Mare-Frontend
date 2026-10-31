@@ -240,6 +240,7 @@ export default function Artista() {
                         artistId={post.musica?.artista?.id ?? artista.id}
                         musicCover={post.musica?.capa ?? undefined}
                         nota={post.nota}
+                        editado={post.editado}
                         avaliacoes={post.musica?.avaliacoes}
                         likes={post._count?.curtidas ?? 0}
                         comments={post._count?.comentarios ?? 0}

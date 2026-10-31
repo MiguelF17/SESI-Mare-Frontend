@@ -8,10 +8,10 @@ export default function FeedTabs({
   setAbaAtiva,
 }: FeedTabsProps) {
   return (
-    <div className="mb-5 flex items-center justify-center gap-10 px-2 mt-5">
+    <div className="flex items-center justify-center gap-8 px-2 sm:mb-3 sm:mt-3 sm:gap-10">
       <button
         onClick={() => setAbaAtiva("paraVoce")}
-        className={`pb-2 text-lg cursor-pointer ${
+        className={`cursor-pointer pb-1 text-xs sm:pb-2 sm:text-lg ${
           abaAtiva === "paraVoce"
             ? "border-b-2 border-[var(--cor-destaque-alternativo)] text-[var(--cor-texto-principal)]"
             : "text-[var(--cor-texto-discreto)]"
@@ -22,7 +22,7 @@ export default function FeedTabs({
 
       <button
         onClick={() => setAbaAtiva("seguindo")}
-        className={`pb-2 text-lg cursor-pointer ${
+        className={`cursor-pointer pb-1 text-xs sm:pb-2 sm:text-lg ${
           abaAtiva === "seguindo"
             ? "border-b-2 border-[var(--cor-destaque-alternativo)] text-[var(--cor-texto-principal)]"
             : "text-[var(--cor-texto-discreto)]"

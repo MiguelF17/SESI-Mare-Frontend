@@ -10,7 +10,7 @@ function Sobre() {
 
             {/* HERO */}
             <section
-                className="relative w-full overflow-hidden bg-gradient-to-r from-[var(--cor-gradiente-inicio)] to-[var(--cor-gradiente-fim)] px-5 py-16 text-[var(--cor-texto-principal)] sm:px-10 sm:py-28 lg:px-24 lg:py-40"
+                className="relative w-full overflow-hidden bg-gradient-to-r from-[var(--cor-gradiente-inicio)] to-[var(--cor-gradiente-fim)] px-5 pb-16 pt-28 text-[var(--cor-texto-principal)] sm:px-10 sm:py-28 lg:px-24 lg:py-40"
                 style={{ fontFamily: "Inter, sans-serif" }}
             >
 
@@ -117,7 +117,7 @@ function Sobre() {
                         </h3>
 
                         <p className="text-[var(--cor-texto-discreto)]">
-                            Dê notas de 1 a 5 estrelas e compartilhe sua opinião
+                            Dê notas de 1 a 5 estrelas, incluindo meios pontos, e compartilhe sua opinião
                             sobre suas músicas favoritas.
                         </p>
                     </div>

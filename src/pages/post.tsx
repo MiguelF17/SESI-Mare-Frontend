@@ -53,6 +53,8 @@ export default function Post() {
     );
 
     const [textoComentario, setTextoComentario] = useState("");
+    const [comentarioRespondendo, setComentarioRespondendo] = useState<Comentario | null>(null);
+    const [acoesComentario, setAcoesComentario] = useState<Record<number, { curtido: boolean; quantidade: number }>>({});
     const [comentarioEditandoId, setComentarioEditandoId] = useState<
         number | null
     >(null);
@@ -72,6 +74,22 @@ export default function Post() {
     const [erro, setErro] = useState("");
 
     const token = localStorage.getItem("token");
+
+    function atualizarComentarioNaLista(
+        comentarioId: number,
+        atualizar: (comentario: Comentario) => Comentario
+    ) {
+        setComentarios((atuais) => atuais.map((comentario) => {
+            if (comentario.id === comentarioId) return atualizar(comentario);
+
+            return {
+                ...comentario,
+                respostas: comentario.respostas?.map((resposta) =>
+                    resposta.id === comentarioId ? atualizar(resposta) : resposta
+                ),
+            };
+        }));
+    }
 
     useEffect(() => {
         let ativo = true;
@@ -174,9 +192,20 @@ export default function Post() {
         setErro("");
 
         try {
-            const novoComentario = await criarComentario(Number(id), { texto });
+            const novoComentario = await criarComentario(Number(id), {
+                texto,
+                ...(comentarioRespondendo ? { respostaAId: comentarioRespondendo.id } : {}),
+            });
 
-            setComentarios((atuais) => [...atuais, novoComentario]);
+            if (comentarioRespondendo) {
+                setComentarios((atuais) => atuais.map((comentario) =>
+                    comentario.id === comentarioRespondendo.id
+                        ? { ...comentario, respostas: [...(comentario.respostas ?? []), novoComentario] }
+                        : comentario
+                ));
+            } else {
+                setComentarios((atuais) => [...atuais, novoComentario]);
+            }
 
             setPost((atual) => {
                 if (!atual) return atual;
@@ -186,12 +215,16 @@ export default function Post() {
                     _count: {
                         curtidas: atual._count?.curtidas ?? 0,
                         comentarios:
-                            (atual._count?.comentarios ?? comentarios.length) + 1,
+                            (atual._count?.comentarios ?? comentarios.reduce(
+                                (total, comentario) => total + 1 + (comentario.respostas?.length ?? 0),
+                                0,
+                            )) + 1,
                     },
                 };
             });
 
             setTextoComentario("");
+            setComentarioRespondendo(null);
             toast.success("Comentário enviado com sucesso!");
         } catch (error) {
             setErro(
@@ -203,6 +236,21 @@ export default function Post() {
             toast.error("Não foi possível enviar o comentário.");
         } finally {
             setEnviando(false);
+        }
+    }
+
+    async function alternarCurtidaComentario(comentario: Comentario) {
+        const atual = acoesComentario[comentario.id] ?? {
+            curtido: comentario.curtidoPorMim ?? false,
+            quantidade: comentario._count?.curtidas ?? 0,
+        };
+        const novoEstado = !atual.curtido;
+        setAcoesComentario((estados) => ({ ...estados, [comentario.id]: { curtido: novoEstado, quantidade: Math.max(0, atual.quantidade + (novoEstado ? 1 : -1)) } }));
+        try {
+            await apiRequest(`/comentarios/${comentario.id}/curtir`, { method: novoEstado ? "POST" : "DELETE" });
+        } catch (error) {
+            setAcoesComentario((estados) => ({ ...estados, [comentario.id]: atual }));
+            toast.error(error instanceof Error ? error.message : "Não foi possível curtir o comentário.");
         }
     }
 
@@ -236,13 +284,11 @@ export default function Post() {
                 body: JSON.stringify({ texto }),
             });
 
-            setComentarios((atuais) =>
-                atuais.map((comentario) =>
-                    comentario.id === comentarioId
-                        ? { ...comentario, texto, editado: true }
-                        : comentario
-                )
-            );
+            atualizarComentarioNaLista(comentarioId, (comentario) => ({
+                ...comentario,
+                texto,
+                editado: true,
+            }));
 
             cancelarEdicao();
             toast.success("Comentário atualizado!");
@@ -267,9 +313,17 @@ export default function Post() {
         try {
             await excluirComentarioServico(comentarioId);
 
-            setComentarios((atuais) =>
-                atuais.filter((comentario) => comentario.id !== comentarioId)
-            );
+            const comentarioPrincipal = comentarios.find((comentario) => comentario.id === comentarioId);
+            const quantidadeRemovida = comentarioPrincipal
+                ? 1 + (comentarioPrincipal.respostas?.length ?? 0)
+                : 1;
+
+            setComentarios((atuais) => atuais
+                .filter((comentario) => comentario.id !== comentarioId)
+                .map((comentario) => ({
+                    ...comentario,
+                    respostas: comentario.respostas?.filter((resposta) => resposta.id !== comentarioId),
+                })));
 
             setPost((atual) => {
                 if (!atual) return atual;
@@ -280,7 +334,10 @@ export default function Post() {
                         curtidas: atual._count?.curtidas ?? 0,
                         comentarios: Math.max(
                             0,
-                            (atual._count?.comentarios ?? comentarios.length) - 1
+                            (atual._count?.comentarios ?? comentarios.reduce(
+                                (total, comentario) => total + 1 + (comentario.respostas?.length ?? 0),
+                                0,
+                            )) - quantidadeRemovida
                         ),
                     },
                 };
@@ -328,7 +385,17 @@ export default function Post() {
     }
 
     const totalComentarios =
-        post._count?.comentarios ?? comentarios.length;
+        post._count?.comentarios ?? comentarios.reduce(
+            (total, comentario) => total + 1 + (comentario.respostas?.length ?? 0),
+            0,
+        );
+    const comentariosVisiveis = comentarios.flatMap((comentario) => [
+        comentario,
+        ...(comentario.respostas ?? []).map((resposta) => ({
+            ...resposta,
+            respondendoA: comentario.usuario,
+        })),
+    ]);
 
     return (
         <PageLayout>
@@ -366,6 +433,7 @@ export default function Post() {
                                 time={post.dataCriacao}
                                 content={post.texto}
                                 nota={post.nota}
+                                editado={post.editado}
                                 musicId={post.musica?.id ?? 0}
                                 musicTitle={post.musica?.titulo || ""}
                                 artist={post.musica?.artista?.nome || "Artista desconhecido"}
@@ -403,6 +471,12 @@ export default function Post() {
                                 )}
 
                                 <div className="min-w-0 flex-1">
+                                    {comentarioRespondendo && (
+                                        <div className="mb-2 flex items-center justify-between text-xs text-[var(--cor-destaque)]">
+                                            <span>Respondendo a @{comentarioRespondendo.usuario.username || comentarioRespondendo.usuario.nome}</span>
+                                            <button type="button" onClick={() => setComentarioRespondendo(null)} className="cursor-pointer text-[var(--cor-texto-discreto)] hover:text-white">Cancelar</button>
+                                        </div>
+                                    )}
                                     <textarea
                                         id="campo-comentario"
                                         value={textoComentario}
@@ -456,8 +530,8 @@ export default function Post() {
                                 Respostas
                             </h2>
 
-                            {comentarios.length > 0 ? (
-                                comentarios.map((comentario) => {
+                            {comentariosVisiveis.length > 0 ? (
+                                comentariosVisiveis.map((comentario) => {
                                     const ehMeuComentario =
                                         usuarioLogadoId !== null &&
                                         usuarioLogadoId === comentario.usuario?.id;
@@ -468,16 +542,18 @@ export default function Post() {
                                     return (
                                         <article
                                             key={comentario.id}
-                                            className="border-b border-[#242b3a] px-1 py-4 transition hover:bg-white"
+                                            className={`border-b border-[#242b3a] px-1 py-4 transition hover:bg-white/5 ${comentario.respostaAId ? "ml-8 border-l-2 border-l-[var(--cor-borda)] pl-4" : ""}`}
                                         >
                                             <div className="flex items-start gap-3">
                                                 {/* Avatar do comentário */}
                                                 {comentario.usuario?.foto ? (
+                                                    <Link to={`/u/${encodeURIComponent(comentario.usuario.username || "")}`} aria-label={`Abrir perfil de ${comentario.usuario.nome}`} className="shrink-0">
                                                     <img
                                                         src={comentario.usuario.foto}
                                                         alt={comentario.usuario.nome || "Usuário"}
                                                         className="h-10 w-10 shrink-0 rounded-full object-cover"
                                                     />
+                                                    </Link>
                                                 ) : (
                                                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#1a2130] text-[var(--cor-texto-discreto)]">
                                                         <UserIcon size={20} />
@@ -487,12 +563,10 @@ export default function Post() {
                                                 <div className="min-w-0 flex-1">
                                                     {/* Nome, horário e opções */}
                                                     <div className="flex items-center gap-2">
-                                                        <span className="truncate text-sm font-semibold text-[var(--cor-texto-principal)]">
-                                                            {comentario.usuario?.nome || "Usuário"}
-                                                        </span>
+                                                        {comentario.usuario?.username ? <Link to={`/u/${encodeURIComponent(comentario.usuario.username)}`} className="truncate text-sm font-semibold text-[var(--cor-texto-principal)] hover:text-[var(--cor-destaque)]">{comentario.usuario.nome || "Usuário"}</Link> : <span className="truncate text-sm font-semibold text-[var(--cor-texto-principal)]">{comentario.usuario?.nome || "Usuário"}</span>}
 
                                                         <span className="shrink-0 text-xs text-[var(--cor-texto-discreto)]">
-                                                            · há {calcularTempo(comentario.dataCriacao)}
+                                                            · {calcularTempo(comentario.dataCriacao) === "agora" ? "agora" : `há ${calcularTempo(comentario.dataCriacao)}`}
                                                         </span>
 
                                                         {comentario.editado && (
@@ -561,9 +635,15 @@ export default function Post() {
                                                     </div>
 
                                                     {/* Edição ou texto do comentário */}
+                                                    {comentario.respondendoA && (
+                                                        <p className="mt-2 text-xs text-[var(--cor-texto-discreto)]">
+                                                            Respondendo a @{comentario.respondendoA.username || comentario.respondendoA.nome}
+                                                        </p>
+                                                    )}
                                                     {editando ? (
                                                         <div className="mt-3 rounded-xl border border-[var(--cor-borda)] bg-[var(--cor-superficie-profunda)] p-3">
-                                                            <textarea
+                                    {comentarioRespondendo && <div className="mb-2 flex items-center justify-between text-xs text-[var(--cor-destaque)]"><span>Respondendo a @{comentarioRespondendo.usuario.username || comentarioRespondendo.usuario.nome}</span><button type="button" onClick={() => setComentarioRespondendo(null)} className="cursor-pointer text-[var(--cor-texto-discreto)] hover:text-white">Cancelar</button></div>}
+                                    <textarea
                                                                 value={textoEditado}
                                                                 onChange={(event) =>
                                                                     setTextoEditado(event.target.value)
@@ -615,8 +695,21 @@ export default function Post() {
                                                         </p>
                                                     )}
 
-                                                    <div className="mt-3 flex items-center gap-2 text-[var(--cor-texto-discreto)]">
-                                                        <ChatCircleIcon size={15} />
+                                                    <div className="mt-3 flex items-center gap-4 text-xs text-[var(--cor-texto-discreto)]">
+                                                        <button type="button" onClick={() => void alternarCurtidaComentario(comentario)} className={`inline-flex cursor-pointer items-center gap-1.5 transition hover:text-pink-400 ${(acoesComentario[comentario.id]?.curtido ?? comentario.curtidoPorMim) ? "text-pink-400" : ""}`} aria-pressed={acoesComentario[comentario.id]?.curtido ?? comentario.curtidoPorMim ?? false}><span aria-hidden="true">♥</span>{acoesComentario[comentario.id]?.quantidade ?? comentario._count?.curtidas ?? 0} Curtir</button>
+                                                        {!comentario.respostaAId && (
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    setComentarioRespondendo(comentario);
+                                                                    setTextoComentario("");
+                                                                    document.getElementById("campo-comentario")?.scrollIntoView({ behavior: "smooth", block: "center" });
+                                                                }}
+                                                                className="inline-flex cursor-pointer items-center gap-1.5 transition hover:text-[var(--cor-destaque)]"
+                                                            >
+                                                                <ChatCircleIcon size={15} />Responder
+                                                            </button>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </div>

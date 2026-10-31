@@ -366,7 +366,7 @@ export default function PerfilPublico() {
                             <div className="px-5 pb-6 sm:px-6">
                                 <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
                                     <div className="flex min-w-0 items-end gap-4">
-                                        <div className="-mt-12 z-30 flex h-[88px] w-[88px] shrink-0 items-center justify-center overflow-hidden rounded-full border-4 border-[#0C121D] bg-[#192538] sm:h-24 sm:w-24">
+                                        <div className="relative z-0 -mt-12 flex h-[88px] w-[88px] shrink-0 items-center justify-center overflow-hidden rounded-full border-4 border-[#0C121D] bg-[#192538] sm:h-24 sm:w-24">
                                             {usuario.foto ? (
                                                 <img
                                                     src={usuario.foto}
@@ -532,6 +532,7 @@ export default function PerfilPublico() {
                                                 time={post.dataCriacao}
                                                 content={post.texto ?? ""}
                                                 nota={post.nota}
+                                                editado={post.editado}
                                                 musicId={post.musica!.id}
                                                 musicTitle={post.musica?.titulo ?? "Música indisponível"}
                                                 artist={post.musica?.artista?.nome ?? "Artista desconhecido"}

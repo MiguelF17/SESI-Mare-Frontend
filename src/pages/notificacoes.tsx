@@ -51,6 +51,7 @@ interface Notificacao {
         id: number;
         texto: string;
         nota: number;
+        editado?: boolean;
         musica: {
             id: number;
             titulo: string;
@@ -105,6 +106,8 @@ export default function Notificacoes() {
     const [tentativa, setTentativa] = useState(0);
     const [atualizando, setAtualizando] = useState<number | null>(null);
     const [marcandoTodas, setMarcandoTodas] = useState(false);
+    const [seguindoIds, setSeguindoIds] = useState<number[]>([]);
+    const [seguindoId, setSeguindoId] = useState<number | null>(null);
 
     const carregarNotificacoes = useCallback(async () => {
         await Promise.resolve();
@@ -133,6 +136,28 @@ export default function Notificacoes() {
     useEffect(() => {
         void Promise.resolve().then(carregarNotificacoes);
     }, [carregarNotificacoes, tentativa]);
+
+    useEffect(() => {
+        let ativo = true;
+
+        async function carregarSeguindo() {
+            try {
+                const usuario = await apiRequest<{ id: number }>("/usuarios/me");
+                const seguindo = await apiRequest<{ seguido: { id: number } }[]>(
+                    `/usuarios/${usuario.id}/seguindo`
+                );
+
+                if (ativo) {
+                    setSeguindoIds(seguindo.map((relacao) => relacao.seguido.id));
+                }
+            } catch (error) {
+                console.error("Erro ao carregar quem você segue:", error);
+            }
+        }
+
+        void carregarSeguindo();
+        return () => { ativo = false; };
+    }, []);
 
     const naoLidas = notificacoes.filter(
         (notificacao) => !notificacao.lida
@@ -247,6 +272,19 @@ export default function Notificacoes() {
         }
     }
 
+    async function seguirDeVolta(usuarioId: number) {
+        if (seguindoId !== null) return;
+        setSeguindoId(usuarioId);
+        try {
+            await apiRequest(`/usuarios/${usuarioId}/seguir`, { method: "POST" });
+            setSeguindoIds((ids) => [...ids, usuarioId]);
+        } catch (error) {
+            console.error("Erro ao seguir usuário:", error);
+        } finally {
+            setSeguindoId(null);
+        }
+    }
+
     return (
         <PageLayout>
             <PageContent>
@@ -254,7 +292,7 @@ export default function Notificacoes() {
                     <section className="min-w-0">
                         {/* Barra de busca */}
                         <div className="sticky top-0 z-20 bg-[var(--cor-fundo)]">
-                            <div className="pt-6">
+                            <div className="pt-14 sm:pt-6">
                                 <SearchBar />
                             </div>
                         </div>
@@ -390,8 +428,15 @@ export default function Notificacoes() {
                                                     : ""
                                             }`}
                                         >
-                                            <button
-                                                type="button"
+                                            <div
+                                                role="button"
+                                                tabIndex={0}
+                                                onKeyDown={(event) => {
+                                                    if (event.key === "Enter" || event.key === " ") {
+                                                        event.preventDefault();
+                                                        void abrirNotificacao(notificacao);
+                                                    }
+                                                }}
                                                 onClick={() =>
                                                     abrirNotificacao(notificacao)
                                                 }
@@ -426,6 +471,17 @@ export default function Notificacoes() {
                                                         </p>
                                                     )}
 
+                                                    {(notificacao.tipo === "seguir" || notificacao.tipo === "seguidor") && notificacao.usuario?.id && (
+                                                        <button
+                                                            type="button"
+                                                            disabled={seguindoId === notificacao.usuario.id || seguindoIds.includes(notificacao.usuario.id)}
+                                                            onClick={(event) => { event.stopPropagation(); void seguirDeVolta(notificacao.usuario!.id); }}
+                                                            className="mt-2 rounded-full bg-[var(--cor-destaque)] px-3 py-1.5 text-xs font-semibold text-white transition hover:brightness-110 disabled:opacity-60"
+                                                        >
+                                                            {seguindoIds.includes(notificacao.usuario.id) ? "Seguindo" : seguindoId === notificacao.usuario.id ? "Seguindo..." : "Seguir de volta"}
+                                                        </button>
+                                                    )}
+
                                                     {/* Texto do comentário */}
                                                     {notificacao.tipo === "comentario" &&
                                                         notificacao.textoComentario && (
@@ -448,6 +504,7 @@ export default function Notificacoes() {
                                                                 time={notificacao.criadaEm}
                                                                 content={notificacao.post.texto}
                                                                 nota={notificacao.post.nota}
+                                                                editado={notificacao.post.editado}
                                                                 musicId={
                                                                     notificacao.post.musica?.id ??
                                                                     notificacao.musicaId ??
@@ -466,7 +523,7 @@ export default function Notificacoes() {
                                                         {tempoNotificacao(notificacao.criadaEm)}
                                                     </p>
                                                 </div>
-                                            </button>
+                                            </div>
 
                                             {/* Ações da notificação */}
                                             <div className="flex shrink-0 items-center gap-2 pt-1">

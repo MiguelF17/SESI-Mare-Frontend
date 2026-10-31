@@ -82,6 +82,8 @@ function Carrossel({ children }: { children: ReactNode }) {
   }, [children]);
 
   function iniciarArraste(e: PointerEvent<HTMLDivElement>) {
+    // No toque, preserva a rolagem horizontal nativa do Safari/iOS.
+    if (e.pointerType === "touch") return;
     // Arrasta apenas com o botão principal do mouse ou com toque.
     if (e.pointerType === "mouse" && e.button !== 0) return;
 
@@ -170,8 +172,10 @@ function Carrossel({ children }: { children: ReactNode }) {
           : "cursor-grab scroll-smooth"
           }`}
         style={{
-          touchAction: "pan-y",
+          touchAction: "pan-x pan-y",
           scrollBehavior: arrastando ? "auto" : "smooth",
+          WebkitOverflowScrolling: "touch",
+          overscrollBehaviorX: "contain",
         }}
       >
         {children}

@@ -57,6 +57,28 @@ export function useCurtida({
     try {
       await alternarCurtidaAPI(postId, estadoAnterior);
     } catch (error) {
+      const mensagem = error instanceof Error ? error.message.toLowerCase() : "";
+      // Perfis podem chegar com curtidoPorMim desatualizado; sincroniza o
+      // estado com o servidor quando ele informa que já existia uma curtida.
+      if (novoEstado && (
+        mensagem.includes("já foi curtido") ||
+        mensagem.includes("ja foi curtido") ||
+        mensagem.includes("já curtiu este post") ||
+        mensagem.includes("ja curtiu este post") ||
+        mensagem.includes("already liked")
+      )) {
+        try {
+          await alternarCurtidaAPI(postId, true);
+          setEstadoLocal({
+            postId,
+            curtido: false,
+            quantidade: Math.max(0, quantidadeAnterior - 1),
+          });
+          return;
+        } catch (erroAoSincronizar) {
+          console.error("Erro ao sincronizar curtida:", erroAoSincronizar);
+        }
+      }
       // Restaura o estado caso a API falhe.
       setEstadoLocal(null);
 

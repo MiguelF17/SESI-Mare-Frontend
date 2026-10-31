@@ -6,6 +6,7 @@ export interface Post {
     texto: string | null;
     nota: number;
     dataCriacao: string;
+    editado?: boolean;
 
     usuario?: {
         id: number;

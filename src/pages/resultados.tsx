@@ -12,6 +12,7 @@ import { buscarMusicas, type Musica } from "../services/musicaService";
 import { buscarPosts, type Post } from "../services/postService";
 import { apiRequest } from "../api";
 import RecommendedMusicList from "../components/recommendedMusicList";
+import type { UsuarioBusca } from "../services/buscaService";
 
 function normalizar(valor: unknown) {
   return String(valor ?? "")
@@ -28,6 +29,7 @@ export default function Resultados() {
   const [musicas, setMusicas] = useState<Musica[]>([]);
   const [artistas, setArtistas] = useState<Artista[]>([]);
   const [posts, setPosts] = useState<Post[]>([]);
+  const [usuarios, setUsuarios] = useState<UsuarioBusca[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState(false);
   const [usuarioLogadoId, setUsuarioLogadoId] = useState<number | null>(
@@ -42,17 +44,19 @@ export default function Resultados() {
       setErro(false);
 
       try {
-        const [musicasDados, artistasDados, postsDados] =
+        const [musicasDados, artistasDados, postsDados, usuariosDados] =
           await Promise.all([
             buscarMusicas(),
             buscarArtistas(),
             buscarPosts(),
+            apiRequest<UsuarioBusca[]>("/usuarios").catch(() => []),
           ]);
 
         if (ativo) {
           setMusicas(musicasDados);
           setArtistas(artistasDados);
           setPosts(postsDados);
+          setUsuarios(usuariosDados);
         }
       } catch (erro) {
         console.error("Erro ao buscar resultados:", erro);
@@ -106,6 +110,10 @@ export default function Resultados() {
 
   const artistasFiltrados = artistas.filter((artista) =>
     normalizar(artista.nome).includes(q)
+  );
+
+  const usuariosFiltrados = usuarios.filter((usuario) =>
+    normalizar(usuario.nome).includes(q) || normalizar(usuario.username).includes(q)
   );
 
   const postsFiltrados = posts.filter(
@@ -186,6 +194,21 @@ export default function Resultados() {
                   )}
                 </section>
 
+                {/* PESSOAS */}
+                <section>
+                  <h2 className="mb-5 font-serif text-lg text-[var(--cor-texto-principal)]">Pessoas <span className="ml-2 text-sm text-[var(--cor-texto-discreto)]">{usuariosFiltrados.length}</span></h2>
+                  {usuariosFiltrados.length ? (
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                      {usuariosFiltrados.map((usuario) => (
+                        <Link key={usuario.id} to={`/u/${encodeURIComponent(usuario.username)}`} className="flex items-center gap-3 rounded-xl border border-[var(--cor-borda-suave)] bg-[var(--cor-superficie)] p-3 transition hover:border-[var(--cor-destaque)]/50">
+                          <img src={usuario.foto || "/logo.png"} alt="" className="h-12 w-12 rounded-full object-cover" />
+                          <span className="min-w-0"><span className="block truncate text-sm font-medium">{usuario.nome}</span><span className="text-xs text-[var(--cor-texto-discreto)]">@{usuario.username}</span></span>
+                        </Link>
+                      ))}
+                    </div>
+                  ) : <p className="text-sm text-[var(--cor-texto-discreto)]">Nenhuma pessoa encontrada.</p>}
+                </section>
+
                 {/* ARTISTAS */}
                 <section>
                   <h2 className="mb-5 font-serif text-lg text-[var(--cor-texto-principal)]">
@@ -248,6 +271,7 @@ export default function Resultados() {
                           artistId={post.musica?.artista?.id}
                           musicCover={post.musica?.capa ?? undefined}
                           nota={post.nota}
+                          editado={post.editado}
                           avaliacoes={post.musica?.avaliacoes}
                           likes={post._count?.curtidas ?? 0}
                           comments={post._count?.comentarios ?? 0}

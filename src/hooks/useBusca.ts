@@ -17,6 +17,7 @@ export function useBusca(termo: string) {
     musicas: [],
     artistas: [],
     posts: [],
+    usuarios: [],
   });
 
   const [carregando, setCarregando] = useState(true);
@@ -61,6 +62,7 @@ export function useBusca(termo: string) {
         musicasEncontradas: [],
         artistasEncontrados: [],
         postsEncontrados: [],
+        usuariosEncontrados: [],
       };
     }
 
@@ -87,6 +89,12 @@ export function useBusca(termo: string) {
             normalizar(post.usuario?.username).includes(busca) ||
             normalizar(post.musica?.titulo).includes(busca) ||
             normalizar(post.musica?.artista?.nome).includes(busca)
+        )
+        .slice(0, 3),
+      usuariosEncontrados: dados.usuarios
+        .filter((usuario) =>
+          normalizar(usuario.nome).includes(busca) ||
+          normalizar(usuario.username).includes(busca)
         )
         .slice(0, 3),
     };

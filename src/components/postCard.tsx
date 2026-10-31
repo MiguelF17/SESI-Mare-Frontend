@@ -29,6 +29,7 @@ interface PostCardProps {
   time: string;
   content?: string | null;
   nota?: number;
+  editado?: boolean;
   musicId: number;
   musicTitle: string;
   artist?: string | null;
@@ -54,6 +55,7 @@ export default function PostCard({
   time,
   content,
   nota,
+  editado = false,
   musicId,
   musicTitle,
   artist,
@@ -78,6 +80,7 @@ export default function PostCard({
 
   const [textoAtual, setTextoAtual] = useState(content ?? "");
   const [notaAtual, setNotaAtual] = useState(nota ?? 0);
+  const [postFoiEditado, setPostFoiEditado] = useState(editado);
   const [textoEditado, setTextoEditado] = useState(content ?? "");
   const [notaEditada, setNotaEditada] = useState(nota ?? 0);
 
@@ -177,6 +180,7 @@ export default function PostCard({
 
       setTextoAtual(novoTexto);
       setNotaAtual(notaEditada);
+      setPostFoiEditado(true);
       setEditando(false);
     } catch (error) {
       setMensagemModal(
@@ -261,17 +265,21 @@ export default function PostCard({
 
         {onClick && (
           <>
+            {estrela > 1 && (
+              <button
+                type="button"
+                aria-label={`Dar nota ${String(estrela - 0.5).replace(".", ",")}`}
+                aria-pressed={valorNota === estrela - 0.5}
+                onClick={() => onClick(estrela - 0.5)}
+                className="absolute left-0 top-0 h-full w-1/2 cursor-pointer"
+              />
+            )}
             <button
               type="button"
-              aria-label={`Dar nota ${estrela - 0.5}`}
-              onClick={() => onClick(estrela - 0.5)}
-              className="absolute left-0 top-0 h-full w-1/2 cursor-pointer"
-            />
-            <button
-              type="button"
-              aria-label={`Dar nota ${estrela}`}
+              aria-label={`Dar ${estrela} ${estrela === 1 ? "estrela" : "estrelas"}`}
+              aria-pressed={valorNota === estrela}
               onClick={() => onClick(estrela)}
-              className="absolute right-0 top-0 h-full w-1/2 cursor-pointer"
+              className={`absolute top-0 h-full cursor-pointer ${estrela === 1 ? "inset-0 w-full" : "right-0 w-1/2"}`}
             />
           </>
         )}
@@ -349,7 +357,8 @@ export default function PostCard({
           </div>
 
           <p className="mt-1 text-xs text-[var(--cor-texto-discreto)]">
-            há {calcularTempo(time)}
+            {calcularTempo(time) === "agora" ? "agora" : `há ${calcularTempo(time)}`}
+            {postFoiEditado && <span className="ml-2">· editado</span>}
           </p>
         </div>
 

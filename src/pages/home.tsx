@@ -104,11 +104,11 @@ export default function Home() {
         <div className="grid grid-cols-1 gap-10 xl:grid-cols-[minmax(0,1fr)_340px]">
           <section className="min-w-0">
             <div className="sticky top-0 z-20 bg-[var(--cor-fundo)]">
-              <div className="pt-6">
+              <div className="pt-3 sm:pt-6">
                 <SearchBar />
               </div>
 
-              <div className="flex justify-center pb-2 pt-4">
+              <div className="flex justify-center pb-0 pt-0 sm:pb-2 sm:pt-4">
                 <FeedTabs
                   abaAtiva={abaAtiva}
                   setAbaAtiva={selecionarAba}
@@ -145,6 +145,7 @@ export default function Home() {
                     artistId={post.musica?.artista?.id}
                     musicCover={post.musica?.capa}
                     nota={post.nota}
+                    editado={post.editado}
                     avaliacoes={post.musica?.avaliacoes}
                     likes={post._count?.curtidas ?? 0}
                     comments={post._count?.comentarios ?? 0}

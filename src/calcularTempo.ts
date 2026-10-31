@@ -4,6 +4,7 @@ export default function calcularTempo(data: string) {
   const dataPost = new Date(data);
 
   const diferenca = agora.getTime() - dataPost.getTime();
+  if (Number.isNaN(dataPost.getTime()) || diferenca < 0) return "agora";
 
   const minutos = Math.floor(diferenca / 60000);
 
@@ -12,16 +13,16 @@ export default function calcularTempo(data: string) {
   }
 
   if (minutos < 60) {
-    return `${minutos} minutos`;
+    return minutos === 1 ? "1 minuto" : `${minutos} minutos`;
   }
 
   const horas = Math.floor(minutos / 60);
 
   if (horas < 24) {
-    return `${horas} horas`;
+    return horas === 1 ? "1 hora" : `${horas} horas`;
   }
 
   const dias = Math.floor(horas / 24);
 
-  return `${dias} dias`;
+  return dias === 1 ? "1 dia" : `${dias} dias`;
 }

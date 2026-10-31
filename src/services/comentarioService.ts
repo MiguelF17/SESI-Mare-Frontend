@@ -12,6 +12,11 @@ export interface Comentario {
     foto?: string | null;
   };
   editado?: boolean;
+  respostaAId?: number | null;
+  respostas?: Comentario[];
+  respondendoA?: Pick<Comentario["usuario"], "nome" | "username">;
+  curtidoPorMim?: boolean;
+  _count?: { curtidas?: number };
 }
 
 export async function buscarComentarios(
@@ -30,6 +35,7 @@ export async function buscarComentarios(
 
 export interface CriarComentarioDados {
   texto: string;
+  respostaAId?: number;
 }
 
 export async function criarComentario(

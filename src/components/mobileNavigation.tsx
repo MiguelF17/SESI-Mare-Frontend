@@ -32,7 +32,7 @@ export default function MobileNavigation() {
 
   return (
     <>
-      <div className="fixed right-4 top-[max(12px,env(safe-area-inset-top))] z-[60] flex items-center gap-2 md:hidden">
+      <div className="fixed right-4 top-[max(16px,env(safe-area-inset-top))] z-[40] flex items-center gap-2 md:hidden">
         <Link to="/notificacoes" aria-label="Notificações" title="Notificações" className={`relative flex h-11 w-11 items-center justify-center rounded-full border border-[var(--cor-borda)] bg-[var(--cor-superficie)] text-[var(--cor-texto-principal)] shadow-md ${ativo("/notificacoes") ? "text-[var(--cor-destaque)]" : ""}`}>
           <BellIcon size={22} weight={ativo("/notificacoes") ? "fill" : "regular"} />
           {naoLidas > 0 && <span className="absolute right-0 top-0 flex h-4 min-w-4 -translate-y-1/4 translate-x-1/4 items-center justify-center rounded-full bg-[var(--cor-destaque)] px-1 text-[10px] text-white">{naoLidas > 99 ? "99+" : naoLidas}</span>}

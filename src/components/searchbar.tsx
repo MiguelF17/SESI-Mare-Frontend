@@ -14,6 +14,7 @@ export default function SearchBar() {
     musicasEncontradas,
     artistasEncontrados,
     postsEncontrados,
+    usuariosEncontrados,
     carregando,
     erro,
   } = useBusca(termo);
@@ -23,7 +24,8 @@ export default function SearchBar() {
   const temResultados =
     musicasEncontradas.length > 0 ||
     artistasEncontrados.length > 0 ||
-    postsEncontrados.length > 0;
+    postsEncontrados.length > 0 ||
+    usuariosEncontrados.length > 0;
 
   function pesquisar() {
     if (!busca) return;
@@ -39,7 +41,7 @@ export default function SearchBar() {
           e.preventDefault();
           pesquisar();
         }}
-        className="flex h-10 w-full items-center gap-3 rounded-lg border border-[var(--cor-borda)] bg-[var(--cor-superficie)] px-4"
+        className="flex h-10 w-full items-center gap-3 rounded-lg border border-[var(--cor-borda)] bg-[var(--cor-superficie)] px-4 pr-28 md:pr-4"
       >
         <MagnifyingGlassIcon
           size={16}
@@ -145,6 +147,29 @@ export default function SearchBar() {
 
                         <span className="text-sm text-[var(--cor-texto-principal)]">
                           {a.nome}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {usuariosEncontrados.length > 0 && (
+                  <div className="mb-3">
+                    <p className="mb-2 text-xs text-[#718096]">PESSOAS</p>
+                    {usuariosEncontrados.map((usuario) => (
+                      <button
+                        type="button"
+                        key={usuario.id}
+                        onClick={() => {
+                          setAberta(false);
+                          navigate(`/u/${encodeURIComponent(usuario.username)}`);
+                        }}
+                        className="flex w-full items-center gap-3 rounded-lg p-2 text-left hover:bg-[var(--cor-superficie-menu)]"
+                      >
+                        <img src={usuario.foto || "/logo.png"} alt="" className="h-10 w-10 rounded-full object-cover" />
+                        <span className="min-w-0">
+                          <span className="block truncate text-sm text-[var(--cor-texto-principal)]">{usuario.nome}</span>
+                          <span className="block truncate text-xs text-[#9CA3AF]">@{usuario.username}</span>
                         </span>
                       </button>
                     ))}

@@ -26,6 +26,7 @@ export interface ComentarioPerfil {
         id?: number;
         texto?: string | null;
         nota?: number;
+        editado?: boolean;
         dataCriacao?: string;
 
         usuario?: {
@@ -118,6 +119,7 @@ export default function ComentarioPerfilCard({
                         time={post.dataCriacao || comentario.dataCriacao}
                         content={post.texto}
                         nota={post.nota}
+                        editado={post.editado}
                         musicId={post.musica!.id!}
                         musicTitle={post.musica?.titulo || "Música indisponível"}
                         artist={post.musica?.artista?.nome || "Artista desconhecido"}
@@ -193,7 +195,7 @@ export default function ComentarioPerfilCard({
                         )}
 
                         <span className="text-xs text-[var(--cor-texto-discreto)]">
-                            · há {calcularTempo(comentario.dataCriacao)}
+                            · {calcularTempo(comentario.dataCriacao) === "agora" ? "agora" : `há ${calcularTempo(comentario.dataCriacao)}`}
                         </span>
                     </div>
 

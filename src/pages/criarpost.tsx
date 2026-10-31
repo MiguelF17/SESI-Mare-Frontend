@@ -89,6 +89,11 @@ function CarrosselRecomendadas({
       <div
         ref={trilhoRef}
         className="flex min-w-0 gap-8 overflow-x-auto scroll-smooth px-3 py-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        style={{
+          touchAction: "pan-x pan-y",
+          WebkitOverflowScrolling: "touch",
+          overscrollBehaviorX: "contain",
+        }}
       >
         {children}
       </div>
@@ -141,18 +146,21 @@ function EstrelaNota({
         </div>
       )}
 
-      <button
-        type="button"
-        onClick={() => onClick(estrela - 0.5)}
-        className="absolute left-0 top-0 h-full w-1/2 cursor-pointer"
-        aria-label={`Dar nota ${estrela - 0.5}`}
-      />
-
+      {estrela > 1 && (
+        <button
+          type="button"
+          onClick={() => onClick(estrela - 0.5)}
+          className="absolute left-0 top-0 h-full w-1/2 cursor-pointer"
+          aria-label={`Dar nota ${String(estrela - 0.5).replace(".", ",")}`}
+          aria-pressed={nota === estrela - 0.5}
+        />
+      )}
       <button
         type="button"
         onClick={() => onClick(estrela)}
-        className="absolute right-0 top-0 h-full w-1/2 cursor-pointer"
-        aria-label={`Dar nota ${estrela}`}
+        className={`absolute top-0 h-full cursor-pointer ${estrela === 1 ? "inset-0 w-full" : "right-0 w-1/2"}`}
+        aria-label={`Dar ${estrela} ${estrela === 1 ? "estrela" : "estrelas"}`}
+        aria-pressed={nota === estrela}
       />
     </div>
   );
