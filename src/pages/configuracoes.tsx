@@ -16,7 +16,8 @@ import PageLayout from "../components/pageLayout";
 import PageContent from "../components/pageContent";
 import SearchBar from "../components/searchbar";
 import RecommendedMusicList from "../components/recommendedMusicList";
-import { API_URL } from "../api";
+import { API_URL, apiRequest } from "../api";
+import toast from "react-hot-toast";
 
 type Tema = "sistema" | "escuro" | "claro";
 
@@ -150,6 +151,24 @@ export default function Configuracoes() {
     localStorage.setItem("mare-notificacoes", JSON.stringify(notificacoes));
   }, [notificacoes]);
 
+  useEffect(() => {
+    let ativo = true;
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+    if (!token) return;
+
+    apiRequest<PreferenciasNotificacao>("/usuarios/me/notificacoes/preferencias", {
+      token,
+      cache: "no-store",
+    }).then((preferencias) => {
+      if (ativo) setNotificacoes(preferencias);
+    }).catch((error: unknown) => {
+      console.error("Erro ao carregar preferências de notificação:", error);
+      if (ativo) toast.error("Não foi possível carregar suas preferências de notificação.");
+    });
+
+    return () => { ativo = false; };
+  }, []);
+
   // Carrega os gêneros existentes nas músicas e as preferências do usuário.
   useEffect(() => {
     if (!mostrarGeneros) return;
@@ -233,10 +252,25 @@ export default function Configuracoes() {
   }, [mostrarGeneros]);
 
   function alternarNotificacao(chave: keyof PreferenciasNotificacao) {
-    setNotificacoes((atuais) => ({
-      ...atuais,
-      [chave]: !atuais[chave],
-    }));
+    const proximas = {
+      ...notificacoes,
+      [chave]: !notificacoes[chave],
+    };
+    setNotificacoes(proximas);
+    localStorage.setItem("mare-notificacoes", JSON.stringify(proximas));
+
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+    if (!token) return;
+
+    apiRequest<PreferenciasNotificacao>("/usuarios/me/notificacoes/preferencias", {
+      method: "PUT",
+      token,
+      body: JSON.stringify(proximas),
+    }).catch((error: unknown) => {
+      console.error("Erro ao salvar preferências de notificação:", error);
+      toast.error("Não foi possível salvar essa preferência.");
+      setNotificacoes((atuais) => ({ ...atuais, [chave]: notificacoes[chave] }));
+    });
   }
 
   function alternarGenero(genero: string) {
@@ -420,7 +454,7 @@ export default function Configuracoes() {
                       ))}
 
                       <p className="text-[11px] text-[var(--cor-texto-discreto)]">
-                        Essas opções são salvas neste navegador.
+                        Essas opções ficam salvas na sua conta.
                       </p>
                     </div>
                   )}

@@ -1,5 +1,6 @@
 import Navbar from "../components/navbar"
 import Footer from "../components/footer"
+import { Link } from "react-router-dom"
 
 import { FaPhone, FaEnvelope, FaClock } from "react-icons/fa"
 
@@ -167,7 +168,10 @@ function Contato() {
 
                             <p className="text-xs text-[#B8C7D9]">
 
-                                Ao enviar, você concorda com nossa política de privacidade.
+                                Ao enviar, você concorda com nossa{" "}
+                                <Link to="/privacidade" className="text-[var(--cor-destaque)] hover:underline">
+                                    política de privacidade
+                                </Link>.
 
                             </p>
 

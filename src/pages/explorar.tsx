@@ -96,7 +96,6 @@ function Carrossel({ children }: { children: ReactNode }) {
 
     setArrastando(true);
 
-    trilho.setPointerCapture(e.pointerId);
   }
 
   function moverArraste(e: PointerEvent<HTMLDivElement>) {
@@ -105,8 +104,11 @@ function Carrossel({ children }: { children: ReactNode }) {
 
     const distancia = e.clientX - inicioX.current;
 
-    if (Math.abs(distancia) > 5) {
+    if (Math.abs(distancia) > 5 && !arrastou.current) {
       arrastou.current = true;
+      if (!trilho.hasPointerCapture(e.pointerId)) {
+        trilho.setPointerCapture(e.pointerId);
+      }
     }
 
     if (arrastou.current) {
