@@ -171,7 +171,7 @@ export default function MusicCard({
     return (
       <div
         onClick={() => id && navigate(`/musica/${id}`)}
-        className="h-[140px] w-[280px] shrink-0 cursor-pointer overflow-hidden rounded-lg border border-[var(--cor-borda)] bg-[var(--cor-superficie)] sm:h-[160px] sm:w-[320px]"
+        className="h-[120px] w-[240px] shrink-0 cursor-pointer overflow-hidden rounded-lg border border-[var(--cor-borda)] bg-[var(--cor-superficie)] sm:h-[138px] sm:w-[275px]"
       >
         <div className="relative h-full w-full">
           <img
@@ -184,7 +184,7 @@ export default function MusicCard({
 
           <div className="absolute inset-0 bg-black/60" />
 
-          <div className="relative z-10 flex h-full w-full flex-col justify-end p-4">
+          <div className="relative z-10 flex h-full w-full flex-col justify-end p-3">
             <div>
               <p className="truncate text-lg text-[var(--cor-texto-principal)]">{titulo}</p>
 
@@ -229,11 +229,12 @@ export default function MusicCard({
 
   // CARD QUADRADO
   if (tipo === "quadrado") {
+    const larguraCompacta = "w-[128px] shrink-0 sm:w-[153px]";
     return (
       <div
         onClick={() => id && navigate(`/musica/${id}`)}
         className={`cursor-pointer rounded-lg border border-[var(--cor-borda)] bg-[var(--cor-superficie)] p-2 transition hover:bg-[#171C2A] ${
-          larguraFixa ? "w-[150px] shrink-0 sm:w-[180px]" : "w-full min-w-0"
+          larguraFixa ? larguraCompacta : "mx-auto w-full min-w-0 max-w-[128px] sm:max-w-[153px]"
         }`}
       >
         <img

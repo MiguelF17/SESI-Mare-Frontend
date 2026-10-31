@@ -123,7 +123,7 @@ export default function Artista() {
           <main className="min-w-0">
             {/* BUSCA E NAVEGAÇÃO */}
             <div className="sticky top-[calc(50px+env(safe-area-inset-top))] z-20 md:top-0 border-b border-[#242b3a] bg-[var(--cor-fundo)]/95 backdrop-blur-md">
-              <div className="py-3">
+              <div className="py-0 md:py-3">
                 <SearchBar />
               </div>
 

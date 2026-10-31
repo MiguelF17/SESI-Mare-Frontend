@@ -167,7 +167,7 @@ function Carrossel({ children }: { children: ReactNode }) {
             e.stopPropagation();
           }
         }}
-        className={`flex min-w-0 gap-4 overflow-x-auto px-2 py-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${arrastando
+        className={`flex min-w-0 gap-2 overflow-x-auto px-2 py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${arrastando
           ? "cursor-grabbing select-none"
           : "cursor-grab scroll-smooth"
           }`}
@@ -514,7 +514,7 @@ export default function Explorar() {
     <PageLayout>
       <PageContent>
         <div className="sticky top-[calc(50px+env(safe-area-inset-top))] z-20 md:top-0 bg-[var(--cor-fundo)]">
-          <div className="w-full pb-6 md:w-[65%]">
+          <div className="w-full pb-0 md:w-[65%] md:pb-6">
             <SearchBar />
           </div>
         </div>

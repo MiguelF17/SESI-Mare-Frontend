@@ -228,7 +228,7 @@ export default function ListaSeguidores() {
                     <section className="min-w-0">
                         {/* Busca */}
                         <div className="sticky top-[calc(50px+env(safe-area-inset-top))] z-20 md:top-0 bg-[var(--cor-fundo)]">
-                            <div className="w-full max-w-[800px] pb-6 pt-6">
+                            <div className="w-full max-w-[800px] pb-0 pt-0 md:pb-6 md:pt-6">
                                 <SearchBar />
                             </div>
                         </div>

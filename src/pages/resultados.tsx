@@ -134,7 +134,7 @@ export default function Resultados() {
           <section className="min-w-0">
             {/* BUSCA FIXA */}
             <div className="sticky top-[calc(50px+env(safe-area-inset-top))] z-20 md:top-0 bg-[var(--cor-fundo)]">
-              <div className="pt-6">
+              <div className="pt-0 md:pt-6">
                 <SearchBar />
               </div>
 

@@ -271,7 +271,7 @@ export default function Musica() {
           <main className="min-w-0">
             {/* BUSCA E NAVEGAÇÃO */}
             <div className="sticky top-[calc(50px+env(safe-area-inset-top))] z-20 md:top-0 border-b border-[#242b3a] bg-[var(--cor-fundo)]/95 backdrop-blur-md">
-              <div className="py-3">
+              <div className="py-0 md:py-3">
                 <SearchBar />
               </div>
 
@@ -430,9 +430,9 @@ export default function Musica() {
             <button
               type="button"
               onClick={() => navigate(`/criarpost?musica=${musica.id}`)}
-              className="mt-12 flex h-14 w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-[var(--cor-destaque-suave)] font-serif text-[18px] text-[var(--cor-texto-principal)] transition hover:bg-[#6bb0ef]"
+              className="mt-4 flex h-12 w-full cursor-pointer items-center justify-center gap-1.5 rounded-lg bg-[var(--cor-destaque-suave)] text-[14px] font-serif text-[var(--cor-texto-principal)] transition hover:bg-[#6bb0ef] disabled:cursor-not-allowed disabled:opacity-50"
             >
-              <PlusIcon weight="bold" size={18} />
+              <PlusIcon weight="bold" size={14} />
               Adicionar um post
             </button>
           </main>

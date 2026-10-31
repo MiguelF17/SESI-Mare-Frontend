@@ -88,7 +88,7 @@ function CarrosselRecomendadas({
 
       <div
         ref={trilhoRef}
-        className="flex min-w-0 gap-8 overflow-x-auto scroll-smooth px-3 py-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="flex min-w-0 gap-4 overflow-x-auto scroll-smooth px-3 py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         style={{
           touchAction: "pan-x pan-y",
           WebkitOverflowScrolling: "touch",
@@ -349,7 +349,9 @@ export default function CriarPost() {
       <PageContent>
         <div className="grid grid-cols-1 gap-10 xl:grid-cols-[minmax(0,1fr)_340px]">
           <main className="min-w-0">
-            <SearchBar />
+            <div className="sticky top-[calc(50px+env(safe-area-inset-top))] z-20 bg-[var(--cor-fundo)] md:top-0">
+              <SearchBar />
+            </div>
 
             <h1 className="mt-5 font-serif text-[26px] text-[var(--cor-texto-principal)]">
               Criar avaliação
@@ -379,7 +381,7 @@ export default function CriarPost() {
                           key={musica.id}
                           onClick={() => selecionarMusica(musica)}
                           aria-pressed={musicaSelecionada?.id === musica.id}
-                          className={`w-[160px] shrink-0 snap-start rounded-lg text-left transition ${
+                          className={`w-fit shrink-0 snap-start rounded-lg text-left transition ${
                             musicaSelecionada?.id === musica.id
                               ? "ring-2 ring-[var(--cor-destaque-suave)]"
                               : "hover:opacity-80"
