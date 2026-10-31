@@ -425,8 +425,8 @@ export default function Explorar() {
     tipo: "banner" | "quadrado"
   ) {
     return (
-      <section className="mb-12 min-w-0">
-        <div className="mb-5 flex items-center gap-2">
+      <section className="mb-8 min-w-0">
+        <div className="mb-4 flex items-center gap-2">
           {icone}
           <h2 className="font-serif text-[17px] text-[var(--cor-texto-principal)]">
             {titulo}
@@ -450,8 +450,8 @@ export default function Explorar() {
 
   function renderizarArtistas() {
     return (
-      <section className="mb-12 min-w-0">
-        <div className="mb-5 flex items-center gap-2">
+      <section className="mb-8 min-w-0">
+        <div className="mb-4 flex items-center gap-2">
           <UserCircleIcon size={20} className="text-[var(--cor-destaque-alternativo)]" />
           <h2 className="font-serif text-[17px] text-[var(--cor-texto-principal)]">
             Artistas
@@ -513,13 +513,13 @@ export default function Explorar() {
   return (
     <PageLayout>
       <PageContent>
-        <div className="sticky top-[calc(40px+env(safe-area-inset-top))] z-20 md:top-0 bg-[var(--cor-fundo)]">
+        <div className="sticky top-[calc(50px+env(safe-area-inset-top))] z-20 md:top-0 bg-[var(--cor-fundo)]">
           <div className="w-full pb-6 md:w-[65%]">
             <SearchBar />
           </div>
         </div>
 
-        <div className="mb-10">
+        <div className="mb-8">
           <h1 className="font-serif text-[26px] text-[var(--cor-texto-cinza-100)]">
             Explorar
           </h1>
@@ -559,7 +559,7 @@ export default function Explorar() {
         )}
 
         <section className="mb-12">
-          <div className="mb-5 flex items-center gap-2">
+          <div className="mb-4 flex items-center gap-2">
             <MusicNotesIcon size={18} className="text-[var(--cor-destaque-alternativo)]" />
 
             <h2 className="font-serif text-[17px] text-[var(--cor-texto-principal)]">
@@ -586,6 +586,7 @@ export default function Explorar() {
                   key={musica.id}
                   id={musica.id}
                   tipo="quadrado"
+                  larguraFixa
                   titulo={musica.titulo}
                   artista={musica.artista?.nome ?? "Artista desconhecido"}
                   artistaId={musica.artista?.id ?? musica.artistaId}
