@@ -108,7 +108,7 @@ export default function Home() {
                 <SearchBar />
               </div>
 
-              <div className="flex justify-center pb-0 pt-0 sm:pb-2 sm:pt-4">
+              <div className="flex justify-center pb-1 pt-3 sm:pb-2 sm:pt-4">
                 <FeedTabs
                   abaAtiva={abaAtiva}
                   setAbaAtiva={selecionarAba}

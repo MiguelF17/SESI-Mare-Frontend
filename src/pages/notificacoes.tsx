@@ -292,7 +292,7 @@ export default function Notificacoes() {
                     <section className="min-w-0">
                         {/* Barra de busca */}
                         <div className="sticky top-0 z-20 bg-[var(--cor-fundo)]">
-                            <div className="pt-14 sm:pt-6">
+                            <div className="pt-3 sm:pt-6">
                                 <SearchBar />
                             </div>
                         </div>
