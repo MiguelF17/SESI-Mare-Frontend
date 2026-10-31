@@ -105,7 +105,7 @@ export default function ImageCropModal({
 
     return (
         <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/80 px-4">
-            <div className="w-full max-w-[600px] rounded-xl border border-[var(--cor-borda-discreta)] bg-[#0d121c] p-5">
+            <div className="max-h-[calc(100dvh-2rem)] w-full max-w-[600px] overflow-y-auto rounded-xl border border-[var(--cor-borda-discreta)] bg-[#0d121c] p-4 sm:p-5">
                 <div className="mb-4 flex items-center justify-between">
                     <h2 className="font-serif text-lg text-[var(--cor-texto-principal)]">
                         Ajustar {tipo === "foto" ? "foto de perfil" : "capa"}
@@ -125,7 +125,7 @@ export default function ImageCropModal({
                 <div
                     className={`relative mx-auto w-full overflow-hidden bg-black ${tipo === "foto"
                         ? "aspect-square max-w-[380px] rounded-full border-2 border-[var(--cor-destaque)]"
-                        : "aspect-[3/1] rounded-lg"
+                        : "aspect-[3/1] max-h-[28vh] rounded-lg sm:max-h-none"
                         }`}
                 >
                     <Cropper
@@ -135,6 +135,7 @@ export default function ImageCropModal({
                         minZoom={1}
                         maxZoom={5}
                         aspect={tipo === "foto" ? 1 : 3}
+                        objectFit={tipo === "capa" ? "horizontal-cover" : "cover"}
                         cropShape={tipo === "foto" ? "round" : "rect"}
                         showGrid={false}
                         onCropChange={setCrop}

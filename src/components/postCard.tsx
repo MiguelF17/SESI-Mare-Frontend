@@ -465,6 +465,7 @@ export default function PostCard({
               value={textoEditado}
               onChange={(event) => setTextoEditado(event.target.value)}
               rows={3}
+              maxLength={500}
               className="mt-2 w-full resize-y rounded-md border border-[var(--cor-borda)] bg-[var(--cor-superficie)] p-2 text-sm text-[var(--cor-texto-principal)] outline-none focus:border-[var(--cor-destaque)]"
             />
           </label>

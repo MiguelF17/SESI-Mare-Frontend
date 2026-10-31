@@ -544,7 +544,7 @@ export default function CriarPost() {
                 value={texto}
                 onChange={(e) => setTexto(e.target.value)}
                 placeholder="Escreva algo sobre a música..."
-                maxLength={2000}
+                maxLength={500}
                 className="h-[115px] w-full resize-none rounded-lg border border-[var(--cor-borda-suave)] bg-[#0c1017] p-3 text-[12px] text-[var(--cor-texto-principal)] outline-none transition placeholder:text-[var(--cor-texto-discreto)] focus:border-[var(--cor-destaque-suave)]"
               />
 
@@ -592,7 +592,7 @@ export default function CriarPost() {
                 value={texto}
                 onChange={(e) => setTexto(e.target.value)}
                 placeholder="Escreva algo sobre a música..."
-                maxLength={2000}
+                maxLength={500}
                 className="h-[115px] w-full resize-none rounded-lg border border-[var(--cor-borda-suave)] bg-[#0c1017] p-3 text-[11px] text-[var(--cor-texto-principal)] outline-none transition placeholder:text-[var(--cor-texto-discreto)] focus:border-[var(--cor-destaque-suave)]"
               />
 

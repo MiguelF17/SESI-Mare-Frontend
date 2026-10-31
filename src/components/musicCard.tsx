@@ -171,7 +171,7 @@ export default function MusicCard({
     return (
       <div
         onClick={() => id && navigate(`/musica/${id}`)}
-        className="h-[160px] w-[320px] shrink-0 cursor-pointer overflow-hidden rounded-lg border border-[var(--cor-borda)] bg-[var(--cor-superficie)]"
+        className="h-[140px] w-[280px] shrink-0 cursor-pointer overflow-hidden rounded-lg border border-[var(--cor-borda)] bg-[var(--cor-superficie)] sm:h-[160px] sm:w-[320px]"
       >
         <div className="relative h-full w-full">
           <img
@@ -233,7 +233,7 @@ export default function MusicCard({
       <div
         onClick={() => id && navigate(`/musica/${id}`)}
         className={`cursor-pointer rounded-lg border border-[var(--cor-borda)] bg-[var(--cor-superficie)] p-2 transition hover:bg-[#171C2A] ${
-          larguraFixa ? "w-[180px] shrink-0" : "w-full min-w-0"
+          larguraFixa ? "w-[150px] shrink-0 sm:w-[180px]" : "w-full min-w-0"
         }`}
       >
         <img

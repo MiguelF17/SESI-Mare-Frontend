@@ -473,10 +473,10 @@ export default function Explorar() {
                 type="button"
                 onClick={() => navigate(`/artista/${artista.id}`)}
                 aria-label={`Ver perfil de ${artista.nome}`}
-                className="w-36 shrink-0 snap-start rounded-xl px-1 py-2 text-left transition-transform duration-300 hover:-translate-y-1 hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#58A9E8]"
+                className="w-32 shrink-0 snap-start rounded-xl px-1 py-2 text-left transition-transform duration-300 hover:-translate-y-1 hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#58A9E8] sm:w-36"
               >
                 <div className="flex cursor-pointer flex-col items-center">
-                  <div className="mb-3 flex h-36 w-36 items-center justify-center overflow-hidden rounded-full bg-[var(--cor-superficie-elevada)]">
+                  <div className="mb-3 flex h-28 w-28 items-center justify-center overflow-hidden rounded-full bg-[var(--cor-superficie-elevada)] sm:h-36 sm:w-36">
                     {artista.fotoURL ? (
                       <img
                         src={artista.fotoURL}
@@ -513,7 +513,7 @@ export default function Explorar() {
   return (
     <PageLayout>
       <PageContent>
-        <div className="sticky top-0 z-20 bg-[var(--cor-fundo)]">
+        <div className="sticky top-[calc(40px+env(safe-area-inset-top))] z-20 md:top-0 bg-[var(--cor-fundo)]">
           <div className="w-full pb-6 md:w-[65%]">
             <SearchBar />
           </div>
