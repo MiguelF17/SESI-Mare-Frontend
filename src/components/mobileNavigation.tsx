@@ -32,7 +32,7 @@ export default function MobileNavigation() {
 
   return (
     <>
-      <div className="flex h-[calc(56px+env(safe-area-inset-top))] items-end justify-between px-4 pb-2 md:hidden">
+      <div className="flex h-[calc(40px+env(safe-area-inset-top))] items-end justify-between px-4 md:hidden">
         <Link to="/configuracoes" aria-label="Configurações" title="Configurações" className={`flex h-10 w-10 items-center justify-center rounded-full border border-[var(--cor-borda)] bg-[var(--cor-superficie)] text-[var(--cor-texto-principal)] shadow-md ${ativo("/configuracoes") ? "text-[var(--cor-destaque)]" : ""}`}>
           <GearIcon size={21} weight={ativo("/configuracoes") ? "fill" : "regular"} />
         </Link>
