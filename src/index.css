@@ -23,6 +23,26 @@ body {
   overflow-x: hidden;
 }
 
+/* Estende o desfoque do cabeçalho pelo intervalo entre busca e botões mobile. */
+.search-header::before {
+  position: absolute;
+  z-index: 0;
+  inset-inline: 0;
+  top: -6px;
+  height: 6px;
+  background: var(--cor-fundo);
+  opacity: 0.8;
+  backdrop-filter: blur(12px);
+  content: "";
+  pointer-events: none;
+}
+
+@media (min-width: 768px) {
+  .search-header::before {
+    display: none;
+  }
+}
+
 /* Barra de rolagem da Maré */
 .scrollbar-mare {
   scrollbar-width: thin;

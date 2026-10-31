@@ -458,7 +458,7 @@ export default function Perfil() {
         <PageContent>
           <div className="grid grid-cols-1 gap-10 xl:grid-cols-[minmax(0,1fr)_340px]">
             <section className="min-w-0">
-              <div className="sticky top-[calc(50px+env(safe-area-inset-top))] z-20 bg-[var(--cor-fundo)] md:top-0">
+              <div className="sticky search-header -mt-2.5 top-[calc(50px+env(safe-area-inset-top))] z-20 bg-[var(--cor-fundo)]/80 backdrop-blur-md md:top-0 md:mt-0">
                 <div className="w-full max-w-[800px] pb-0 pt-0 md:pb-6 md:pt-6">
                   <SearchBar />
                 </div>
