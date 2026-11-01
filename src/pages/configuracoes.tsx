@@ -8,6 +8,7 @@ import {
   ShieldCheckIcon,
   FileTextIcon,
   SignOutIcon,
+  TrashIcon,
   CaretRightIcon,
   MusicNotesIcon,
 } from "@phosphor-icons/react";
@@ -122,6 +123,8 @@ export default function Configuracoes() {
   const [mostrarConfirmacaoSaida, setMostrarConfirmacaoSaida] =
     useState(false);
   const [saindo, setSaindo] = useState(false);
+  const [mostrarConfirmacaoExclusao, setMostrarConfirmacaoExclusao] = useState(false);
+  const [excluindoConta, setExcluindoConta] = useState(false);
 
   // Aplica e salva o tema escolhido.
   useEffect(() => {
@@ -363,6 +366,32 @@ export default function Configuracoes() {
     window.location.reload();
   }
 
+  async function confirmarExclusaoConta() {
+    if (excluindoConta) return;
+
+    setExcluindoConta(true);
+    try {
+      await apiRequest<{ message: string }>("/usuarios/me", {
+        method: "DELETE",
+      });
+
+      localStorage.removeItem("token");
+      localStorage.removeItem("usuario");
+      sessionStorage.removeItem("token");
+      sessionStorage.removeItem("user");
+      sessionStorage.removeItem("usuario");
+      toast.success("Sua conta foi excluída.");
+      navigate("/", { replace: true });
+      window.location.reload();
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Não foi possível excluir sua conta."
+      );
+    } finally {
+      setExcluindoConta(false);
+    }
+  }
+
   return (
     <PageLayout>
       <PageContent>
@@ -597,22 +626,35 @@ export default function Configuracoes() {
                 </div>
               </section>
 
-              {/* SAIR */}
+              {/* AÇÕES DA CONTA */}
               <section>
                 <h2 className="mb-3 font-serif text-[18px] text-[var(--cor-texto-principal)]">
-                  Sair
+                  Conta
                 </h2>
 
-                <button
-                  type="button"
-                  onClick={sairDaConta}
-                  className="flex min-h-[42px] w-full cursor-pointer items-center gap-3 rounded-md border border-[var(--cor-borda-perigo)] bg-[var(--cor-fundo-perigo)] px-4 text-left transition hover:border-red-500 hover:bg-red-500/10"
-                >
-                  <SignOutIcon size={16} className="text-[var(--cor-texto-perigo)]" />
-                  <span className="text-[12px] text-[var(--cor-texto-perigo)]">
-                    Sair da conta
-                  </span>
-                </button>
+                <div className="flex flex-col gap-2">
+                  <button
+                    type="button"
+                    onClick={sairDaConta}
+                    className="flex min-h-[42px] w-full cursor-pointer items-center gap-3 rounded-md border border-[var(--cor-borda-discreta)] bg-[var(--cor-superficie-alternativa)] px-4 text-left transition hover:border-[var(--cor-borda-destaque)]"
+                  >
+                    <SignOutIcon size={16} className="text-[var(--cor-destaque-alternativo)]" />
+                    <span className="text-[12px] text-[var(--cor-texto-secundario)]">
+                      Sair da conta
+                    </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setMostrarConfirmacaoExclusao(true)}
+                    className="flex min-h-[42px] w-full cursor-pointer items-center gap-3 rounded-md border border-red-500/40 bg-red-500/5 px-4 text-left transition hover:border-red-500 hover:bg-red-500/10"
+                  >
+                    <TrashIcon size={16} className="text-red-400" />
+                    <span className="text-[12px] font-medium text-red-400">
+                      Excluir conta permanentemente
+                    </span>
+                  </button>
+                </div>
               </section>
             </div>
           </section>
@@ -671,9 +713,50 @@ export default function Configuracoes() {
                 type="button"
                 onClick={confirmarSaida}
                 disabled={saindo}
-                className="cursor-pointer rounded-lg bg-red-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+                className="cursor-pointer rounded-lg bg-[var(--cor-destaque-alternativo)] px-5 py-2.5 text-sm font-semibold text-[var(--cor-tinta)] transition hover:bg-[#79BCF5] disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {saindo ? "Saindo..." : "Sair da conta"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {mostrarConfirmacaoExclusao && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="titulo-excluir-conta"
+            className="w-full max-w-sm rounded-2xl border border-red-500/40 bg-[var(--cor-superficie)] p-5 shadow-2xl shadow-black/50"
+          >
+            <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-full bg-red-500/15 text-red-400">
+              <TrashIcon size={22} />
+            </div>
+
+            <h2 id="titulo-excluir-conta" className="text-base font-semibold text-[var(--cor-texto-principal)]">
+              Excluir sua conta permanentemente?
+            </h2>
+            <p className="mt-2 text-sm leading-6 text-[var(--cor-texto-secundario)]">
+              Essa ação não pode ser desfeita. Seu perfil e os dados associados à conta serão removidos.
+            </p>
+
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setMostrarConfirmacaoExclusao(false)}
+                disabled={excluindoConta}
+                className="cursor-pointer rounded-lg border border-[var(--cor-borda)] px-4 py-2.5 text-sm text-[var(--cor-texto-principal)] transition hover:bg-[var(--cor-superficie-elevada)] disabled:opacity-50"
+              >
+                Manter conta
+              </button>
+              <button
+                type="button"
+                onClick={confirmarExclusaoConta}
+                disabled={excluindoConta}
+                className="cursor-pointer rounded-lg bg-red-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {excluindoConta ? "Excluindo..." : "Excluir conta"}
               </button>
             </div>
           </div>

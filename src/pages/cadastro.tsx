@@ -122,15 +122,18 @@ function Cadastro() {
   min-h-screen
   w-full
   flex
-  items-center
+  items-start
   justify-center
   lg:justify-end
   relative
   overflow-x-hidden
   px-4
-  py-4
+  pt-24
+  pb-8
   sm:px-6
   lg:px-20
+  lg:items-center
+  lg:py-24
   bg-[var(--cor-fundo)]
 "
       style={{
