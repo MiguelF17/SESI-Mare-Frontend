@@ -270,7 +270,7 @@ export default function Musica() {
         <div className="grid grid-cols-1 gap-10 xl:grid-cols-[minmax(0,1fr)_340px]">
           <main className="min-w-0">
             {/* BUSCA E NAVEGAÇÃO */}
-            <div className="sticky search-header -mt-2.5 top-[calc(50px+env(safe-area-inset-top))] z-20 md:top-0 md:mt-0 border-b border-[#242b3a] bg-[var(--cor-fundo)]/95 backdrop-blur-md">
+            <div className="sticky md:static search-header -mt-2.5 top-[calc(50px+env(safe-area-inset-top))] z-20 md:top-0 md:mt-0 border-b border-[#242b3a] bg-[var(--cor-fundo)]/95 backdrop-blur-md">
               <div className="py-0 md:py-3">
                 <SearchBar />
               </div>

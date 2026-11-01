@@ -397,7 +397,7 @@ export default function Configuracoes() {
       <PageContent>
         <div className="grid grid-cols-1 gap-10 xl:grid-cols-[minmax(0,1fr)_340px]">
           <section className="min-w-0">
-            <div className="sticky search-header -mt-2.5 top-[calc(50px+env(safe-area-inset-top))] z-20 md:top-0 md:mt-0 bg-[var(--cor-fundo)]/80 backdrop-blur-md">
+            <div className="sticky md:static search-header -mt-2.5 top-[calc(50px+env(safe-area-inset-top))] z-20 md:top-0 md:mt-0 bg-[var(--cor-fundo)]/80 backdrop-blur-md">
               <div className="pt-0 md:pt-6">
                 <SearchBar />
               </div>
@@ -638,7 +638,7 @@ export default function Configuracoes() {
                     onClick={sairDaConta}
                     className="flex min-h-[42px] w-full cursor-pointer items-center gap-3 rounded-md border border-[var(--cor-borda-discreta)] bg-[var(--cor-superficie-alternativa)] px-4 text-left transition hover:border-[var(--cor-borda-destaque)]"
                   >
-                    <SignOutIcon size={16} className="text-[var(--cor-destaque-alternativo)]" />
+                    <SignOutIcon size={16} className="text-[var(--cor-texto-secundario)]" />
                     <span className="text-[12px] text-[var(--cor-texto-secundario)]">
                       Sair da conta
                     </span>

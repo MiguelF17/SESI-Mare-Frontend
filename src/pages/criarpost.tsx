@@ -349,7 +349,7 @@ export default function CriarPost() {
       <PageContent>
         <div className="grid grid-cols-1 gap-10 xl:grid-cols-[minmax(0,1fr)_340px]">
           <main className="min-w-0">
-            <div className="sticky search-header -mt-2.5 top-[calc(50px+env(safe-area-inset-top))] z-20 bg-[var(--cor-fundo)]/80 backdrop-blur-md md:top-0 md:mt-0">
+            <div className="sticky md:static search-header -mt-2.5 top-[calc(50px+env(safe-area-inset-top))] z-20 bg-[var(--cor-fundo)]/80 backdrop-blur-md md:top-0 md:mt-0">
               <SearchBar />
             </div>
 
