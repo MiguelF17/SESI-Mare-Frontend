@@ -405,7 +405,7 @@ export default function Musica() {
                   Carregando músicas relacionadas...
                 </p>
               ) : musicasRelacionadas.length > 0 ? (
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5 xl:grid-cols-6">
                   {musicasRelacionadas.map((item) => (
                     <MusicCard
                       key={item.id}

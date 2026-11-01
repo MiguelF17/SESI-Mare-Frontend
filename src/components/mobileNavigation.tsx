@@ -9,6 +9,7 @@ import {
   BellIcon,
 } from "@phosphor-icons/react";
 import { apiRequest } from "../api";
+import SearchBar from "./searchbar";
 
 export default function MobileNavigation() {
   const location = useLocation();
@@ -32,12 +33,16 @@ export default function MobileNavigation() {
 
   return (
     <>
-      <div className="fixed inset-x-0 top-0 z-40 flex h-[calc(52px+env(safe-area-inset-top))] items-end justify-between border-b border-[var(--cor-borda)] bg-[var(--cor-fundo)]/90 px-4 pb-1 backdrop-blur-xl md:hidden">
-        <Link to="/configuracoes" aria-label="Configurações" title="Configurações" className={`flex h-10 w-10 items-center justify-center rounded-full border border-[var(--cor-borda)] bg-[var(--cor-superficie)] text-[var(--cor-texto-principal)] shadow-md ${ativo("/configuracoes") ? "text-[var(--cor-destaque)]" : ""}`}>
+      <div className="fixed inset-x-0 top-0 z-40 flex h-[calc(52px+env(safe-area-inset-top))] items-end gap-2 border-b border-[var(--cor-borda)] bg-[var(--cor-fundo)]/95 px-3 pb-1 backdrop-blur-xl md:hidden">
+        <Link to="/configuracoes" aria-label="Configurações" title="Configurações" className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--cor-borda)] bg-[var(--cor-superficie)] text-[var(--cor-texto-principal)] shadow-md ${ativo("/configuracoes") ? "text-[var(--cor-destaque)]" : ""}`}>
           <GearIcon size={21} weight={ativo("/configuracoes") ? "fill" : "regular"} />
         </Link>
 
-        <Link to="/notificacoes" aria-label="Notificações" title="Notificações" className={`relative flex h-10 w-10 items-center justify-center rounded-full border border-[var(--cor-borda)] bg-[var(--cor-superficie)] text-[var(--cor-texto-principal)] shadow-md ${ativo("/notificacoes") ? "text-[var(--cor-destaque)]" : ""}`}>
+        <div className="min-w-0 flex-1">
+          <SearchBar mobileHeader />
+        </div>
+
+        <Link to="/notificacoes" aria-label="Notificações" title="Notificações" className={`relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--cor-borda)] bg-[var(--cor-superficie)] text-[var(--cor-texto-principal)] shadow-md ${ativo("/notificacoes") ? "text-[var(--cor-destaque)]" : ""}`}>
           <BellIcon size={21} weight={ativo("/notificacoes") ? "fill" : "regular"} />
           {naoLidas > 0 && <span className="absolute right-0 top-0 flex h-4 min-w-4 -translate-y-1/4 translate-x-1/4 items-center justify-center rounded-full bg-[var(--cor-destaque)] px-1 text-[10px] text-white">{naoLidas > 99 ? "99+" : naoLidas}</span>}
         </Link>

@@ -1,10 +1,10 @@
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { MagnifyingGlassIcon } from "@phosphor-icons/react";
+import { MagnifyingGlassIcon, UserCircleIcon } from "@phosphor-icons/react";
 import { useBusca } from "../hooks/useBusca";
 
-export default function SearchBar() {
+export default function SearchBar({ mobileHeader = false }: { mobileHeader?: boolean }) {
   const navigate = useNavigate();
 
   const [termo, setTermo] = useState("");
@@ -35,13 +35,16 @@ export default function SearchBar() {
   }
 
   return (
-    <div className="relative w-full">
+    <div className={`${mobileHeader ? "block" : "hidden md:block"} relative w-full min-w-0`}>
       <form
         onSubmit={(e) => {
           e.preventDefault();
           pesquisar();
         }}
-        className="flex h-10 w-full items-center gap-3 rounded-lg border border-[var(--cor-borda)] bg-[var(--cor-superficie)]/90 px-4 shadow-sm backdrop-blur-xl"
+        className={`relative z-30 flex w-full items-center gap-3 border border-[var(--cor-borda)] shadow-sm backdrop-blur-xl ${mobileHeader
+          ? "h-8 rounded-lg bg-[var(--cor-fundo)]/55 px-2"
+          : "h-10 rounded-lg bg-[var(--cor-superficie)]/90 px-3 sm:px-4"
+          }`}
       >
         <MagnifyingGlassIcon
           size={16}
@@ -166,7 +169,13 @@ export default function SearchBar() {
                         }}
                         className="flex w-full items-center gap-3 rounded-lg p-2 text-left hover:bg-[var(--cor-superficie-menu)]"
                       >
-                        <img src={usuario.foto || "/logo.png"} alt="" className="h-10 w-10 rounded-full object-cover" />
+                        {usuario.foto ? (
+                          <img src={usuario.foto} alt="" className="h-10 w-10 rounded-full object-cover" />
+                        ) : (
+                          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--cor-superficie-menu)] text-[#8992A5]">
+                            <UserCircleIcon size={24} weight="regular" aria-hidden="true" />
+                          </span>
+                        )}
                         <span className="min-w-0">
                           <span className="block truncate text-sm text-[var(--cor-texto-principal)]">{usuario.nome}</span>
                           <span className="block truncate text-xs text-[#9CA3AF]">@{usuario.username}</span>

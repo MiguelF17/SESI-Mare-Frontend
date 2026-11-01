@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
     BellIcon,
+    AtIcon,
     HeartIcon,
     ChatCircleIcon,
     UserCircleIcon,
@@ -181,6 +182,9 @@ export default function Notificacoes() {
 
             case "comentario":
                 return <ChatCircleIcon size={20} />;
+
+            case "mencao":
+                return <AtIcon size={20} />;
 
             case "seguir":
             case "seguidor":

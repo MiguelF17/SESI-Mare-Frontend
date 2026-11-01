@@ -582,13 +582,12 @@ export default function Explorar() {
               Nenhuma música encontrada.
             </p>
           ) : (
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+            <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5 xl:grid-cols-6">
               {catalogo.map((musica) => (
                 <MusicCard
                   key={musica.id}
                   id={musica.id}
                   tipo="quadrado"
-                  larguraFixa
                   titulo={musica.titulo}
                   artista={musica.artista?.nome ?? "Artista desconhecido"}
                   artistaId={musica.artista?.id ?? musica.artistaId}

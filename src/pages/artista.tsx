@@ -186,7 +186,7 @@ export default function Artista() {
               </div>
 
               {musicas.length > 0 ? (
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+                <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-5">
                   {musicas.map((musica) => (
                     <MusicCard
                       key={musica.id}

@@ -43,6 +43,47 @@ interface UsuarioLogado {
     foto?: string | null;
 }
 
+function contarArvore(comentarios: Comentario[]): number {
+    return comentarios.reduce(
+        (total, comentario) => total + 1 + contarArvore(comentario.respostas ?? []),
+        0,
+    );
+}
+
+function buscarNaArvore(comentarios: Comentario[], id: number): Comentario | undefined {
+    for (const comentario of comentarios) {
+        if (comentario.id === id) return comentario;
+        const encontrado = buscarNaArvore(comentario.respostas ?? [], id);
+        if (encontrado) return encontrado;
+    }
+    return undefined;
+}
+
+function removerDaArvore(comentarios: Comentario[], id: number): Comentario[] {
+    return comentarios
+        .filter((comentario) => comentario.id !== id)
+        .map((comentario) => ({
+            ...comentario,
+            respostas: removerDaArvore(comentario.respostas ?? [], id),
+        }));
+}
+
+function inserirRespostaNaArvore(
+    comentarios: Comentario[],
+    paiId: number,
+    resposta: Comentario,
+): Comentario[] {
+    return comentarios.map((comentario) => {
+        if (comentario.id === paiId) {
+            return { ...comentario, respostas: [...(comentario.respostas ?? []), resposta] };
+        }
+        return {
+            ...comentario,
+            respostas: inserirRespostaNaArvore(comentario.respostas ?? [], paiId, resposta),
+        };
+    });
+}
+
 export default function Post() {
     const { id } = useParams();
 
@@ -81,16 +122,13 @@ export default function Post() {
         comentarioId: number,
         atualizar: (comentario: Comentario) => Comentario
     ) {
-        setComentarios((atuais) => atuais.map((comentario) => {
-            if (comentario.id === comentarioId) return atualizar(comentario);
-
-            return {
-                ...comentario,
-                respostas: comentario.respostas?.map((resposta) =>
-                    resposta.id === comentarioId ? atualizar(resposta) : resposta
-                ),
-            };
-        }));
+        setComentarios((atuais) => {
+            const atualizarNaArvore = (itens: Comentario[]): Comentario[] =>
+                itens.map((comentario) => comentario.id === comentarioId
+                    ? atualizar(comentario)
+                    : { ...comentario, respostas: atualizarNaArvore(comentario.respostas ?? []) });
+            return atualizarNaArvore(atuais);
+        });
     }
 
     useEffect(() => {
@@ -206,11 +244,7 @@ export default function Post() {
                     ...atual,
                     _count: {
                         curtidas: atual._count?.curtidas ?? 0,
-                        comentarios:
-                            (atual._count?.comentarios ?? comentarios.reduce(
-                                (total, comentario) => total + 1 + (comentario.respostas?.length ?? 0),
-                                0,
-                            )) + 1,
+                        comentarios: (atual._count?.comentarios ?? contarArvore(comentarios)) + 1,
                     },
                 };
             });
@@ -243,9 +277,7 @@ export default function Post() {
         try {
             const resposta = await criarComentario(Number(id), { texto, respostaAId: comentarioPai.id });
             const respostaComContexto = { ...resposta, respondendoA: comentarioPai.usuario };
-            setComentarios((atuais) => atuais.map((comentario) => comentario.id === comentarioPai.id
-                ? { ...comentario, respostas: [...(comentario.respostas ?? []), respostaComContexto] }
-                : comentario));
+            setComentarios((atuais) => inserirRespostaNaArvore(atuais, comentarioPai.id, respostaComContexto));
             setPost((atual) => atual ? {
                 ...atual,
                 _count: {
@@ -337,17 +369,12 @@ export default function Post() {
         try {
             await excluirComentarioServico(comentarioId);
 
-            const comentarioPrincipal = comentarios.find((comentario) => comentario.id === comentarioId);
-            const quantidadeRemovida = comentarioPrincipal
-                ? 1 + (comentarioPrincipal.respostas?.length ?? 0)
+            const comentarioRemovido = buscarNaArvore(comentarios, comentarioId);
+            const quantidadeRemovida = comentarioRemovido
+                ? contarArvore([comentarioRemovido])
                 : 1;
 
-            setComentarios((atuais) => atuais
-                .filter((comentario) => comentario.id !== comentarioId)
-                .map((comentario) => ({
-                    ...comentario,
-                    respostas: comentario.respostas?.filter((resposta) => resposta.id !== comentarioId),
-                })));
+            setComentarios((atuais) => removerDaArvore(atuais, comentarioId));
 
             setPost((atual) => {
                 if (!atual) return atual;
@@ -358,10 +385,7 @@ export default function Post() {
                         curtidas: atual._count?.curtidas ?? 0,
                         comentarios: Math.max(
                             0,
-                            (atual._count?.comentarios ?? comentarios.reduce(
-                                (total, comentario) => total + 1 + (comentario.respostas?.length ?? 0),
-                                0,
-                            )) - quantidadeRemovida
+                            (atual._count?.comentarios ?? contarArvore(comentarios)) - quantidadeRemovida
                         ),
                     },
                 };
@@ -409,17 +433,19 @@ export default function Post() {
     }
 
     const totalComentarios =
-        post._count?.comentarios ?? comentarios.reduce(
-            (total, comentario) => total + 1 + (comentario.respostas?.length ?? 0),
-            0,
-        );
-    const comentariosVisiveis = comentarios.flatMap((comentario) => [
-        comentario,
-        ...(comentario.respostas ?? []).map((resposta) => ({
-            ...resposta,
-            respondendoA: comentario.usuario,
-        })),
-    ]);
+        post._count?.comentarios ?? contarArvore(comentarios);
+    const comentariosVisiveis: (Comentario & { profundidade: number })[] = [];
+    const achatarComentarios = (itens: Comentario[], pai?: Comentario, profundidade = 0) => {
+        for (const comentario of itens) {
+            comentariosVisiveis.push({
+                ...comentario,
+                ...(pai ? { respondendoA: pai.usuario } : {}),
+                profundidade,
+            });
+            achatarComentarios(comentario.respostas ?? [], comentario, profundidade + 1);
+        }
+    };
+    achatarComentarios(comentarios);
 
     return (
         <PageLayout>
@@ -560,7 +586,8 @@ export default function Post() {
                                     return (
                                         <article
                                             key={comentario.id}
-                                            className={`border-b border-[#242b3a] px-1 py-4 transition hover:bg-white/5 ${comentario.respostaAId ? "ml-8 border-l border-l-[var(--cor-borda)] pl-4" : ""}`}
+                                            className={`border-b border-[#242b3a] px-1 py-4 transition hover:bg-white/5 ${comentario.respostaAId ? "border-l border-l-[var(--cor-borda)] pl-4" : ""}`}
+                                            style={{ marginLeft: comentario.respostaAId ? `${Math.min(comentario.profundidade, 3) * 12}px` : undefined }}
                                         >
                                             <div className="flex items-start gap-3">
                                                 {/* Avatar do comentário */}
@@ -710,20 +737,18 @@ export default function Post() {
 
                                                     <div className="mt-3 flex items-center gap-4 text-xs text-[var(--cor-texto-discreto)]">
                                                         <button type="button" onClick={() => void alternarCurtidaComentario(comentario)} className={`inline-flex cursor-pointer items-center gap-1.5 transition hover:text-pink-400 ${(acoesComentario[comentario.id]?.curtido ?? comentario.curtidoPorMim) ? "text-pink-400" : ""}`} aria-pressed={acoesComentario[comentario.id]?.curtido ?? comentario.curtidoPorMim ?? false} aria-label={(acoesComentario[comentario.id]?.curtido ?? comentario.curtidoPorMim) ? "Descurtir comentário" : "Curtir comentário"}><Heart size={17} fill={(acoesComentario[comentario.id]?.curtido ?? comentario.curtidoPorMim) ? "currentColor" : "none"} />{acoesComentario[comentario.id]?.quantidade ?? comentario._count?.curtidas ?? 0}</button>
-                                                        {!comentario.respostaAId && (
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => {
-                                                                    setComentarioComRespostaAbertaId((atual) => atual === comentario.id ? null : comentario.id);
-                                                                    setTextoResposta("");
-                                                                }}
-                                                                className="inline-flex cursor-pointer items-center gap-1.5 transition hover:text-[var(--cor-destaque)]"
-                                                            >
-                                                                <ChatCircleIcon size={15} />Responder
-                                                            </button>
-                                                        )}
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => {
+                                                                setComentarioComRespostaAbertaId((atual) => atual === comentario.id ? null : comentario.id);
+                                                                setTextoResposta("");
+                                                            }}
+                                                            className="inline-flex cursor-pointer items-center gap-1.5 transition hover:text-[var(--cor-destaque)]"
+                                                        >
+                                                            <ChatCircleIcon size={15} />Responder
+                                                        </button>
                                                     </div>
-                                                    {comentarioComRespostaAbertaId === comentario.id && !comentario.respostaAId && (
+                                                    {comentarioComRespostaAbertaId === comentario.id && (
                                                         token ? (
                                                             <form onSubmit={(event) => void enviarResposta(event, comentario)} className="mt-3 border-l border-[var(--cor-borda)] pl-3">
                                                                 <p className="mb-1 text-xs text-[var(--cor-destaque)]">Respondendo a @{comentario.usuario.username || comentario.usuario.nome}</p>
