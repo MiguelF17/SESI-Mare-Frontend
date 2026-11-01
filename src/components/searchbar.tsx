@@ -64,7 +64,7 @@ function SearchBar({ variant }: { variant: "mobile" | "desktop" }) {
             if (e.key === "Escape") setAberta(false);
           }}
           placeholder="Buscar músicas, artistas e posts..."
-          className="w-full border-none bg-transparent text-xs text-[var(--cor-texto-principal)] outline-none placeholder:text-[#718096]"
+          className="min-w-0 flex-1 border-none bg-transparent text-xs text-[var(--cor-texto-principal)] outline-none placeholder:text-[#718096]"
         />
       </form>
 

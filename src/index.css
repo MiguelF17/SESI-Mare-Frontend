@@ -23,22 +23,6 @@ body {
   overflow-x: clip;
 }
 
-.desktop-search-width {
-  width: calc(min(1200px, 100vw - clamp(220px, 30vw, 340px)) - 48px);
-}
-
-@media (min-width: 1024px) {
-  .desktop-search-width {
-    width: calc(min(1200px, 100vw - clamp(220px, 30vw, 340px)) - 80px);
-  }
-}
-
-@media (min-width: 1280px) {
-  .desktop-search-width {
-    width: calc(min(1200px, 100vw - clamp(220px, 30vw, 340px)) - 460px);
-  }
-}
-
 .search-header {
   display: none;
 }

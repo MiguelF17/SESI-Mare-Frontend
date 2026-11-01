@@ -38,7 +38,7 @@ export default function MobileNavigation() {
           <GearIcon size={21} weight={ativo("/configuracoes") ? "fill" : "regular"} />
         </Link>
 
-        <div className="absolute inset-x-[60px] bottom-1 rounded-xl border border-[var(--cor-borda)] bg-[var(--cor-superficie)] p-1 shadow-md">
+        <div className="min-w-0 flex-1 rounded-xl border border-[var(--cor-borda)] bg-[var(--cor-superficie)] p-1 shadow-md">
           <MobileSearchBar />
         </div>
 
