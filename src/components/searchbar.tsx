@@ -42,9 +42,9 @@ function SearchBar({ variant }: { variant: "mobile" | "desktop" }) {
           e.preventDefault();
           pesquisar();
         }}
-        className={`relative z-30 flex w-full items-center gap-3 border border-[var(--cor-borda)] shadow-sm backdrop-blur-xl ${mobileHeader
-          ? "h-8 rounded-lg bg-[var(--cor-fundo)]/55 px-2"
-          : "h-10 rounded-lg bg-[var(--cor-superficie)]/90 px-3 sm:px-4"
+        className={`relative z-30 flex w-full items-center gap-3 shadow-sm backdrop-blur-xl ${mobileHeader
+          ? "h-8 rounded-lg border border-[var(--cor-borda)] bg-[var(--cor-fundo)]/55 px-2"
+          : "h-10 rounded-lg border border-[var(--cor-borda)] bg-[var(--cor-superficie)]/90 px-3 sm:px-4"
           }`}
       >
         <MagnifyingGlassIcon

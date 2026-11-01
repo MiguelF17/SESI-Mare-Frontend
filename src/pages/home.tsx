@@ -102,7 +102,7 @@ export default function Home() {
       <PageContent>
         <div className="grid grid-cols-1 gap-10 xl:grid-cols-[minmax(0,1fr)_340px]">
           <section className="min-w-0">
-            <div className="sticky top-[calc(52px+env(safe-area-inset-top))] z-20 -mt-2.5 bg-[var(--cor-fundo)]/90 backdrop-blur-xl md:relative md:top-auto md:mt-0">
+            <div className="sticky top-[calc(52px+env(safe-area-inset-top))] z-20 -mt-2.5 bg-[var(--cor-fundo)]/90 backdrop-blur-xl md:top-16 md:mt-0">
               <div className="flex justify-center pb-1 pt-3 sm:pb-2 sm:pt-4">
                 <FeedTabs
                   abaAtiva={abaAtiva}
