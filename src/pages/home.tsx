@@ -103,7 +103,7 @@ export default function Home() {
         <div className="grid grid-cols-1 gap-10 xl:grid-cols-[minmax(0,1fr)_340px]">
           <section className="min-w-0">
             <div className="sticky top-[calc(52px+env(safe-area-inset-top))] z-20 -mt-2.5 bg-[var(--cor-fundo)]/90 backdrop-blur-xl md:top-16 md:mt-0">
-              <div className="flex justify-center pb-1 pt-3 sm:pb-2 sm:pt-4">
+              <div className="flex justify-center pb-1 pt-3 sm:pb-2 sm:pt-4 md:pb-0 md:pt-1">
                 <FeedTabs
                   abaAtiva={abaAtiva}
                   setAbaAtiva={selecionarAba}
@@ -111,7 +111,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="flex flex-col gap-6 pt-4">
+            <div className="flex flex-col gap-6 pt-4 md:pt-2">
               {feedCarregando ? (
                 <p className="py-8 text-center text-sm text-[var(--cor-texto-discreto)]">
                   Carregando publicações...
@@ -163,7 +163,7 @@ export default function Home() {
           </section>
 
           <aside className="hidden xl:block">
-            <div className="fixed top-2/5 w-[340px] -translate-y-2/5">
+            <div className="fixed top-20 w-[340px]">
               <h2 className="mb-5 font-serif text-[16px] text-[var(--cor-texto-principal)]">
                 Músicas recomendadas
               </h2>

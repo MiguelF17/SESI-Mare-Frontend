@@ -8,7 +8,7 @@ export default function FeedTabs({
   setAbaAtiva,
 }: FeedTabsProps) {
   return (
-    <div className="flex items-center justify-center gap-8 px-2 sm:mb-3 sm:mt-3 sm:gap-10">
+    <div className="flex items-center justify-center gap-8 px-2 sm:mb-3 sm:mt-3 sm:gap-10 md:mb-1 md:mt-0">
       <button
         onClick={() => setAbaAtiva("paraVoce")}
         className={`cursor-pointer pb-1 text-xs sm:pb-2 sm:text-lg ${

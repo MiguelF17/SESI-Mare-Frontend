@@ -22,7 +22,7 @@ export default function PageLayout({ children }: PageLayoutProps) {
         </div>
       </div>
 
-      <main className="ml-0 min-h-screen min-w-0 pb-[calc(72px+env(safe-area-inset-bottom))] md:ml-[clamp(220px,30vw,340px)] md:pb-0 md:pt-16">
+      <main className="ml-0 min-h-screen min-w-0 pb-[calc(72px+env(safe-area-inset-bottom))] md:ml-[clamp(220px,30vw,340px)] md:pb-0 md:pt-10">
         {children}
       </main>
     </div>
