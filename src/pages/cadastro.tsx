@@ -94,6 +94,20 @@ function Cadastro() {
     } catch (error) {
       console.error("Erro ao cadastrar:", error);
 
+      if (
+        error instanceof Error &&
+        error.message.toLowerCase().includes("conta foi criada")
+      ) {
+        navigate("/login", {
+          state: {
+            mensagem: "Sua conta foi criada, mas o primeiro envio falhou. Você pode tentar reenviar a confirmação abaixo.",
+            email: formData.email.trim(),
+            reenviar: true,
+          },
+        });
+        return;
+      }
+
       toast.error(
         error instanceof Error
           ? error.message
