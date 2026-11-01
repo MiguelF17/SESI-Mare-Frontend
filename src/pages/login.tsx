@@ -5,6 +5,8 @@ import fundoLogin from "../assets/fundoLogin.jpg";
 import logo from "../assets/logomare.png";
 import toast from "react-hot-toast";
 import { useAuth } from "../hooks/useAuth";
+import { ApiError } from "../api";
+import { reenviarVerificacao } from "../services/authService";
 
 function Login() {
   const navigate = useNavigate();
@@ -14,6 +16,9 @@ function Login() {
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const location = useLocation();
   const mensagemCadastro = location.state?.mensagem;
+  const [emailReenvio, setEmailReenvio] = useState<string>(location.state?.email ?? "");
+  const [reenviando, setReenviando] = useState(false);
+  const [emailPendente, setEmailPendente] = useState(false);
 
   const handleSubmit = async (
     e: React.FormEvent<HTMLFormElement>
@@ -22,6 +27,7 @@ function Login() {
 
     try {
       const usuario = await entrar(login.trim().toLowerCase(), senha);
+      setEmailPendente(false);
 
       toast.success("Login realizado com sucesso!");
 
@@ -31,11 +37,32 @@ function Login() {
     } catch (error) {
       console.error("Erro ao fazer login:", error);
 
+      if (error instanceof ApiError && error.code === "EMAIL_NAO_VERIFICADO") {
+        setEmailPendente(true);
+        setEmailReenvio(login.trim());
+      }
+
       toast.error(
         error instanceof Error
           ? error.message
           : "Não foi possível conectar ao servidor."
       );
+    }
+  };
+
+  const handleReenviarVerificacao = async () => {
+    if (!emailReenvio.trim()) {
+      toast.error("Informe seu e-mail ou usuário para reenviar a confirmação.");
+      return;
+    }
+    setReenviando(true);
+    try {
+      const resposta = await reenviarVerificacao(emailReenvio.trim());
+      toast.success(resposta.message);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Não foi possível reenviar o e-mail.");
+    } finally {
+      setReenviando(false);
     }
   };
 
@@ -156,6 +183,31 @@ function Login() {
           {mensagemCadastro && (
             <div className="mb-4 rounded-lg border border-[var(--cor-destaque)]/30 bg-[var(--cor-destaque)]/10 py-3 px-2 text-sm text-[#A9D8FF]">
               {mensagemCadastro}
+            </div>
+          )}
+
+          {(emailPendente || mensagemCadastro || location.state?.reenviar) && (
+            <div className="mb-4 space-y-3 rounded-lg border border-[var(--cor-borda)] bg-[var(--cor-fundo)]/60 p-3">
+              <label htmlFor="email-reenvio" className="block text-sm text-[var(--cor-texto-destaque)]">
+                Reenviar e-mail de confirmação
+              </label>
+              <input
+                id="email-reenvio"
+                type="text"
+                autoComplete="email"
+                value={emailReenvio}
+                onChange={(event) => setEmailReenvio(event.target.value)}
+                placeholder="Seu e-mail ou usuário"
+                className="w-full rounded-lg border border-[var(--cor-borda)] bg-[var(--cor-fundo)] px-3 py-2 text-[var(--cor-texto-destaque)]"
+              />
+              <button
+                type="button"
+                onClick={handleReenviarVerificacao}
+                disabled={reenviando}
+                className="w-full rounded-lg border border-[var(--cor-destaque)] px-4 py-2 text-sm font-medium text-[var(--cor-destaque)] disabled:opacity-60"
+              >
+                {reenviando ? "Enviando..." : "Reenviar confirmação"}
+              </button>
             </div>
           )}
 

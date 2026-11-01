@@ -41,7 +41,7 @@ export default function SearchBar() {
           e.preventDefault();
           pesquisar();
         }}
-        className="flex h-10 w-full items-center gap-3 rounded-lg border border-[var(--cor-borda)] bg-[var(--cor-superficie)] px-4"
+        className="flex h-10 w-full items-center gap-3 rounded-lg border border-[var(--cor-borda)] bg-[var(--cor-superficie)]/90 px-4 shadow-sm backdrop-blur-xl"
       >
         <MagnifyingGlassIcon
           size={16}

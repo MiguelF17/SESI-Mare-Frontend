@@ -100,6 +100,7 @@ function VerificarEmail() {
 
                         <Link
                             to="/login"
+                            state={{ mensagem: "O link pode ter expirado. Informe seu e-mail ou usuário para solicitar outro.", reenviar: true }}
                             className="mt-6 inline-block rounded-lg border border-[var(--cor-borda)] px-6 py-3 font-medium text-[var(--cor-texto-principal)] transition hover:bg-[#1b2230]"
                         >
                             Voltar para o login

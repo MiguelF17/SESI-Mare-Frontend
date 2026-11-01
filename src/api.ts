@@ -51,6 +51,8 @@ function executarRequisicao<T>(
 
                 if (typeof erro.code === "string") {
                     codigo = erro.code;
+                } else if (typeof erro.error === "string") {
+                    codigo = erro.error;
                 }
             } else if (typeof dados === "string" && dados.trim()) {
                 mensagem = dados;
