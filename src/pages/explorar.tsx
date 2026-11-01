@@ -515,7 +515,7 @@ export default function Explorar() {
   return (
     <PageLayout>
       <PageContent>
-        <div className="sticky md:static search-header -mt-2.5 top-[calc(50px+env(safe-area-inset-top))] z-20 md:top-0 md:mt-0 bg-[var(--cor-fundo)]/80 backdrop-blur-md">
+        <div className="sticky md:relative search-header -mt-2.5 top-[calc(50px+env(safe-area-inset-top))] z-20 md:top-0 md:mt-0 bg-[var(--cor-fundo)]/80 backdrop-blur-md">
           <div className="w-full pb-0 md:w-[65%] md:pb-6">
             <SearchBar />
           </div>
