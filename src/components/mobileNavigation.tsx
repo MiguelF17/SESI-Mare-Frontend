@@ -9,7 +9,7 @@ import {
   BellIcon,
 } from "@phosphor-icons/react";
 import { apiRequest } from "../api";
-import SearchBar from "./searchbar";
+import { MobileSearchBar } from "./searchbar";
 
 export default function MobileNavigation() {
   const location = useLocation();
@@ -39,7 +39,7 @@ export default function MobileNavigation() {
         </Link>
 
         <div className="absolute inset-x-[60px] bottom-1 rounded-xl border border-[var(--cor-borda)] bg-[var(--cor-superficie)] p-1 shadow-md">
-          <SearchBar mobileHeader />
+          <MobileSearchBar />
         </div>
 
         <Link to="/notificacoes" aria-label="Notificações" title="Notificações" className={`relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--cor-borda)] bg-[var(--cor-superficie)] text-[var(--cor-texto-principal)] shadow-md ${ativo("/notificacoes") ? "text-[var(--cor-destaque)]" : ""}`}>

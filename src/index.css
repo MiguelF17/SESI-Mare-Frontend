@@ -37,6 +37,10 @@ body {
   pointer-events: none;
 }
 
+.search-header {
+  display: none;
+}
+
 @media (min-width: 768px) {
   .search-header::before {
     display: none;
