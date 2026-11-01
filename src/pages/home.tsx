@@ -103,8 +103,8 @@ export default function Home() {
       <PageContent>
         <div className="grid grid-cols-1 gap-10 xl:grid-cols-[minmax(0,1fr)_340px]">
           <section className="min-w-0">
-            <div className="sticky md:relative top-[calc(52px+env(safe-area-inset-top))] z-20 -mt-2.5 bg-[var(--cor-fundo)]/90 backdrop-blur-xl md:top-0 md:mt-0">
-              <div className="pt-0">
+            <div className="sticky top-[calc(52px+env(safe-area-inset-top))] z-20 -mt-2.5 bg-[var(--cor-fundo)]/90 backdrop-blur-xl md:top-0 md:mt-0">
+              <div className="pt-0 md:pt-6">
                 <SearchBar />
               </div>
 

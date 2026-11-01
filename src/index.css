@@ -24,10 +24,6 @@ body {
 }
 
 /* Estende o desfoque do cabeçalho pelo intervalo entre busca e botões mobile. */
-.search-header {
-  display: none;
-}
-
 .search-header::before {
   position: absolute;
   z-index: 0;

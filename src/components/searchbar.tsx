@@ -4,10 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { MagnifyingGlassIcon, UserCircleIcon } from "@phosphor-icons/react";
 import { useBusca } from "../hooks/useBusca";
 
-export default function SearchBar({
-  mobileHeader = false,
-  desktopHeader = false,
-}: { mobileHeader?: boolean; desktopHeader?: boolean }) {
+export default function SearchBar({ mobileHeader = false }: { mobileHeader?: boolean }) {
   const navigate = useNavigate();
 
   const [termo, setTermo] = useState("");
@@ -38,7 +35,7 @@ export default function SearchBar({
   }
 
   return (
-    <div className={`${mobileHeader ? "block" : desktopHeader ? "hidden md:block" : "hidden"} relative w-full min-w-0`}>
+    <div className={`${mobileHeader ? "block" : "hidden md:block"} relative w-full min-w-0`}>
       <form
         onSubmit={(e) => {
           e.preventDefault();
