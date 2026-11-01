@@ -11,7 +11,6 @@ import {
 
 import PageLayout from "../components/pageLayout";
 import PageContent from "../components/pageContent";
-import SearchBar from "../components/searchbar";
 import OuvirCard from "../components/ouvirCard";
 import MusicCard from "../components/musicCard";
 
@@ -350,7 +349,6 @@ export default function CriarPost() {
         <div className="grid grid-cols-1 gap-10 xl:grid-cols-[minmax(0,1fr)_340px]">
           <main className="min-w-0">
             <div className="sticky search-header -mt-2.5 top-[calc(50px+env(safe-area-inset-top))] z-20 bg-[var(--cor-fundo)]/80 backdrop-blur-md md:top-0 md:mt-0">
-              <SearchBar />
             </div>
 
             <h1 className="mt-5 font-serif text-[26px] text-[var(--cor-texto-principal)]">

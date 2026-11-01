@@ -17,7 +17,6 @@ import toast from "react-hot-toast";
 
 import PageLayout from "../components/pageLayout";
 import PageContent from "../components/pageContent";
-import SearchBar from "../components/searchbar";
 import PostCard from "../components/postCard";
 import BotaoVoltar from "../components/botaoVoltar";
 import RecommendedMusicList from "../components/recommendedMusicList";
@@ -455,7 +454,6 @@ export default function Post() {
                         {/* Cabeçalho */}
                         <div className="sticky search-header -mt-2.5 top-[calc(50px+env(safe-area-inset-top))] z-20 md:top-0 md:mt-0 border-b border-[#242b3a] bg-[var(--cor-fundo)]/95 backdrop-blur-md">
                             <div className="py-0 md:py-3">
-                                <SearchBar />
                             </div>
 
                             <div className="flex items-center gap-5 py-3">

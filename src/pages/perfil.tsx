@@ -14,7 +14,6 @@ import toast from "react-hot-toast";
 
 import PageLayout from "../components/pageLayout";
 import PageContent from "../components/pageContent";
-import SearchBar from "../components/searchbar";
 import PostCard from "../components/postCard";
 import MusicCard from "../components/musicCard";
 import ImageCropModal from "../components/imageCropModal";
@@ -460,7 +459,6 @@ export default function Perfil() {
             <section className="min-w-0">
               <div className="sticky search-header -mt-2.5 top-[calc(50px+env(safe-area-inset-top))] z-20 bg-[var(--cor-fundo)]/80 backdrop-blur-md md:top-0 md:mt-0">
                 <div className="w-full max-w-[800px] pb-0 pt-0 md:pb-6 md:pt-6">
-                  <SearchBar />
                 </div>
               </div>
 

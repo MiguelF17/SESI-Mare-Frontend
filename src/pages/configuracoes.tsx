@@ -15,7 +15,6 @@ import {
 
 import PageLayout from "../components/pageLayout";
 import PageContent from "../components/pageContent";
-import SearchBar from "../components/searchbar";
 import RecommendedMusicList from "../components/recommendedMusicList";
 import { API_URL, apiRequest } from "../api";
 import toast from "react-hot-toast";
@@ -399,7 +398,6 @@ export default function Configuracoes() {
           <section className="min-w-0">
             <div className="sticky search-header -mt-2.5 top-[calc(50px+env(safe-area-inset-top))] z-20 md:top-0 md:mt-0 bg-[var(--cor-fundo)]/80 backdrop-blur-md">
               <div className="pt-0 md:pt-6">
-                <SearchBar />
               </div>
             </div>
 

@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 
 import PageLayout from "../components/pageLayout";
 import PageContent from "../components/pageContent";
-import SearchBar from "../components/searchbar";
 import MusicCard from "../components/musicCard";
 
 import { apiRequest } from "../api";
@@ -63,7 +62,6 @@ export default function Salvos() {
           <div className="flex flex-col">
             <div className="sticky search-header -mt-2.5 top-[calc(50px+env(safe-area-inset-top))] z-20 md:top-0 md:mt-0 bg-[var(--cor-fundo)]/80 backdrop-blur-md">
               <div className="w-full pb-0 md:pb-6">
-                <SearchBar />
               </div>
             </div>
 

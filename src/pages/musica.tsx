@@ -4,7 +4,6 @@ import { useNavigate, useParams, Link } from "react-router-dom";
 
 import PageLayout from "../components/pageLayout";
 import PageContent from "../components/pageContent";
-import SearchBar from "../components/searchbar";
 import OuvirCard from "../components/ouvirCard";
 import PostCard from "../components/postCard";
 import MusicCard from "../components/musicCard";
@@ -272,7 +271,6 @@ export default function Musica() {
             {/* BUSCA E NAVEGAÇÃO */}
             <div className="sticky search-header -mt-2.5 top-[calc(50px+env(safe-area-inset-top))] z-20 md:top-0 md:mt-0 border-b border-[#242b3a] bg-[var(--cor-fundo)]/95 backdrop-blur-md">
               <div className="py-0 md:py-3">
-                <SearchBar />
               </div>
 
               <div className="flex items-center gap-4 py-3">
