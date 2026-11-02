@@ -300,8 +300,7 @@ export default function Notificacoes() {
                         </div>
 
                         {/* Cabeçalho */}
-                        <div className="mb-6 mt-6 flex items-center gap-4">
-                            <BotaoVoltar fallback="/" />
+                        <div className="mb-6 mt-4 flex items-center gap-4">
 
                             <div className="min-w-0 flex-1">
                                 <h1 className="font-serif text-2xl text-[var(--cor-texto-destaque)]">
@@ -566,7 +565,7 @@ export default function Notificacoes() {
 
                     {/* Músicas recomendadas */}
                     <aside className="hidden min-w-0 xl:block">
-                        <div className="fixed top-2/5 w-[340px] -translate-y-2/5">
+                        <div className="fixed top-20 w-[340px]">
                             <h2 className="mb-5 font-serif text-base text-[var(--cor-texto-destaque)]">
                                 Músicas recomendadas
                             </h2>

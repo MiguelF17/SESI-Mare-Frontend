@@ -378,7 +378,7 @@ export default function ListaSeguidores() {
 
                     {/* Músicas recomendadas */}
                     <aside className="hidden min-w-0 xl:block">
-                        <div className="sticky top-6 pt-6">
+                        <div className="fixed top-20 w-[340px]">
                             <h2 className="mb-5 font-serif text-[16px] text-[var(--cor-texto-principal)]">
                                 Músicas recomendadas
                             </h2>

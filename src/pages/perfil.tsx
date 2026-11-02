@@ -463,7 +463,7 @@ export default function Perfil() {
               </div>
 
               {/* Título da página */}
-              <div className="mb-6 flex items-center gap-4">
+              <div className="mb-6 mt-4 flex items-center gap-4">
                 <div className="min-w-0">
                   <h1 className="font-serif text-[26px] text-[var(--cor-texto-cinza-100)]">
                     {usuario.nome}
@@ -874,7 +874,7 @@ export default function Perfil() {
 
             {/* RECOMENDAÇÕES */}
             <aside className="hidden xl:block">
-              <div className="fixed top-2/5 w-[340px] -translate-y-2/5">
+              <div className="fixed top-20 w-[340px]">
                 <h2 className="mb-5 font-serif text-[16px] text-[var(--cor-texto-principal)]">
                   Músicas recomendadas
                 </h2>

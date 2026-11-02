@@ -294,7 +294,7 @@ export default function Resultados() {
 
           {/* COLUNA DIREITA: RECOMENDAÇÕES */}
           <aside className="hidden xl:block">
-            <div className="fixed top-2/5 w-[340px] -translate-y-2/5">
+            <div className="fixed top-20 w-[340px]">
               <h2 className="mb-5 font-serif text-base text-[var(--cor-texto-principal)]">
                 Músicas recomendadas
               </h2>

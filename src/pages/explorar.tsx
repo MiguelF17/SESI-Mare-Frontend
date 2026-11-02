@@ -519,7 +519,7 @@ export default function Explorar() {
           </div>
         </div>
 
-        <div className="mb-8">
+        <div className="mb-8 mt-4">
           <h1 className="font-serif text-[26px] text-[var(--cor-texto-cinza-100)]">
             Explorar
           </h1>

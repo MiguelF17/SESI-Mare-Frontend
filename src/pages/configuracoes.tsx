@@ -401,7 +401,7 @@ export default function Configuracoes() {
               </div>
             </div>
 
-            <div className="w-full pt-5">
+            <div className="w-full mt-4">
               <div className="mb-6">
                 <h1 className="font-serif text-[26px] text-[var(--cor-texto-principal)]">
                   Configurações
@@ -659,7 +659,7 @@ export default function Configuracoes() {
 
           {/* MÚSICAS RECOMENDADAS */}
           <aside className="hidden min-w-0 xl:block">
-            <div className="fixed top-2/5 w-[340px] -translate-y-2/5">
+            <div className="fixed top-20 w-[340px]">
               <h2 className="mb-5 font-serif text-[16px] text-[var(--cor-texto-principal)]">
                 Músicas recomendadas
               </h2>

@@ -24,10 +24,10 @@ export default function Sidebar() {
         <Link to="/"><img src={logo} alt="Maré" className="h-12 w-auto object-contain" /></Link>
       </div>
       <div className="mb-6 flex items-center gap-3 px-6">
-        <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#1a2130]">
+        <div draggable={false} className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#1a2130]">
           {usuario?.foto ? <img src={usuario.foto} alt={usuario.nome} className="h-full w-full object-cover" /> : <UserIcon size={30} className="text-[var(--cor-texto-cinza-400)]" />}
         </div>
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 cursor-default flex-1">
           <p className="truncate text-[15px]">{usuario?.nome || "Usuário"}</p>
           <p className="truncate text-[12px] text-[var(--cor-texto-discreto)]">@{usuario?.username || ""}</p>
         </div>

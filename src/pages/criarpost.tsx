@@ -351,7 +351,7 @@ export default function CriarPost() {
             <div className="sticky search-header -mt-2.5 top-[calc(50px+env(safe-area-inset-top))] z-20 bg-[var(--cor-fundo)]/80 backdrop-blur-md md:top-0 md:mt-0">
             </div>
 
-            <h1 className="mt-5 font-serif text-[26px] text-[var(--cor-texto-principal)]">
+            <h1 className="mt-4 font-serif text-[26px] text-[var(--cor-texto-principal)]">
               Criar avaliação
             </h1>
 

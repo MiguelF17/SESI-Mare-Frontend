@@ -168,7 +168,7 @@ function SearchBar({ variant }: { variant: "mobile" | "desktop" }) {
                           setAberta(false);
                           navigate(`/u/${encodeURIComponent(usuario.username)}`);
                         }}
-                        className="flex w-full items-center gap-3 rounded-lg p-2 text-left hover:bg-[var(--cor-superficie-menu)]"
+                        className="flex cursor-pointer w-full items-center gap-3 rounded-lg p-2 text-left hover:bg-[var(--cor-superficie-menu)]"
                       >
                         {usuario.foto ? (
                           <img src={usuario.foto} alt="" className="h-10 w-10 rounded-full object-cover" />
