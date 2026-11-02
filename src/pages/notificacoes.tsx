@@ -563,7 +563,7 @@ export default function Notificacoes() {
                     {/* Músicas recomendadas */}
                     <aside className="hidden min-w-0 xl:block">
                         <div className="fixed top-20 w-[340px]">
-                            <h2 className="mb-5 font-serif text-base text-[var(--cor-texto-destaque)]">
+                            <h2 className="mb-5 font-serif text-base text-[var(--cor-texto-principal)]">
                                 Músicas recomendadas
                             </h2>
 
