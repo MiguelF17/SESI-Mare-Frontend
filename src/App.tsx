@@ -26,6 +26,7 @@ const ListaSeguidores = lazy(() => import("./pages/listaSeguidores"));
 const Notificacoes = lazy(() => import("./pages/notificacoes"));
 const Legal = lazy(() => import("./pages/legal"));
 const VerificarEmail = lazy(() => import("./pages/verificarEmail"));
+const RecuperarSenha = lazy(() => import("./pages/recuperarSenha"));
 
 function App() {
   return (
@@ -64,6 +65,7 @@ function App() {
           {/* Inicial */}
           <Route element={<PublicRoute />}>
             <Route path="/login" element={<Login />} />
+            <Route path="/recuperar-senha" element={<RecuperarSenha />} />
             <Route path="/cadastro" element={<Cadastro />} />
             <Route path="/" element={<Hero />} />
             <Route path="/sobre" element={<Sobre />} />

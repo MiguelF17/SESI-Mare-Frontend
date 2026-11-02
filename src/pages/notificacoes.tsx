@@ -13,7 +13,6 @@ import {
 
 import PageLayout from "../components/pageLayout";
 import PageContent from "../components/pageContent";
-import BotaoVoltar from "../components/botaoVoltar";
 import RecommendedMusicList from "../components/recommendedMusicList";
 import PostCard from "../components/postCard";
 

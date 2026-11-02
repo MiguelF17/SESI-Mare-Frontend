@@ -1,5 +1,6 @@
 
 import { useEffect, useState } from "react";
+import { MagnifyingGlassIcon } from "@phosphor-icons/react";
 
 import PageLayout from "../components/pageLayout";
 import PageContent from "../components/pageContent";
@@ -17,9 +18,17 @@ interface MusicaSalva {
   };
 }
 
+function normalizar(texto: string) {
+  return texto
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLocaleLowerCase("pt-BR");
+}
+
 export default function Salvos() {
   const [musicas, setMusicas] = useState<MusicaSalva[]>([]);
   const [carregando, setCarregando] = useState(true);
+  const [pesquisa, setPesquisa] = useState("");
   
 
   useEffect(() => {
@@ -55,6 +64,12 @@ export default function Salvos() {
     );
   }
 
+  const consulta = normalizar(pesquisa.trim());
+  const musicasFiltradas = musicas.filter(({ musica }) =>
+    [musica.titulo, musica.artista?.nome, musica.genero]
+      .some((campo) => normalizar(campo ?? "").includes(consulta))
+  );
+
   return (
     <PageLayout>
       <PageContent>
@@ -75,6 +90,20 @@ export default function Salvos() {
               </p>
             </div>
 
+            {musicas.length > 0 && (
+              <label className="mb-4 flex items-center gap-3 rounded-lg border border-[var(--cor-borda)] bg-[var(--cor-superficie-alternativa)] px-4">
+                <MagnifyingGlassIcon size={18} className="shrink-0 text-[#8495A9]" aria-hidden="true" />
+                <input
+                  type="search"
+                  value={pesquisa}
+                  onChange={(event) => setPesquisa(event.target.value)}
+                  placeholder="Buscar nas músicas salvas..."
+                  aria-label="Buscar nas músicas salvas"
+                  className="min-w-0 flex-1 bg-transparent py-3 text-sm text-[var(--cor-texto-principal)] outline-none placeholder:text-[#738196]"
+                />
+              </label>
+            )}
+
             <section className="flex flex-col gap-4">
               {carregando ? (
                 <p className="py-8 text-center text-[14px] text-[var(--cor-texto-discreto)]">
@@ -84,8 +113,12 @@ export default function Salvos() {
                 <p className="py-8 text-center text-[14px] text-[var(--cor-texto-discreto)]">
                   Você ainda não salvou nenhuma música.
                 </p>
+              ) : musicasFiltradas.length === 0 ? (
+                <p className="py-8 text-center text-[14px] text-[var(--cor-texto-discreto)]">
+                  Nenhuma música salva corresponde à sua busca.
+                </p>
               ) : (
-                musicas.map((salvamento) => {
+                musicasFiltradas.map((salvamento) => {
                   const musica = salvamento.musica;
 
                   return (

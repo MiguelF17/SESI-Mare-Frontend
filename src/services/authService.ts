@@ -82,3 +82,15 @@ export async function reenviarVerificacao(
     }
   );
 }
+
+export async function solicitarRedefinicaoSenha(email: string): Promise<RespostaReenvio> {
+  return apiRequest<RespostaReenvio>("/usuarios/recuperar-senha", {
+    method: "POST", token: null, body: JSON.stringify({ email }),
+  });
+}
+
+export async function redefinirSenha(token: string, senha: string): Promise<RespostaVerificacao> {
+  return apiRequest<RespostaVerificacao>("/usuarios/redefinir-senha", {
+    method: "POST", token: null, body: JSON.stringify({ token, senha }),
+  });
+}
