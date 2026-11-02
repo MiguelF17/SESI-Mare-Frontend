@@ -197,7 +197,7 @@ function Cadastro() {
         <div
           className="
   w-full
-  bg-[var(--cor-cartao-autenticacao)]
+  bg-[var(--cor-superficie)]
   backdrop-blur-md
   border
   border-[var(--cor-borda)]

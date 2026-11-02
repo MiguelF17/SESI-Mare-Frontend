@@ -349,7 +349,7 @@ export default function PostCard({
                   event.stopPropagation();
                   abrirPerfil();
                 }}
-                className="truncate cursor-pointer text-xs text-[#718096] hover:text-[var(--cor--destaque)]"
+                className="truncate cursor-pointer text-xs text-[#718096] hover:text-[var(--cor-destaque)]"
               >
                 @{username}
               </button>
