@@ -329,7 +329,7 @@ export default function PostCard({
         </button>
 
         <div className="min-w-0 flex-1 pt-0.5">
-          <div className="flex cursor-pointer flex-wrap items-center gap-x-2 gap-y-1">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
             <button
               type="button"
               onClick={(event) => {
@@ -337,7 +337,7 @@ export default function PostCard({
                 abrirPerfil();
               }}
               disabled={!username}
-              className="max-w-full truncate text-left text-sm hover:text-[var(--cor-texto-destaque)] font-semibold text-[var(--cor-texto-destaque)]"
+              className="max-w-full cursor-pointer truncate text-left text-sm hover:text-[var(--cor-texto-destaque)] font-semibold text-[var(--cor-texto-destaque)]"
             >
               {name || "Usuário"}
             </button>
@@ -349,7 +349,7 @@ export default function PostCard({
                   event.stopPropagation();
                   abrirPerfil();
                 }}
-                className="truncate text-xs text-[#718096] hover:text-[var(--cor-texto-destaque)]"
+                className="truncate cursor-pointer text-xs text-[#718096] hover:text-[var(--cor-texto-destaque)]"
               >
                 @{username}
               </button>
