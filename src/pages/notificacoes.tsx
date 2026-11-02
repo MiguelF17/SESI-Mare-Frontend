@@ -302,9 +302,9 @@ export default function Notificacoes() {
                         {/* Cabeçalho */}
                         <div className="mb-6 mt-4 flex items-center gap-4">
 
-                            <div className="mb-6 mt-4">
+                            <div className="min-w-0 flex-1">
                                 <h1 className="font-serif text-[26px] text-[var(--cor-texto-cinza-100)]">
-                                    Notificações
+                                   Notificações
                                 </h1>
 
                                 <p className="mt-1 font-serif text-[13px] text-[var(--cor-texto-discreto)]">
@@ -563,7 +563,7 @@ export default function Notificacoes() {
                     {/* Músicas recomendadas */}
                     <aside className="hidden min-w-0 xl:block">
                         <div className="fixed top-20 w-[340px]">
-                            <h2 className="mb-5 font-serif text-base text-[var(--cor-texto-principal)]">
+                            <h2 className="mb-5 font-serif text-base text-[var(--cor-texto-destaque)]">
                                 Músicas recomendadas
                             </h2>
 
