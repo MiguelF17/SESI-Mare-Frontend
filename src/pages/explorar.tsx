@@ -144,7 +144,7 @@ function Carrossel({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="group/carrossel relative min-w-0 overflow-x-auto">
+    <div className="group/carrossel relative min-w-0 overflow-x-hidden">
       {podeVoltar && (
         <button
           type="button"
