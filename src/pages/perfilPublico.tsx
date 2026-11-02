@@ -331,7 +331,7 @@ export default function PerfilPublico() {
                         </div>
 
                         {/* Título da página */}
-                        <div className="mb-6 flex items-center gap-4">
+                        <div className="mb-6 mt-4 flex items-center gap-4">
                             <BotaoVoltar fallback="/" />
 
                             <div className="min-w-0">
