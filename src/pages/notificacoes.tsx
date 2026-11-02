@@ -302,12 +302,12 @@ export default function Notificacoes() {
                         {/* Cabeçalho */}
                         <div className="mb-6 mt-4 flex items-center gap-4">
 
-                            <div className="min-w-0 flex-1">
-                                <h1 className="font-serif text-2xl text-[var(--cor-texto-destaque)]">
+                            <div className="mb-6 mt-4">
+                                <h1 className="font-serif text-[26px] text-[var(--cor-texto-cinza-100)]">
                                     Notificações
                                 </h1>
 
-                                <p className="mt-1 font-serif text-[13px] text-[#718096]">
+                                <p className="mt-1 font-serif text-[13px] text-[var(--cor-texto-discreto)]">
                                     Acompanhe as interações no seu perfil.
                                 </p>
                             </div>
@@ -326,11 +326,10 @@ export default function Notificacoes() {
                                     <button
                                         type="button"
                                         onClick={() => setFiltro("todas")}
-                                        className={`cursor-pointer rounded-lg px-4 py-2 text-xs transition ${
-                                            filtro === "todas"
+                                        className={`cursor-pointer rounded-lg px-4 py-2 text-xs transition ${filtro === "todas"
                                                 ? "bg-[var(--cor-superficie-elevada)] text-[var(--cor-destaque)]"
                                                 : "text-[#718096] hover:bg-[var(--cor-superficie-elevada)] hover:text-[var(--cor-texto-destaque)]"
-                                        }`}
+                                            }`}
                                     >
                                         Todas
                                     </button>
@@ -338,11 +337,10 @@ export default function Notificacoes() {
                                     <button
                                         type="button"
                                         onClick={() => setFiltro("naoLidas")}
-                                        className={`cursor-pointer rounded-lg px-4 py-2 text-xs transition ${
-                                            filtro === "naoLidas"
+                                        className={`cursor-pointer rounded-lg px-4 py-2 text-xs transition ${filtro === "naoLidas"
                                                 ? "bg-[var(--cor-superficie-elevada)] text-[var(--cor-destaque)]"
                                                 : "text-[#718096] hover:bg-[var(--cor-superficie-elevada)] hover:text-[var(--cor-texto-destaque)]"
-                                        }`}
+                                            }`}
                                     >
                                         Não lidas
                                     </button>
@@ -423,11 +421,10 @@ export default function Notificacoes() {
                                     {notificacoesFiltradas.map((notificacao) => (
                                         <div
                                             key={notificacao.id}
-                                            className={`group flex items-start gap-3 px-4 py-4 transition-colors hover:bg-[var(--cor-superficie-elevada)]/50 sm:gap-4 sm:px-5 ${
-                                                !notificacao.lida
+                                            className={`group flex items-start gap-3 px-4 py-4 transition-colors hover:bg-[var(--cor-superficie-elevada)]/50 sm:gap-4 sm:px-5 ${!notificacao.lida
                                                     ? "bg-[var(--cor-destaque)]/[0.035]"
                                                     : ""
-                                            }`}
+                                                }`}
                                         >
                                             <div
                                                 role="button"
@@ -539,7 +536,7 @@ export default function Notificacoes() {
                                                     <button
                                                         type="button"
                                                         onClick={() => {
-                                                            marcarComoLida(notificacao.id).catch(() => {});
+                                                            marcarComoLida(notificacao.id).catch(() => { });
                                                         }}
                                                         disabled={atualizando !== null}
                                                         title="Marcar como lida"
