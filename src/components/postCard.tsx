@@ -337,7 +337,7 @@ export default function PostCard({
                 abrirPerfil();
               }}
               disabled={!username}
-              className="max-w-full truncate text-left text-sm hover:underline font-semibold text-[var(--cor-texto-destaque)]"
+              className="max-w-full truncate text-left text-sm hover:text-[var(--cor-texto-destaque)] font-semibold text-[var(--cor-texto-destaque)]"
             >
               {name || "Usuário"}
             </button>
@@ -349,7 +349,7 @@ export default function PostCard({
                   event.stopPropagation();
                   abrirPerfil();
                 }}
-                className="truncate text-xs text-[#718096]"
+                className="truncate text-xs text-[#718096] hover:text-[var(--cor-texto-destaque)]"
               >
                 @{username}
               </button>
