@@ -124,6 +124,13 @@ export default function Configuracoes() {
   const [saindo, setSaindo] = useState(false);
   const [mostrarConfirmacaoExclusao, setMostrarConfirmacaoExclusao] = useState(false);
   const [excluindoConta, setExcluindoConta] = useState(false);
+  const [novoEmail, setNovoEmail] = useState("");
+  const [senhaAtualEmail, setSenhaAtualEmail] = useState("");
+  const [senhaAtualSenha, setSenhaAtualSenha] = useState("");
+  const [novaSenha, setNovaSenha] = useState("");
+  const [confirmarNovaSenha, setConfirmarNovaSenha] = useState("");
+  const [salvandoEmail, setSalvandoEmail] = useState(false);
+  const [salvandoSenha, setSalvandoSenha] = useState(false);
 
   // Aplica e salva o tema escolhido.
   useEffect(() => {
@@ -391,6 +398,42 @@ export default function Configuracoes() {
     }
   }
 
+  async function solicitarTrocaEmail(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (salvandoEmail) return;
+    setSalvandoEmail(true);
+    try {
+      const resposta = await apiRequest<{ message: string }>("/usuarios/me/email", {
+        method: "PATCH",
+        body: JSON.stringify({ novoEmail, senhaAtual: senhaAtualEmail }),
+      });
+      setNovoEmail(""); setSenhaAtualEmail("");
+      toast.success(resposta.message);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Não foi possível alterar o e-mail.");
+    } finally { setSalvandoEmail(false); }
+  }
+
+  async function alterarSenha(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (salvandoSenha) return;
+    if (novaSenha !== confirmarNovaSenha) {
+      toast.error("As senhas não coincidem.");
+      return;
+    }
+    setSalvandoSenha(true);
+    try {
+      const resposta = await apiRequest<{ message: string }>("/usuarios/me/senha", {
+        method: "PATCH",
+        body: JSON.stringify({ senhaAtual: senhaAtualSenha, novaSenha }),
+      });
+      setSenhaAtualSenha(""); setNovaSenha(""); setConfirmarNovaSenha("");
+      toast.success(resposta.message);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Não foi possível alterar a senha.");
+    } finally { setSalvandoSenha(false); }
+  }
+
   return (
     <PageLayout>
       <PageContent>
@@ -588,6 +631,29 @@ export default function Configuracoes() {
                       </div>
                     </div>
                   )}
+                </div>
+              </section>
+
+              {/* SEGURANÇA DA CONTA */}
+              <section className="mb-7">
+                <h2 className="mb-1 font-serif text-[18px] text-[var(--cor-texto-principal)]">Segurança da conta</h2>
+                <p className="mb-3 text-xs text-[var(--cor-texto-discreto)]">As alterações exigem sua senha atual.</p>
+                <div className="grid gap-3 md:grid-cols-2">
+                  <form onSubmit={(event) => void solicitarTrocaEmail(event)} className="rounded-md border border-[var(--cor-borda-discreta)] bg-[var(--cor-superficie-alternativa)] p-4">
+                    <h3 className="mb-3 text-sm font-medium text-[var(--cor-texto-principal)]">Alterar e-mail</h3>
+                    <label className="mb-3 block text-xs text-[var(--cor-texto-secundario)]">Novo e-mail<input required type="email" autoComplete="email" value={novoEmail} onChange={(event) => setNovoEmail(event.target.value)} className="mt-1.5 h-10 w-full rounded-md border border-[var(--cor-borda-discreta)] bg-[var(--cor-fundo)] px-3 text-sm text-[var(--cor-texto-principal)] outline-none focus:border-[var(--cor-borda-destaque)]" /></label>
+                    <label className="mb-3 block text-xs text-[var(--cor-texto-secundario)]">Senha atual<input required type="password" autoComplete="current-password" value={senhaAtualEmail} onChange={(event) => setSenhaAtualEmail(event.target.value)} className="mt-1.5 h-10 w-full rounded-md border border-[var(--cor-borda-discreta)] bg-[var(--cor-fundo)] px-3 text-sm text-[var(--cor-texto-principal)] outline-none focus:border-[var(--cor-borda-destaque)]" /></label>
+                    <button disabled={salvandoEmail} className="rounded-md bg-[var(--cor-destaque-alternativo)] px-3 py-2 text-xs font-medium text-[var(--cor-tinta)] disabled:opacity-50">{salvandoEmail ? "Enviando..." : "Enviar confirmação"}</button>
+                    <p className="mt-2 text-[11px] leading-4 text-[var(--cor-texto-discreto)]">O e-mail atual muda depois que você confirmar o link enviado.</p>
+                  </form>
+                  <form onSubmit={(event) => void alterarSenha(event)} className="rounded-md border border-[var(--cor-borda-discreta)] bg-[var(--cor-superficie-alternativa)] p-4">
+                    <h3 className="mb-3 text-sm font-medium text-[var(--cor-texto-principal)]">Alterar senha</h3>
+                    <label className="mb-3 block text-xs text-[var(--cor-texto-secundario)]">Senha atual<input required type="password" autoComplete="current-password" value={senhaAtualSenha} onChange={(event) => setSenhaAtualSenha(event.target.value)} className="mt-1.5 h-10 w-full rounded-md border border-[var(--cor-borda-discreta)] bg-[var(--cor-fundo)] px-3 text-sm text-[var(--cor-texto-principal)] outline-none focus:border-[var(--cor-borda-destaque)]" /></label>
+                    <label className="mb-3 block text-xs text-[var(--cor-texto-secundario)]">Nova senha<input required type="password" autoComplete="new-password" minLength={8} value={novaSenha} onChange={(event) => setNovaSenha(event.target.value)} className="mt-1.5 h-10 w-full rounded-md border border-[var(--cor-borda-discreta)] bg-[var(--cor-fundo)] px-3 text-sm text-[var(--cor-texto-principal)] outline-none focus:border-[var(--cor-borda-destaque)]" /></label>
+                    <label className="mb-3 block text-xs text-[var(--cor-texto-secundario)]">Confirmar nova senha<input required type="password" autoComplete="new-password" minLength={8} value={confirmarNovaSenha} onChange={(event) => setConfirmarNovaSenha(event.target.value)} className="mt-1.5 h-10 w-full rounded-md border border-[var(--cor-borda-discreta)] bg-[var(--cor-fundo)] px-3 text-sm text-[var(--cor-texto-principal)] outline-none focus:border-[var(--cor-borda-destaque)]" /></label>
+                    <button disabled={salvandoSenha} className="rounded-md bg-[var(--cor-destaque-alternativo)] px-3 py-2 text-xs font-medium text-[var(--cor-tinta)] disabled:opacity-50">{salvandoSenha ? "Salvando..." : "Salvar nova senha"}</button>
+                    <p className="mt-2 text-[11px] leading-4 text-[var(--cor-texto-discreto)]">Use 8 ou mais caracteres, com maiúscula, minúscula, número e símbolo.</p>
+                  </form>
                 </div>
               </section>
 

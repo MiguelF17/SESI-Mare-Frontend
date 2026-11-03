@@ -29,6 +29,8 @@ export default function MobileNavigation() {
       }
     }
     buscarNotificacoes();
+    window.addEventListener("mare:notificacoes-atualizadas", buscarNotificacoes);
+    return () => window.removeEventListener("mare:notificacoes-atualizadas", buscarNotificacoes);
   }, []);
 
   return (

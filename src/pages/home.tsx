@@ -1,5 +1,6 @@
 
 import { useEffect, useState } from "react";
+import { ArrowClockwiseIcon } from "@phosphor-icons/react";
 
 import PageLayout from "../components/pageLayout";
 import PageContent from "../components/pageContent";
@@ -12,65 +13,21 @@ import { useHomeFeed } from "../hooks/useHomeFeed";
 
 
 export default function Home() {
-  const {
-    posts,
-    carregando,
-    erro,
-  } = useHomeFeed();
-
   const [abaAtiva, setAbaAtiva] = useState<
     "paraVoce" | "seguindo"
   >("paraVoce");
-
-  const [postsSeguindo, setPostsSeguindo] = useState<typeof posts>([]);
-  const [carregandoSeguindo, setCarregandoSeguindo] = useState(false);
-  const [erroSeguindo, setErroSeguindo] = useState("");
+  const temSessao = Boolean(localStorage.getItem("token"));
+  const feedParaVoce = useHomeFeed("/posts", abaAtiva === "paraVoce");
+  const feedSeguindo = useHomeFeed("/posts?seguindo=true", abaAtiva === "seguindo" && temSessao);
+  const feedAtual = abaAtiva === "seguindo" ? feedSeguindo : feedParaVoce;
 
   const [usuarioLogadoId, setUsuarioLogadoId] = useState<number | null>(
     null
   );
 
   function selecionarAba(aba: "paraVoce" | "seguindo") {
-    if (aba === "seguindo" && !localStorage.getItem("token")) {
-      setErroSeguindo(
-        "Faça login para ver as publicações de quem você segue."
-      );
-      setPostsSeguindo([]);
-    } else {
-      setErroSeguindo("");
-    }
-
     setAbaAtiva(aba);
   }
-
-
-
-  // Busca as publicações de quem o usuário segue.
-  useEffect(() => {
-    if (abaAtiva !== "seguindo") return;
-
-    if (!localStorage.getItem("token")) return;
-
-    async function buscarPostsSeguindo() {
-      setCarregandoSeguindo(true);
-      setErroSeguindo("");
-
-      try {
-        const resultado = await apiRequest<typeof posts>(
-          "/posts?seguindo=true"
-        );
-
-        setPostsSeguindo(resultado);
-      } catch (error) {
-        console.error("Erro ao buscar publicações de quem sigo:", error);
-        setErroSeguindo("Não foi possível carregar as publicações.");
-      } finally {
-        setCarregandoSeguindo(false);
-      }
-    }
-
-    buscarPostsSeguindo();
-  }, [abaAtiva]);
 
   // Busca o ID do usuário logado.
   useEffect(() => {
@@ -88,14 +45,9 @@ export default function Home() {
     buscarUsuarioLogado();
   }, []);
 
-  const postsExibidos =
-    abaAtiva === "seguindo" ? postsSeguindo : posts;
-
-  const feedCarregando =
-    abaAtiva === "seguindo" ? carregandoSeguindo : carregando;
-
-  const erroFeed =
-    abaAtiva === "seguindo" ? erroSeguindo : erro;
+  const erroFeed = abaAtiva === "seguindo" && !temSessao
+    ? "Faça login para ver as publicações de quem você segue."
+    : feedAtual.erro;
 
   return (
     <PageLayout>
@@ -112,7 +64,19 @@ export default function Home() {
             </div>
 
             <div className="flex flex-col gap-6 pt-4 md:pt-2">
-              {feedCarregando ? (
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => void feedAtual.recarregar()}
+                  disabled={feedAtual.carregando || feedAtual.atualizando}
+                  className="inline-flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-xs text-[var(--cor-texto-secundario)] transition hover:bg-[var(--cor-superficie-alternativa)] disabled:cursor-not-allowed disabled:opacity-50"
+                  aria-label="Recarregar feed"
+                >
+                  <ArrowClockwiseIcon size={15} className={feedAtual.atualizando ? "animate-spin" : ""} />
+                  {feedAtual.atualizando ? "Atualizando..." : "Atualizar feed"}
+                </button>
+              </div>
+              {feedAtual.carregando ? (
                 <p className="py-8 text-center text-sm text-[var(--cor-texto-discreto)]">
                   Carregando publicações...
                 </p>
@@ -120,8 +84,8 @@ export default function Home() {
                 <p className="py-8 text-center text-sm text-red-400">
                   {erroFeed}
                 </p>
-              ) : postsExibidos.length > 0 ? (
-                postsExibidos.map((post) => (
+              ) : feedAtual.posts.length > 0 ? (
+                feedAtual.posts.map((post) => (
                   <PostCard
                     key={post.id}
                     postId={post.id}
@@ -158,6 +122,18 @@ export default function Home() {
                     ? "Nenhuma publicação de quem você segue."
                     : "Nenhum post feito."}
                 </p>
+              )}
+              {!feedAtual.carregando && !erroFeed && feedAtual.temMais && (
+                <div className="flex justify-center py-2">
+                  <button
+                    type="button"
+                    onClick={() => void feedAtual.carregarMais()}
+                    disabled={feedAtual.carregandoMais}
+                    className="cursor-pointer rounded-full border border-[var(--cor-borda)] px-5 py-2.5 text-sm font-medium text-[var(--cor-texto-principal)] transition hover:border-[var(--cor-borda-destaque)] disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {feedAtual.carregandoMais ? "Carregando..." : "Carregar mais posts"}
+                  </button>
+                </div>
               )}
             </div>
           </section>

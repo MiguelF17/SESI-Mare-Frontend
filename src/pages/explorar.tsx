@@ -16,6 +16,8 @@ import {
   MusicNotesIcon,
   CaretLeftIcon,
   CaretRightIcon,
+  FunnelIcon,
+  XIcon,
 } from "@phosphor-icons/react";
 
 import PageLayout from "../components/pageLayout";
@@ -37,6 +39,10 @@ type MusicaExplorar = Musica & {
 
 interface ArtistaFavorito {
   artistaId: number;
+}
+
+function normalizarTexto(valor: string) {
+  return valor.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("pt-BR");
 }
 
 
@@ -210,6 +216,11 @@ export default function Explorar() {
 
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState(false);
+  const [filtrosAbertos, setFiltrosAbertos] = useState(false);
+  const [textoFiltro, setTextoFiltro] = useState("");
+  const [generosSelecionados, setGenerosSelecionados] = useState<string[]>([]);
+  const [artistasSelecionados, setArtistasSelecionados] = useState<number[]>([]);
+  const [ordemResultados, setOrdemResultados] = useState<"catalogo" | "nota" | "avaliacoes" | "titulo">("catalogo");
 
   // Carrega catálogo, artistas e preferências.
   useEffect(() => {
@@ -319,23 +330,83 @@ export default function Explorar() {
     return Array.from(unicas.values());
   }, [musicas]);
 
+  const generosDisponiveis = useMemo(
+    () => [...new Set(catalogo.map((musica) => musica.genero?.trim()).filter((genero): genero is string => Boolean(genero)))].sort((a, b) => a.localeCompare(b, "pt-BR")),
+    [catalogo],
+  );
+
+  const catalogoFiltrado = useMemo(() => {
+    const generos = new Set(generosSelecionados.map((genero) => genero.toLocaleLowerCase("pt-BR")));
+    const idsArtistas = new Set(artistasSelecionados);
+    const busca = normalizarTexto(textoFiltro.trim());
+    const resultado = catalogo.filter((musica) => {
+      const generoCorresponde = generos.size === 0 || generos.has(musica.genero?.trim().toLocaleLowerCase("pt-BR") ?? "");
+      const artistaCorresponde = idsArtistas.size === 0 || idsArtistas.has(musica.artista?.id ?? musica.artistaId ?? -1);
+      const textoCorresponde = !busca || normalizarTexto(`${musica.titulo} ${musica.artista?.nome ?? ""}`).includes(busca);
+      return generoCorresponde && artistaCorresponde && textoCorresponde;
+    });
+
+    if (ordemResultados === "nota") return resultado.sort((a, b) => (b.nota ?? 0) - (a.nota ?? 0));
+    if (ordemResultados === "avaliacoes") return resultado.sort((a, b) => (b.avaliacoes ?? 0) - (a.avaliacoes ?? 0));
+    if (ordemResultados === "titulo") return resultado.sort((a, b) => a.titulo.localeCompare(b.titulo, "pt-BR"));
+    return resultado;
+  }, [catalogo, generosSelecionados, artistasSelecionados, ordemResultados, textoFiltro]);
+
+  const artistasFiltrados = useMemo(() => {
+    const idsArtistas = new Set(artistasSelecionados);
+    const generos = new Set(generosSelecionados.map((genero) => genero.toLocaleLowerCase("pt-BR")));
+    const busca = normalizarTexto(textoFiltro.trim());
+
+    return artistas.filter((artista) => {
+      if (idsArtistas.size > 0 && !idsArtistas.has(artista.id)) return false;
+      const musicasDoArtista = catalogo.filter((musica) => (musica.artista?.id ?? musica.artistaId) === artista.id);
+      const textoCorresponde = !busca || normalizarTexto(artista.nome).includes(busca) || musicasDoArtista.some((musica) => normalizarTexto(musica.titulo).includes(busca));
+      if (!textoCorresponde) return false;
+      if (generos.size === 0) return true;
+      return musicasDoArtista.some((musica) =>
+        generos.has(musica.genero?.trim().toLocaleLowerCase("pt-BR") ?? "")
+      );
+    });
+  }, [artistas, catalogo, generosSelecionados, artistasSelecionados, textoFiltro]);
+
+  const quantidadeFiltrosAtivos = generosSelecionados.length + artistasSelecionados.length + Number(ordemResultados !== "catalogo") + Number(Boolean(textoFiltro.trim()));
+
+  function alternarGenero(genero: string) {
+    setGenerosSelecionados((selecionados) => selecionados.includes(genero)
+      ? selecionados.filter((item) => item !== genero)
+      : [...selecionados, genero]);
+  }
+
+  function alternarArtista(artistaId: number) {
+    setArtistasSelecionados((selecionados) => selecionados.includes(artistaId)
+      ? selecionados.filter((item) => item !== artistaId)
+      : [...selecionados, artistaId]);
+  }
+
+  function limparFiltros() {
+    setGenerosSelecionados([]);
+    setArtistasSelecionados([]);
+    setOrdemResultados("catalogo");
+    setTextoFiltro("");
+  }
+
   // Em alta: músicas com mais publicações.
   const musicasEmAlta = useMemo(
     () =>
-      [...catalogo]
+      [...catalogoFiltrado]
         .sort(
           (a, b) =>
             (b.quantidadePosts ?? 0) - (a.quantidadePosts ?? 0) ||
             (b.avaliacoes ?? 0) - (a.avaliacoes ?? 0)
         )
         .slice(0, 8),
-    [catalogo]
+    [catalogoFiltrado]
   );
 
   // Mais bem avaliadas: considera nota e número de avaliações.
   const musicasMaisBemAvaliadas = useMemo(
     () =>
-      [...catalogo]
+      [...catalogoFiltrado]
         .filter((musica) => (musica.avaliacoes ?? 0) > 0)
         .sort(
           (a, b) =>
@@ -343,13 +414,13 @@ export default function Explorar() {
             (b.avaliacoes ?? 0) - (a.avaliacoes ?? 0)
         )
         .slice(0, 8),
-    [catalogo]
+    [catalogoFiltrado]
   );
 
   // Calcula recomendações a partir das preferências do usuário.
   const { musicasRecomendadas: musicasPorPreferencia } =
     useMusicasRecomendadas(
-      catalogo,
+      catalogoFiltrado,
       generosFavoritos,
       artistasFavoritos
     );
@@ -360,7 +431,7 @@ export default function Explorar() {
       musicasEmAlta.map((musica) => musica.id)
     );
 
-    const restantes = catalogo.filter(
+    const restantes = catalogoFiltrado.filter(
       (musica) => !idsEmAlta.has(musica.id)
     );
 
@@ -387,12 +458,12 @@ export default function Explorar() {
       );
 
       resultado.push(
-        ...catalogo.filter((musica) => !idsIncluidos.has(musica.id))
+        ...catalogoFiltrado.filter((musica) => !idsIncluidos.has(musica.id))
       );
     }
 
     return resultado.slice(0, 8);
-  }, [catalogo, musicasEmAlta, musicasPorPreferencia]);
+  }, [catalogoFiltrado, musicasEmAlta, musicasPorPreferencia]);
 
   function renderizarCard(
     musica: MusicaExplorar,
@@ -459,16 +530,16 @@ export default function Explorar() {
           </h2>
         </div>
 
-        {artistas.length === 0 ? (
+        {artistasFiltrados.length === 0 ? (
           <p className="py-4 text-sm text-[var(--cor-texto-discreto)]">
             {carregando
               ? "Carregando artistas..."
-              : "Nenhum artista encontrado."}
+              : "Nenhum artista corresponde aos filtros selecionados."}
           </p>
         ) : (
           <Carrossel>
 
-            {artistas.map((artista) => (
+            {artistasFiltrados.map((artista) => (
               <button
                 key={artista.id}
                 type="button"
@@ -529,6 +600,72 @@ export default function Explorar() {
           </p>
         </div>
 
+        <section className="mb-7 rounded-xl border border-[var(--cor-borda)] bg-[var(--cor-superficie)] p-4 sm:p-5">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 className="font-serif text-base text-[var(--cor-texto-principal)]">Encontre o seu som</h2>
+              <p className="mt-1 text-xs text-[var(--cor-texto-discreto)]">Filtre músicas e artistas por gênero, artista ou nota.</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setFiltrosAbertos((aberto) => !aberto)}
+              aria-expanded={filtrosAbertos}
+              className="inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-lg border border-[var(--cor-borda-destaque)] bg-[var(--cor-superficie-elevada)] px-3 py-2 text-xs font-medium text-[var(--cor-texto-principal)] transition hover:border-[var(--cor-destaque)]"
+            >
+              <FunnelIcon size={17} />
+              {filtrosAbertos ? "Fechar filtros" : "Abrir filtros"}
+              {quantidadeFiltrosAtivos > 0 && <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--cor-destaque)] px-1 text-[10px] text-[#07111E]">{quantidadeFiltrosAtivos}</span>}
+            </button>
+          </div>
+
+          {filtrosAbertos && (
+            <div className="mt-5 space-y-5 border-t border-[var(--cor-borda)] pt-4">
+              <label className="block max-w-xl text-xs font-semibold text-[var(--cor-texto-secundario)]">
+                Nome da música ou do artista
+                <input type="search" value={textoFiltro} onChange={(evento) => setTextoFiltro(evento.target.value)} placeholder="Ex.: nome da faixa ou artista" className="mt-1.5 h-10 w-full rounded-lg border border-[var(--cor-borda)] bg-[var(--cor-fundo)] px-3 text-sm font-normal text-[var(--cor-texto-principal)] outline-none placeholder:text-[var(--cor-texto-discreto)] focus:border-[var(--cor-borda-destaque)]" />
+              </label>
+
+              <div>
+                <h3 className="mb-2 text-xs font-semibold text-[var(--cor-texto-secundario)]">Gêneros</h3>
+                {generosDisponiveis.length ? (
+                  <div className="flex flex-wrap gap-2">
+                    {generosDisponiveis.map((genero) => {
+                      const selecionado = generosSelecionados.includes(genero);
+                      return <button key={genero} type="button" aria-pressed={selecionado} onClick={() => alternarGenero(genero)} className={`cursor-pointer rounded-full border px-3 py-1.5 text-xs transition ${selecionado ? "border-[var(--cor-destaque)] bg-[var(--cor-destaque)]/15 text-[var(--cor-texto-principal)]" : "border-[var(--cor-borda)] text-[var(--cor-texto-secundario)] hover:border-[var(--cor-borda-destaque)]"}`}>{genero}</button>;
+                    })}
+                  </div>
+                ) : <p className="text-xs text-[var(--cor-texto-discreto)]">Não há gêneros cadastrados no catálogo.</p>}
+              </div>
+
+              <div>
+                <h3 className="mb-2 text-xs font-semibold text-[var(--cor-texto-secundario)]">Artistas</h3>
+                {artistas.length ? (
+                  <div className="flex max-h-36 flex-wrap gap-2 overflow-y-auto pr-1">
+                    {artistas.map((artista) => {
+                      const selecionado = artistasSelecionados.includes(artista.id);
+                      const indisponivelPorGenero = generosSelecionados.length > 0 && !artistasFiltrados.some((item) => item.id === artista.id);
+                      return <button key={artista.id} type="button" aria-pressed={selecionado} disabled={indisponivelPorGenero} onClick={() => alternarArtista(artista.id)} className={`cursor-pointer rounded-full border px-3 py-1.5 text-xs transition disabled:hidden ${selecionado ? "border-[var(--cor-destaque)] bg-[var(--cor-destaque)]/15 text-[var(--cor-texto-principal)]" : "border-[var(--cor-borda)] text-[var(--cor-texto-secundario)] hover:border-[var(--cor-borda-destaque)]"}`}>{artista.nome}</button>;
+                    })}
+                  </div>
+                ) : <p className="text-xs text-[var(--cor-texto-discreto)]">Não há artistas cadastrados no catálogo.</p>}
+              </div>
+
+              <div className="flex flex-wrap items-end justify-between gap-3">
+                <label className="flex flex-col gap-1.5 text-xs text-[var(--cor-texto-secundario)]">
+                  Ordenar músicas
+                  <select value={ordemResultados} onChange={(evento) => setOrdemResultados(evento.target.value as typeof ordemResultados)} className="min-h-9 cursor-pointer rounded-lg border border-[var(--cor-borda)] bg-[var(--cor-fundo)] px-3 text-xs text-[var(--cor-texto-principal)] outline-none focus:border-[var(--cor-borda-destaque)]">
+                    <option value="catalogo">Ordem do catálogo</option>
+                    <option value="nota">Melhor nota</option>
+                    <option value="avaliacoes">Mais avaliações</option>
+                    <option value="titulo">Título (A–Z)</option>
+                  </select>
+                </label>
+                {quantidadeFiltrosAtivos > 0 && <button type="button" onClick={limparFiltros} className="inline-flex min-h-9 cursor-pointer items-center gap-1.5 rounded-lg px-2 text-xs text-[var(--cor-texto-discreto)] transition hover:text-[var(--cor-texto-principal)]"><XIcon size={15} />Limpar filtros</button>}
+              </div>
+            </div>
+          )}
+        </section>
+
         {erro && (
           <p className="mb-8 text-sm text-red-400">
             Não foi possível carregar o catálogo. Tente atualizar a página.
@@ -567,7 +704,7 @@ export default function Explorar() {
             </h2>
 
             <span className="ml-1 text-xs text-[var(--cor-texto-discreto)]">
-              {catalogo.length}
+              {catalogoFiltrado.length}
             </span>
           </div>
 
@@ -575,13 +712,13 @@ export default function Explorar() {
             <p className="py-6 text-sm text-[var(--cor-texto-discreto)]">
               Carregando catálogo...
             </p>
-          ) : catalogo.length === 0 ? (
+          ) : catalogoFiltrado.length === 0 ? (
             <p className="py-6 text-sm text-[var(--cor-texto-discreto)]">
-              Nenhuma música encontrada.
+              Nenhuma música corresponde aos filtros selecionados.
             </p>
           ) : (
             <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5 xl:grid-cols-6">
-              {catalogo.map((musica) => (
+              {catalogoFiltrado.map((musica) => (
                 <MusicCard
                   key={musica.id}
                   id={musica.id}

@@ -9,6 +9,7 @@ import {
     MusicNotesIcon,
     ArrowClockwiseIcon,
     CheckIcon,
+    TrashIcon,
 } from "@phosphor-icons/react";
 
 import PageLayout from "../components/pageLayout";
@@ -105,6 +106,7 @@ export default function Notificacoes() {
     const [tentativa, setTentativa] = useState(0);
     const [atualizando, setAtualizando] = useState<number | null>(null);
     const [marcandoTodas, setMarcandoTodas] = useState(false);
+    const [limpando, setLimpando] = useState(false);
     const [seguindoIds, setSeguindoIds] = useState<number[]>([]);
     const [seguindoId, setSeguindoId] = useState<number | null>(null);
 
@@ -214,6 +216,7 @@ export default function Notificacoes() {
                         : notificacao
                 )
             );
+            window.dispatchEvent(new Event("mare:notificacoes-atualizadas"));
         } catch (error) {
             console.error("Erro ao marcar notificação como lida:", error);
             setErro("Não foi possível atualizar a notificação.");
@@ -240,11 +243,30 @@ export default function Notificacoes() {
                     lida: true,
                 }))
             );
+            window.dispatchEvent(new Event("mare:notificacoes-atualizadas"));
         } catch (error) {
             console.error("Erro ao atualizar notificações:", error);
             setErro("Não foi possível atualizar as notificações.");
         } finally {
             setMarcandoTodas(false);
+        }
+    }
+
+    async function limparHistorico() {
+        if (limpando || notificacoes.length === 0) return;
+        if (!window.confirm("Remover todas as notificações da sua conta?")) return;
+
+        setLimpando(true);
+        setErro("");
+        try {
+            await apiRequest("/notificacoes", { method: "DELETE" });
+            setNotificacoes([]);
+            window.dispatchEvent(new Event("mare:notificacoes-atualizadas"));
+        } catch (error) {
+            console.error("Erro ao limpar notificações:", error);
+            setErro(error instanceof Error ? error.message : "Não foi possível limpar as notificações.");
+        } finally {
+            setLimpando(false);
         }
     }
 
@@ -345,6 +367,7 @@ export default function Notificacoes() {
                                     </button>
                                 </div>
 
+                                <div className="flex flex-wrap items-center gap-1">
                                 <button
                                     type="button"
                                     onClick={marcarTodasComoLidas}
@@ -357,6 +380,18 @@ export default function Notificacoes() {
                                         ? "Atualizando..."
                                         : "Marcar todas como lidas"}
                                 </button>
+                                {notificacoes.length > 0 && (
+                                    <button
+                                        type="button"
+                                        onClick={() => void limparHistorico()}
+                                        disabled={limpando || marcandoTodas}
+                                        className="inline-flex cursor-pointer items-center gap-2 rounded-lg px-2 py-2 text-xs text-red-400 transition hover:bg-red-500/10 disabled:cursor-not-allowed disabled:opacity-40"
+                                    >
+                                        <TrashIcon size={17} />
+                                        {limpando ? "Limpando..." : "Limpar notificações"}
+                                    </button>
+                                )}
+                                </div>
                             </header>
 
                             {/* Carregamento */}

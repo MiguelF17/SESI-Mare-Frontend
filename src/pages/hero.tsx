@@ -1,17 +1,51 @@
 
+import { useEffect, useState } from "react"
 import Navbar from "../components/navbar"
 import Footer from "../components/footer"
 
 import fundo from "../assets/fundoHero.jpg"
-import app_store from "../assets/app_store.png"
 import qrcode from "../assets/RoW2Cw.png"
 
 import { useNavigate } from "react-router-dom"
 
+type EventoInstalacaoPwa = Event & {
+  prompt: () => Promise<void>
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>
+}
 
 function Hero() {
 
   const navigate = useNavigate();
+  const [eventoInstalacao, setEventoInstalacao] = useState<EventoInstalacaoPwa | null>(null)
+  const [mostrarAjudaPwa, setMostrarAjudaPwa] = useState(false)
+  const [ehIOS, setEhIOS] = useState(false)
+
+  useEffect(() => {
+    const agente = navigator.userAgent
+    setEhIOS(/iPad|iPhone|iPod/.test(agente) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1))
+
+    const guardarPrompt = (evento: Event) => {
+      evento.preventDefault()
+      setEventoInstalacao(evento as EventoInstalacaoPwa)
+    }
+    window.addEventListener("beforeinstallprompt", guardarPrompt)
+    return () => window.removeEventListener("beforeinstallprompt", guardarPrompt)
+  }, [])
+
+  async function instalarPwa() {
+    if (!eventoInstalacao) {
+      setMostrarAjudaPwa(true)
+      return
+    }
+
+    try {
+      await eventoInstalacao.prompt()
+      const escolha = await eventoInstalacao.userChoice
+      if (escolha.outcome === "accepted") setEventoInstalacao(null)
+    } catch {
+      setMostrarAjudaPwa(true)
+    }
+  }
 
 
   /* se não estiver logado, vai para o login */
@@ -239,20 +273,6 @@ function Hero() {
 
           <div className="mt-6 flex flex-wrap justify-center gap-3 sm:gap-4">
 
-            <img
-              src={app_store}
-              alt="App Store"
-              className="
-                w-40
-                sm:w-[190px]
-                h-auto
-                cursor-pointer
-                hover:scale-105
-                transition
-              "
-            />
-
-
             <a
               href="https://expo.dev/artifacts/eas/wQcvkroOm9-hZP7tDUywEOJQV7hRHt6_QCTF6-F2fX8.apk"
               target="_blank"
@@ -268,6 +288,21 @@ function Hero() {
             >
               Baixar para Android
             </a>
+
+            <button
+              type="button"
+              onClick={() => void instalarPwa()}
+              aria-label={ehIOS ? "Adicionar o site Maré à tela inicial do iPhone" : "Instalar o site Maré como aplicativo"}
+              className="
+                inline-flex min-h-12 items-center justify-center rounded-xl
+                bg-[#58AAF0] px-6 py-3 text-base font-semibold text-[#08111B]
+                shadow-lg shadow-[#58AAF0]/20 transition hover:scale-105
+                hover:bg-[#83C4FA] focus-visible:outline focus-visible:outline-2
+                focus-visible:outline-offset-4 focus-visible:outline-[#58AAF0]
+              "
+            >
+              {ehIOS ? "Adicionar ao iPhone" : "Instalar Maré"}
+            </button>
 
           </div>
 
@@ -305,6 +340,25 @@ function Hero() {
         </div>
 
       </div>
+
+
+      {mostrarAjudaPwa && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
+          <section role="dialog" aria-modal="true" aria-labelledby="titulo-instalar-pwa" className="w-full max-w-sm rounded-2xl border border-[var(--cor-borda)] bg-[var(--cor-superficie)] p-5 text-left shadow-2xl">
+            <h2 id="titulo-instalar-pwa" className="text-lg font-semibold text-[var(--cor-texto-principal)]">Adicionar a Maré à tela inicial</h2>
+            {ehIOS ? (
+              <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm leading-5 text-[var(--cor-texto-secundario)]">
+                <li>Abra este site no Safari do iPhone.</li>
+                <li>Toque em Compartilhar.</li>
+                <li>Escolha “Adicionar à Tela de Início” e confirme em “Adicionar”.</li>
+              </ol>
+            ) : (
+              <p className="mt-3 text-sm leading-5 text-[var(--cor-texto-secundario)]">No menu do navegador, escolha “Instalar app” ou “Adicionar à tela inicial”.</p>
+            )}
+            <button type="button" onClick={() => setMostrarAjudaPwa(false)} className="mt-5 rounded-lg bg-[var(--cor-destaque-alternativo)] px-4 py-2 text-sm font-semibold text-[var(--cor-tinta)]">Entendi</button>
+          </section>
+        </div>
+      )}
 
 
 
