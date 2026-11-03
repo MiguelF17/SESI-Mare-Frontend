@@ -4,7 +4,7 @@ import Footer from "../components/footer"
 
 import fundo from "../assets/fundoHero.jpg"
 import app_store from "../assets/app_store.png"
-import qrcode from "../assets/qrcode.png"
+import qrcode from "../assets/RoW2Cw.png"
 
 import { useNavigate } from "react-router-dom"
 
