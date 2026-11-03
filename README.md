@@ -1,75 +1,118 @@
-# React + TypeScript + Vite
+# 🌊 Maré — Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Sua vida musical em um só lugar.**
 
-Currently, two official plugins are available:
+O Maré é uma plataforma social voltada para pessoas que gostam de música e desejam compartilhar suas opiniões, descobrir novos artistas e acompanhar as experiências musicais de outros usuários.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Este repositório contém a aplicação web do projeto, desenvolvida para oferecer uma experiência social e intuitiva, permitindo que os usuários interajam através de publicações, avaliações e recomendações musicais.
 
-## React Compiler
+## 🎨 Tecnologias
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **React** — Construção da interface.
+- **Vite** — Ambiente de desenvolvimento e build.
+- **TypeScript** — Tipagem estática.
+- **Tailwind CSS** — Estilização.
+- **React Router** — Navegação entre páginas.
+- **Phosphor Icons** — Biblioteca de ícones.
+- **React Hot Toast** — Notificações visuais.
 
-## Expanding the ESLint configuration
+## ✨ Funcionalidades
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- Cadastro, login e verificação de e-mail.
+- Feed personalizado de publicações.
+- Feed de usuários seguidos.
+- Avaliação de músicas com notas de 1 a 5.
+- Publicações com textos e avaliações.
+- Curtidas e comentários.
+- Pesquisa de músicas, artistas, usuários e publicações.
+- Perfis personalizados.
+- Sistema de seguidores.
+- Salvamento de músicas.
+- Recomendações musicais.
+- Notificações.
+- Edição de perfil, foto e capa.
+- Integração com plataformas externas de streaming.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 📁 Estrutura do projeto
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```text
+frontend/
+├── public/
+├── src/
+│   ├── assets/
+│   ├── components/
+│   ├── hooks/
+│   ├── pages/
+│   ├── services/
+│   ├── contexts/
+│   ├── routes/
+│   ├── types/
+│   ├── utils/
+│   ├── App.tsx
+│   └── main.tsx
+├── .env
+├── index.html
+├── package.json
+└── vite.config.ts
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+*A estrutura pode variar conforme a organização atual do projeto.*
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## ⚙️ Como executar
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 1. Clone o repositório
 
+```bash
+git clone URL_DO_REPOSITORIO
+cd nome-do-repositorio
 ```
+
+### 2. Instale as dependências
+
+```bash
+npm install
+```
+
+### 3. Configure a API
+
+Crie um arquivo `.env` na raiz do projeto:
+
+```env
+VITE_API_URL=http://localhost:3000
+```
+
+Altere o endereço conforme a localização da API.
+
+### 4. Execute a aplicação
+
+```bash
+npm run dev
+```
+
+O Vite disponibilizará o endereço local da aplicação, normalmente:
+
+```text
+http://localhost:5173
+```
+
+### 5. Gere a versão de produção
+
+```bash
+npm run build
+```
+
+## 🎧 Experiência musical
+
+O Maré não busca substituir as plataformas de streaming existentes.
+
+Sua proposta é oferecer uma experiência social em torno da música, permitindo que os usuários descubram conteúdos, compartilhem avaliações e interajam com outras pessoas.
+
+Quando desejarem ouvir uma música, os usuários podem acessar plataformas externas de streaming, como Spotify, Apple Music, Amazon Music e YouTube Music.
+
+## 🔗 Integração
+
+O frontend consome a API do Maré para realizar operações de autenticação, publicações, avaliações, comentários, perfis e demais funcionalidades.
+
+---
+
+Desenvolvido como parte do projeto acadêmico **Maré — TCC**.

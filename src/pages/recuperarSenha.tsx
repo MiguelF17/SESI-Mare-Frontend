@@ -42,7 +42,7 @@ export default function RecuperarSenha() {
       <img src={logo} alt="Maré" className="mx-auto my-7 h-auto w-36" />
       <div className="mb-6 text-center"><div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-[#58AAF0]/10 text-[var(--cor-destaque)]">{token ? <ShieldCheck /> : <Mail />}</div>
         <h1 className="text-xl font-semibold text-[var(--cor-texto-principal)]">{token ? "Crie uma nova senha" : "Redefinir senha"}</h1>
-        <p className="mt-2 text-sm text-[#9aa6ba]">{token ? "Escolha uma senha segura para sua conta." : enviado ? "Se o e-mail estiver cadastrado, você receberá um link em instantes." : "Enviaremos um link de redefinição para o e-mail da sua conta."}</p>
+        <p className="mt-2 text-sm text-[#9aa6ba]">{token ? "Escolha uma senha segura para sua conta." : enviado ? "Enviamos o link de redefinição para o e-mail cadastrado." : "Enviaremos um link de redefinição para o e-mail da sua conta."}</p>
       </div>
       {!enviado || token ? <form onSubmit={enviar} className="space-y-4">
         {!token ? <label className="block text-sm text-[#D0D0D5]">E-mail<input required type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} className="mt-2 h-12 w-full rounded-xl border border-[var(--cor-borda)] bg-[#0b1019] px-4 text-white outline-none focus:border-[var(--cor-destaque)]" placeholder="voce@email.com" /></label> : <>

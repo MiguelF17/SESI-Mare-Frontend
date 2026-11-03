@@ -1,8 +1,14 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { MagnifyingGlassIcon, UserCircleIcon } from "@phosphor-icons/react";
+import { ClockCounterClockwiseIcon, MagnifyingGlassIcon, UserCircleIcon, XIcon } from "@phosphor-icons/react";
 import { useBusca } from "../hooks/useBusca";
+import {
+  buscarHistoricoPesquisa,
+  limparHistoricoPesquisa,
+  registrarPesquisa,
+  removerPesquisaDoHistorico,
+} from "../services/historicoPesquisa";
 
 function SearchBar({ variant }: { variant: "mobile" | "desktop" }) {
   const mobileHeader = variant === "mobile";
@@ -10,6 +16,11 @@ function SearchBar({ variant }: { variant: "mobile" | "desktop" }) {
 
   const [termo, setTermo] = useState("");
   const [aberta, setAberta] = useState(false);
+  const [historico, setHistorico] = useState<string[]>([]);
+
+  useEffect(() => {
+    setHistorico(buscarHistoricoPesquisa());
+  }, []);
 
   const {
     musicasEncontradas,
@@ -31,8 +42,16 @@ function SearchBar({ variant }: { variant: "mobile" | "desktop" }) {
   function pesquisar() {
     if (!busca) return;
 
+    setHistorico(registrarPesquisa(busca));
     setAberta(false);
     navigate(`/buscar?q=${encodeURIComponent(busca)}`);
+  }
+
+  function repetirPesquisa(consulta: string) {
+    setTermo(consulta);
+    setHistorico(registrarPesquisa(consulta));
+    setAberta(false);
+    navigate(`/buscar?q=${encodeURIComponent(consulta)}`);
   }
 
   return (
@@ -68,7 +87,7 @@ function SearchBar({ variant }: { variant: "mobile" | "desktop" }) {
         />
       </form>
 
-      {aberta && busca && (
+      {aberta && (busca || historico.length > 0) && (
         <>
           <button
             type="button"
@@ -78,7 +97,48 @@ function SearchBar({ variant }: { variant: "mobile" | "desktop" }) {
           />
 
           <div className="absolute left-0 right-0 top-full z-30 mt-2 max-h-96 overflow-y-auto rounded-xl border border-[var(--cor-borda-suave)] bg-[var(--cor-superficie)] p-3 shadow-xl">
-            {carregando ? (
+            {!busca ? (
+              <div>
+                <div className="mb-2 flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-xs font-semibold text-[var(--cor-texto-principal)]">
+                    <ClockCounterClockwiseIcon size={15} className="text-[#8793A7]" />
+                    Pesquisas recentes
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      limparHistoricoPesquisa();
+                      setHistorico([]);
+                    }}
+                    className="cursor-pointer text-xs text-[var(--cor-destaque)] hover:text-[var(--cor-texto-principal)]"
+                  >
+                    Limpar
+                  </button>
+                </div>
+                <div className="space-y-1">
+                  {historico.map((pesquisa) => (
+                    <div key={pesquisa} className="flex items-center rounded-lg hover:bg-[var(--cor-superficie-menu)]">
+                      <button
+                        type="button"
+                        onClick={() => repetirPesquisa(pesquisa)}
+                        className="flex min-w-0 flex-1 cursor-pointer items-center gap-3 px-2 py-2 text-left text-sm text-[var(--cor-texto-principal)]"
+                      >
+                        <ClockCounterClockwiseIcon size={16} className="shrink-0 text-[#718096]" />
+                        <span className="truncate">{pesquisa}</span>
+                      </button>
+                      <button
+                        type="button"
+                        aria-label={`Remover ${pesquisa} do histórico`}
+                        onClick={() => setHistorico(removerPesquisaDoHistorico(pesquisa))}
+                        className="mr-1 cursor-pointer rounded-full p-1.5 text-[#718096] hover:text-[var(--cor-texto-principal)]"
+                      >
+                        <XIcon size={14} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : carregando ? (
               <p className="py-4 text-center text-sm text-[#718096]">
                 Buscando...
               </p>
@@ -103,6 +163,7 @@ function SearchBar({ variant }: { variant: "mobile" | "desktop" }) {
                         type="button"
                         key={m.id}
                         onClick={() => {
+                          setHistorico(registrarPesquisa(busca));
                           setAberta(false);
                           navigate(`/musica/${m.id}`);
                         }}
@@ -138,6 +199,7 @@ function SearchBar({ variant }: { variant: "mobile" | "desktop" }) {
                         type="button"
                         key={a.id}
                         onClick={() => {
+                          setHistorico(registrarPesquisa(busca));
                           setAberta(false);
                           navigate(`/artista/${a.id}`);
                         }}
@@ -165,6 +227,7 @@ function SearchBar({ variant }: { variant: "mobile" | "desktop" }) {
                         type="button"
                         key={usuario.id}
                         onClick={() => {
+                          setHistorico(registrarPesquisa(busca));
                           setAberta(false);
                           navigate(`/u/${encodeURIComponent(usuario.username)}`);
                         }}
@@ -197,6 +260,7 @@ function SearchBar({ variant }: { variant: "mobile" | "desktop" }) {
                         type="button"
                         key={p.id}
                         onClick={() => {
+                          setHistorico(registrarPesquisa(busca));
                           setAberta(false);
                           navigate(`/post/${p.id}`);
                         }}
