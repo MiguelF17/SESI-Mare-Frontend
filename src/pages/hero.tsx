@@ -4,7 +4,6 @@ import Footer from "../components/footer"
 
 import fundo from "../assets/fundoHero.jpg"
 import app_store from "../assets/app_store.png"
-import play_store from "../assets/play_store.png"
 import qrcode from "../assets/qrcode.png"
 
 import { useNavigate } from "react-router-dom"
@@ -254,18 +253,21 @@ function Hero() {
             />
 
 
-            <img
-              src={play_store}
-              alt="Google Play"
+            <a
+              href="https://expo.dev/artifacts/eas/wQcvkroOm9-hZP7tDUywEOJQV7hRHt6_QCTF6-F2fX8.apk"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Baixar o aplicativo Maré para Android"
               className="
-                w-40
-                sm:w-[180px]
-                h-auto
-                cursor-pointer
-                hover:scale-105
-                transition
+                inline-flex min-h-12 items-center justify-center rounded-xl
+                bg-[#58AAF0] px-6 py-3 text-base font-semibold text-[#08111B]
+                shadow-lg shadow-[#58AAF0]/20 transition hover:scale-105
+                hover:bg-[#83C4FA] focus-visible:outline focus-visible:outline-2
+                focus-visible:outline-offset-4 focus-visible:outline-[#58AAF0]
               "
-            />
+            >
+              Baixar para Android
+            </a>
 
           </div>
 
