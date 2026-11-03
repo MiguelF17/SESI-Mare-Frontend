@@ -27,6 +27,7 @@ const Notificacoes = lazy(() => import("./pages/notificacoes"));
 const Legal = lazy(() => import("./pages/legal"));
 const VerificarEmail = lazy(() => import("./pages/verificarEmail"));
 const RecuperarSenha = lazy(() => import("./pages/recuperarSenha"));
+const Mensagens = lazy(() => import("./pages/mensagens"));
 
 function App() {
   return (
@@ -94,6 +95,7 @@ function App() {
             <Route path="/buscar" element={<Resultados />} />
             <Route path="/usuarios/:id/:tipo" element={<ListaSeguidores />} />
             <Route path="/notificacoes" element={<Notificacoes />} />
+            <Route path="/mensagens" element={<Mensagens />} />
           </Route>
         </Routes>
       </Suspense>

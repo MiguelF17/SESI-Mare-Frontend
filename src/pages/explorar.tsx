@@ -357,7 +357,7 @@ export default function Explorar() {
     const generos = new Set(generosSelecionados.map((genero) => genero.toLocaleLowerCase("pt-BR")));
     const busca = normalizarTexto(textoFiltro.trim());
 
-    return artistas.filter((artista) => {
+    const resultado = artistas.filter((artista) => {
       if (idsArtistas.size > 0 && !idsArtistas.has(artista.id)) return false;
       const musicasDoArtista = catalogo.filter((musica) => (musica.artista?.id ?? musica.artistaId) === artista.id);
       const textoCorresponde = !busca || normalizarTexto(artista.nome).includes(busca) || musicasDoArtista.some((musica) => normalizarTexto(musica.titulo).includes(busca));
@@ -367,7 +367,13 @@ export default function Explorar() {
         generos.has(musica.genero?.trim().toLocaleLowerCase("pt-BR") ?? "")
       );
     });
-  }, [artistas, catalogo, generosSelecionados, artistasSelecionados, textoFiltro]);
+    const generosPreferidos = new Set(generosFavoritos.map((genero) => genero.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("pt-BR")));
+    const idsArtistasDosGeneros = new Set(catalogo
+      .filter((musica) => generosPreferidos.has((musica.genero ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("pt-BR")))
+      .map((musica) => musica.artista?.id ?? musica.artistaId)
+      .filter((id): id is number => id != null));
+    return resultado.sort((a, b) => Number(idsArtistasDosGeneros.has(b.id)) - Number(idsArtistasDosGeneros.has(a.id)));
+  }, [artistas, catalogo, generosSelecionados, artistasSelecionados, textoFiltro, generosFavoritos]);
 
   const quantidadeFiltrosAtivos = generosSelecionados.length + artistasSelecionados.length + Number(ordemResultados !== "catalogo") + Number(Boolean(textoFiltro.trim()));
 

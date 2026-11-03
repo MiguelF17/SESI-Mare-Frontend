@@ -6,6 +6,7 @@ import {
   UserIcon,
   GearIcon,
   BellIcon,
+  ChatCircleDotsIcon,
 } from "@phosphor-icons/react";
 import logo from "../assets/logoSidebar.png";
 import { useMeuPerfil } from "../hooks/useMeuPerfil";
@@ -37,6 +38,7 @@ export default function Sidebar() {
         <Link to="/home" aria-label="Início" aria-current={ativo("/home") ? "page" : undefined} className={item("/home")}><HouseLineIcon size={22} weight={ativo("/home") ? "fill" : "regular"} />Início</Link>
         <Link to="/explorar" aria-label="Explorar" className={item("/explorar")}><PlaylistIcon size={22} />Explorar</Link>
         <Link to="/notificacoes" aria-label="Notificações" className={item("/notificacoes")}><BellIcon size={22} weight={ativo("/notificacoes") ? "fill" : "regular"} />Notificações</Link>
+        <Link to="/mensagens" aria-label="Conversas" className={item("/mensagens")}><ChatCircleDotsIcon size={22} weight={ativo("/mensagens") ? "fill" : "regular"} />Conversas</Link>
         <Link to="/salvos" aria-label="Salvos" className={item("/salvos")}><BookmarkSimpleIcon size={22} weight={ativo("/salvos") ? "fill" : "regular"} />Salvos</Link>
         <Link to="/perfil" aria-label="Perfil" className={item("/perfil")}><UserIcon size={22} weight={ativo("/perfil") ? "fill" : "regular"} />Perfil</Link>
         <button onClick={() => navigate("/criarpost")} aria-label="Criar publicação" className="mx-6 my-4 cursor-pointer rounded-lg bg-[var(--cor-destaque)] py-3 text-sm text-white transition hover:bg-[var(--cor-destaque-forte)]">Criar post</button>

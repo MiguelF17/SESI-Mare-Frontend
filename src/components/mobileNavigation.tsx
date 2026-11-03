@@ -7,6 +7,7 @@ import {
   UserIcon,
   GearIcon,
   BellIcon,
+  ChatCircleDotsIcon,
 } from "@phosphor-icons/react";
 import { apiRequest } from "../api";
 import { MobileSearchBar } from "./searchbar";
@@ -59,7 +60,7 @@ export default function MobileNavigation() {
         <Link to="/home" aria-label="Início" title="Início" aria-current={ativo("/home") ? "page" : undefined} className={item("/home")}><HouseLineIcon size={22} weight={ativo("/home") ? "fill" : "regular"} /><span>Início</span></Link>
         <Link to="/explorar" aria-label="Explorar" title="Explorar" className={item("/explorar")}><PlaylistIcon size={22} /><span>Explorar</span></Link>
         <button onClick={() => navigate("/criarpost")} aria-label="Criar post" title="Criar post" className="flex min-w-0 flex-1 flex-col items-center justify-center gap-1 py-1.5 text-[10px] text-[var(--cor-texto-principal)]"><span className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--cor-destaque)] text-2xl leading-none text-white shadow-lg shadow-[var(--cor-destaque)]/30">+</span><span>Criar post</span></button>
-        <Link to="/salvos" aria-label="Salvos" title="Salvos" className={item("/salvos")}><BookmarkSimpleIcon size={22} weight={ativo("/salvos") ? "fill" : "regular"} /><span>Salvos</span></Link>
+        <Link to="/mensagens" aria-label="Conversas" title="Conversas" className={item("/mensagens")}><ChatCircleDotsIcon size={22} weight={ativo("/mensagens") ? "fill" : "regular"} /><span>Conversas</span></Link>
         <Link to="/perfil" aria-label="Perfil" title="Perfil" className={item("/perfil")}><UserIcon size={22} weight={ativo("/perfil") ? "fill" : "regular"} /><span>Perfil</span></Link>
       </nav>
     </>
