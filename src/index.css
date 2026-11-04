@@ -70,6 +70,18 @@ body {
   background-color: var(--cor-destaque);
 }
 
+/* Oculta a barra dos carrosséis sem remover a rolagem por gesto ou mouse. */
+.scrollbar-oculta {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.scrollbar-oculta::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
 /* Barra de rolagem da Maré */
 * {
   scrollbar-width: thin;

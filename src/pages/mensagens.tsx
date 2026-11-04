@@ -245,6 +245,7 @@ export default function Mensagens() {
               <div className="flex-1 space-y-2 overflow-y-auto p-4">
                 {mensagens.map((mensagem, indice) => {
                   const novaData = indice === 0 || chaveDoDia(mensagens[indice - 1].criadaEm) !== chaveDoDia(mensagem.criadaEm);
+                  const minha = mensagem.remetenteId === meuId;
                   return (
                     <div key={mensagem.id}>
                       {novaData && (
@@ -254,15 +255,17 @@ export default function Mensagens() {
                           </span>
                         </div>
                       )}
-                      <div className={`mb-2 max-w-[82%] rounded-2xl px-3.5 py-2.5 ${mensagem.remetenteId === meuId ? "ml-auto bg-[#1c4770]" : "bg-[var(--cor-fundo)]"}`}>
+                      <div className={`mb-2 max-w-[82%] rounded-2xl border px-3.5 py-2.5 shadow-sm ${minha
+                        ? "ml-auto border-[#3678A9] bg-[#1C4770] text-white"
+                        : "border-[var(--cor-borda)] bg-[var(--cor-superficie-elevada)] text-[var(--cor-texto-principal)]"}`}>
                         {mensagem.musica ? (
                           <Link to={`/musica/${mensagem.musica.id}`} className="flex items-center gap-3">
                             {mensagem.musica.capa && <img src={mensagem.musica.capa} alt="" className="h-12 w-12 rounded-lg object-cover" />}
-                            <span><b className="block">{mensagem.musica.titulo}</b><small>{mensagem.musica.artista.nome}</small></span>
+                            <span><b className="block">{mensagem.musica.titulo}</b><small className={minha ? "text-blue-100/80" : "text-[var(--cor-texto-secundario)]"}>{mensagem.musica.artista.nome}</small></span>
                           </Link>
                         ) : <p className="whitespace-pre-wrap break-words text-sm">{mensagem.texto}</p>}
-                        <p className="mt-1 text-right text-[10px] text-[var(--cor-texto-discreto)]">
-                          {formatarHoraMensagem(mensagem.criadaEm)}{mensagem.remetenteId === meuId ? ` · ${mensagem.lidaEm ? "Lida" : "Enviada"}` : ""}
+                        <p className={`mt-1 text-right text-[10px] ${minha ? "text-blue-100/75" : "text-[var(--cor-texto-discreto)]"}`}>
+                          {formatarHoraMensagem(mensagem.criadaEm)}{minha ? ` · ${mensagem.lidaEm ? "Lida" : "Enviada"}` : ""}
                         </p>
                       </div>
                     </div>

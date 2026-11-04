@@ -41,11 +41,6 @@ interface ArtistaFavorito {
   artistaId: number;
 }
 
-function normalizarTexto(valor: string) {
-  return valor.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("pt-BR");
-}
-
-
 function Carrossel({ children }: { children: ReactNode }) {
   const trilhoRef = useRef<HTMLDivElement>(null);
 
@@ -174,7 +169,7 @@ function Carrossel({ children }: { children: ReactNode }) {
             e.stopPropagation();
           }
         }}
-        className={`flex min-w-0 gap-2 overflow-x-auto px-2 py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${arrastando
+        className={`scrollbar-oculta flex min-w-0 gap-2 overflow-x-auto px-2 py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${arrastando
           ? "cursor-grabbing select-none"
           : "cursor-grab scroll-smooth"
           }`}
@@ -217,7 +212,6 @@ export default function Explorar() {
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState(false);
   const [filtrosAbertos, setFiltrosAbertos] = useState(false);
-  const [textoFiltro, setTextoFiltro] = useState("");
   const [generosSelecionados, setGenerosSelecionados] = useState<string[]>([]);
   const [artistasSelecionados, setArtistasSelecionados] = useState<number[]>([]);
   const [ordemResultados, setOrdemResultados] = useState<"catalogo" | "nota" | "avaliacoes" | "titulo">("catalogo");
@@ -338,30 +332,25 @@ export default function Explorar() {
   const catalogoFiltrado = useMemo(() => {
     const generos = new Set(generosSelecionados.map((genero) => genero.toLocaleLowerCase("pt-BR")));
     const idsArtistas = new Set(artistasSelecionados);
-    const busca = normalizarTexto(textoFiltro.trim());
     const resultado = catalogo.filter((musica) => {
       const generoCorresponde = generos.size === 0 || generos.has(musica.genero?.trim().toLocaleLowerCase("pt-BR") ?? "");
       const artistaCorresponde = idsArtistas.size === 0 || idsArtistas.has(musica.artista?.id ?? musica.artistaId ?? -1);
-      const textoCorresponde = !busca || normalizarTexto(`${musica.titulo} ${musica.artista?.nome ?? ""}`).includes(busca);
-      return generoCorresponde && artistaCorresponde && textoCorresponde;
+      return generoCorresponde && artistaCorresponde;
     });
 
     if (ordemResultados === "nota") return resultado.sort((a, b) => (b.nota ?? 0) - (a.nota ?? 0));
     if (ordemResultados === "avaliacoes") return resultado.sort((a, b) => (b.avaliacoes ?? 0) - (a.avaliacoes ?? 0));
     if (ordemResultados === "titulo") return resultado.sort((a, b) => a.titulo.localeCompare(b.titulo, "pt-BR"));
     return resultado;
-  }, [catalogo, generosSelecionados, artistasSelecionados, ordemResultados, textoFiltro]);
+  }, [catalogo, generosSelecionados, artistasSelecionados, ordemResultados]);
 
   const artistasFiltrados = useMemo(() => {
     const idsArtistas = new Set(artistasSelecionados);
     const generos = new Set(generosSelecionados.map((genero) => genero.toLocaleLowerCase("pt-BR")));
-    const busca = normalizarTexto(textoFiltro.trim());
 
     const resultado = artistas.filter((artista) => {
       if (idsArtistas.size > 0 && !idsArtistas.has(artista.id)) return false;
       const musicasDoArtista = catalogo.filter((musica) => (musica.artista?.id ?? musica.artistaId) === artista.id);
-      const textoCorresponde = !busca || normalizarTexto(artista.nome).includes(busca) || musicasDoArtista.some((musica) => normalizarTexto(musica.titulo).includes(busca));
-      if (!textoCorresponde) return false;
       if (generos.size === 0) return true;
       return musicasDoArtista.some((musica) =>
         generos.has(musica.genero?.trim().toLocaleLowerCase("pt-BR") ?? "")
@@ -373,9 +362,9 @@ export default function Explorar() {
       .map((musica) => musica.artista?.id ?? musica.artistaId)
       .filter((id): id is number => id != null));
     return resultado.sort((a, b) => Number(idsArtistasDosGeneros.has(b.id)) - Number(idsArtistasDosGeneros.has(a.id)));
-  }, [artistas, catalogo, generosSelecionados, artistasSelecionados, textoFiltro, generosFavoritos]);
+  }, [artistas, catalogo, generosSelecionados, artistasSelecionados, generosFavoritos]);
 
-  const quantidadeFiltrosAtivos = generosSelecionados.length + artistasSelecionados.length + Number(ordemResultados !== "catalogo") + Number(Boolean(textoFiltro.trim()));
+  const quantidadeFiltrosAtivos = generosSelecionados.length + artistasSelecionados.length + Number(ordemResultados !== "catalogo");
 
   function alternarGenero(genero: string) {
     setGenerosSelecionados((selecionados) => selecionados.includes(genero)
@@ -393,7 +382,6 @@ export default function Explorar() {
     setGenerosSelecionados([]);
     setArtistasSelecionados([]);
     setOrdemResultados("catalogo");
-    setTextoFiltro("");
   }
 
   // Em alta: músicas com mais publicações.
@@ -606,31 +594,20 @@ export default function Explorar() {
           </p>
         </div>
 
-        <section className="mb-7 rounded-xl border border-[var(--cor-borda)] bg-[var(--cor-superficie)] p-4 sm:p-5">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <h2 className="font-serif text-base text-[var(--cor-texto-principal)]">Encontre o seu som</h2>
-              <p className="mt-1 text-xs text-[var(--cor-texto-discreto)]">Filtre músicas e artistas por gênero, artista ou nota.</p>
-            </div>
-            <button
+        <div className="mb-7">
+          <button
               type="button"
               onClick={() => setFiltrosAbertos((aberto) => !aberto)}
               aria-expanded={filtrosAbertos}
-              className="inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-lg border border-[var(--cor-borda-destaque)] bg-[var(--cor-superficie-elevada)] px-3 py-2 text-xs font-medium text-[var(--cor-texto-principal)] transition hover:border-[var(--cor-destaque)]"
+              className="inline-flex min-h-9 cursor-pointer items-center gap-1.5 rounded-md py-1 text-xs text-[var(--cor-texto-secundario)] transition hover:text-[var(--cor-destaque)]"
             >
-              <FunnelIcon size={17} />
-              {filtrosAbertos ? "Fechar filtros" : "Abrir filtros"}
-              {quantidadeFiltrosAtivos > 0 && <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--cor-destaque)] px-1 text-[10px] text-[#07111E]">{quantidadeFiltrosAtivos}</span>}
-            </button>
-          </div>
+              <FunnelIcon size={15} className={quantidadeFiltrosAtivos ? "text-[var(--cor-destaque)]" : ""} />
+              {filtrosAbertos ? "Fechar filtros" : "Filtros"}
+              {quantidadeFiltrosAtivos > 0 && <span className="text-[var(--cor-destaque)]">· {quantidadeFiltrosAtivos}</span>}
+          </button>
 
           {filtrosAbertos && (
-            <div className="mt-5 space-y-5 border-t border-[var(--cor-borda)] pt-4">
-              <label className="block max-w-xl text-xs font-semibold text-[var(--cor-texto-secundario)]">
-                Nome da música ou do artista
-                <input type="search" value={textoFiltro} onChange={(evento) => setTextoFiltro(evento.target.value)} placeholder="Ex.: nome da faixa ou artista" className="mt-1.5 h-10 w-full rounded-lg border border-[var(--cor-borda)] bg-[var(--cor-fundo)] px-3 text-sm font-normal text-[var(--cor-texto-principal)] outline-none placeholder:text-[var(--cor-texto-discreto)] focus:border-[var(--cor-borda-destaque)]" />
-              </label>
-
+            <div className="mt-2 space-y-5 border-b border-[var(--cor-borda)] pb-4 pt-2">
               <div>
                 <h3 className="mb-2 text-xs font-semibold text-[var(--cor-texto-secundario)]">Gêneros</h3>
                 {generosDisponiveis.length ? (
@@ -670,7 +647,7 @@ export default function Explorar() {
               </div>
             </div>
           )}
-        </section>
+        </div>
 
         {erro && (
           <p className="mb-8 text-sm text-red-400">

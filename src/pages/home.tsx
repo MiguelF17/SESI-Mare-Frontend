@@ -1,5 +1,6 @@
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { TouchEvent as ReactTouchEvent } from "react";
 import { ArrowClockwiseIcon } from "@phosphor-icons/react";
 
 import PageLayout from "../components/pageLayout";
@@ -24,6 +25,51 @@ export default function Home() {
   const [usuarioLogadoId, setUsuarioLogadoId] = useState<number | null>(
     null
   );
+  const [distanciaPuxada, setDistanciaPuxada] = useState(0);
+  const inicioPuxada = useRef<number | null>(null);
+  const distanciaPuxadaRef = useRef(0);
+
+  function iniciarPuxada(evento: ReactTouchEvent<HTMLElement>) {
+    if (window.scrollY > 1 || feedAtual.carregando || feedAtual.atualizando) return;
+    inicioPuxada.current = evento.touches[0]?.clientY ?? null;
+    distanciaPuxadaRef.current = 0;
+  }
+
+  function acompanharPuxada(evento: ReactTouchEvent<HTMLElement>) {
+    if (inicioPuxada.current === null || window.scrollY > 1) return;
+    const distancia = Math.max(0, evento.touches[0].clientY - inicioPuxada.current);
+    distanciaPuxadaRef.current = distancia;
+
+    // Atualiza o indicador em pequenos passos para evitar renderizar a cada pixel.
+    const distanciaVisual = Math.min(distancia, 96);
+    if (Math.abs(distanciaVisual - distanciaPuxada) >= 4) {
+      setDistanciaPuxada(distanciaVisual);
+    }
+  }
+
+  function finalizarPuxada() {
+    const deveAtualizar = distanciaPuxadaRef.current >= 72;
+    limparPuxada();
+
+    if (deveAtualizar && !feedAtual.carregando && !feedAtual.atualizando) {
+      void feedAtual.recarregar();
+    }
+  }
+
+  function limparPuxada() {
+    inicioPuxada.current = null;
+    distanciaPuxadaRef.current = 0;
+    setDistanciaPuxada(0);
+  }
+
+  // Evita que o navegador recarregue a página toda durante o gesto do feed.
+  useEffect(() => {
+    const comportamentoAnterior = document.documentElement.style.overscrollBehaviorY;
+    document.documentElement.style.overscrollBehaviorY = "contain";
+    return () => {
+      document.documentElement.style.overscrollBehaviorY = comportamentoAnterior;
+    };
+  }, []);
 
   function selecionarAba(aba: "paraVoce" | "seguindo") {
     setAbaAtiva(aba);
@@ -53,7 +99,30 @@ export default function Home() {
     <PageLayout>
       <PageContent>
         <div className="grid grid-cols-1 gap-10 xl:grid-cols-[minmax(0,1fr)_340px]">
-          <section className="min-w-0">
+          <section
+            className="min-w-0"
+            onTouchStartCapture={iniciarPuxada}
+            onTouchMoveCapture={acompanharPuxada}
+            onTouchEndCapture={finalizarPuxada}
+            onTouchCancelCapture={limparPuxada}
+            style={{ overscrollBehaviorY: "contain" }}
+          >
+            <div
+              aria-live="polite"
+              className="flex items-center justify-center gap-2 overflow-hidden text-xs text-[var(--cor-destaque)] transition-[height] duration-150 md:hidden"
+              style={{
+                height: feedAtual.atualizando ? 38 : Math.min(distanciaPuxada * 0.4, 38),
+              }}
+            >
+              {(distanciaPuxada > 8 || feedAtual.atualizando) && <>
+                <ArrowClockwiseIcon
+                  size={15}
+                  className={feedAtual.atualizando ? "animate-spin" : "transition-transform"}
+                  style={{ transform: feedAtual.atualizando ? undefined : `rotate(${Math.min(distanciaPuxada / 72, 1) * 180}deg)` }}
+                />
+                <span>{feedAtual.atualizando ? "Atualizando..." : distanciaPuxada >= 72 ? "Solte para atualizar" : "Puxe para atualizar"}</span>
+              </>}
+            </div>
             <div className="sticky top-[calc(52px+env(safe-area-inset-top))] z-20 -mt-2.5 bg-[var(--cor-fundo)]/90 backdrop-blur-xl md:top-16 md:mt-0">
               <div className="flex justify-center pb-1 pt-3 sm:pb-2 sm:pt-4 md:pb-0 md:pt-1">
                 <FeedTabs
@@ -69,7 +138,7 @@ export default function Home() {
                   type="button"
                   onClick={() => void feedAtual.recarregar()}
                   disabled={feedAtual.carregando || feedAtual.atualizando}
-                  className="inline-flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-xs text-[var(--cor-texto-secundario)] transition hover:bg-[var(--cor-superficie-alternativa)] disabled:cursor-not-allowed disabled:opacity-50"
+                  className="hidden cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-xs text-[var(--cor-texto-secundario)] transition hover:bg-[var(--cor-superficie-alternativa)] disabled:cursor-not-allowed disabled:opacity-50 md:inline-flex"
                   aria-label="Recarregar feed"
                 >
                   <ArrowClockwiseIcon size={15} className={feedAtual.atualizando ? "animate-spin" : ""} />
