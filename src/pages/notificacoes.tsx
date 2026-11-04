@@ -60,6 +60,12 @@ interface Notificacao {
                 nome: string;
             } | null;
         } | null;
+        usuario?: {
+            id: number;
+            nome: string;
+            username: string;
+            foto: string | null;
+        } | null;
     } | null;
 }
 
@@ -476,9 +482,9 @@ export default function Notificacoes() {
                                                 className="flex min-w-0 flex-1 cursor-pointer items-start gap-3 text-left sm:gap-4"
                                             >
                                                 {/* Foto ou ícone */}
-                                                {notificacao.usuario?.foto ? (
+                                                {(notificacao.post?.usuario?.foto ?? notificacao.usuario?.foto) ? (
                                                     <img
-                                                        src={notificacao.usuario.foto}
+                                                        src={notificacao.post?.usuario?.foto ?? notificacao.usuario?.foto ?? ""}
                                                         alt=""
                                                         className="h-11 w-11 shrink-0 rounded-full border border-[var(--cor-borda)] object-cover"
                                                     />

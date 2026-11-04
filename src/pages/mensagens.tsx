@@ -82,13 +82,12 @@ export default function Mensagens() {
       ]);
       setConversas(lista);
       setMeuId(perfil.id);
-      if (!idAtivo && lista.length) setParams({ id: String(lista[0].id) }, { replace: true });
     } catch (error) {
       setErro(error instanceof Error ? error.message : "Não foi possível carregar suas conversas.");
     } finally {
       setCarregando(false);
     }
-  }, [idAtivo, setParams]);
+  }, []);
 
   const carregarMensagens = useCallback(async () => {
     if (!idAtivo) {
@@ -162,16 +161,18 @@ export default function Mensagens() {
 
   return (
     <PageLayout>
-      <section className="mx-auto flex h-[calc(100dvh-4rem)] max-w-6xl flex-col px-3 py-4 text-[var(--cor-texto-principal)] sm:px-6 md:pt-8">
-        <h1 className="mb-4 flex items-center gap-2 text-2xl font-semibold"><ChatCircleDotsIcon size={26} />Conversas</h1>
+      <section className="flex h-[calc(100dvh-124px-env(safe-area-inset-top)-env(safe-area-inset-bottom))] min-h-0 w-full flex-col text-[var(--cor-texto-principal)] md:mt-6 md:h-[calc(100dvh-4rem)]">
         {erro && (
-          <p role="alert" className="mb-3 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-300">
+          <p role="alert" className="mx-3 mt-2 shrink-0 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-300 md:mx-5">
             {erro}<button className="ml-3 underline" onClick={() => setErro("")}>Fechar</button>
           </p>
         )}
 
-        <div className="grid min-h-0 flex-1 overflow-hidden rounded-2xl border border-[var(--cor-borda)] bg-[var(--cor-superficie)] md:grid-cols-[minmax(230px,0.8fr)_1.5fr]">
-          <aside className={`${idAtivo ? "hidden md:block" : ""} overflow-y-auto border-[var(--cor-borda)] md:border-r`}>
+        <div className="grid min-h-0 flex-1 overflow-hidden border-y border-[var(--cor-borda)] md:grid-cols-[minmax(260px,320px)_minmax(0,1fr)] md:border-t-0">
+          <aside className={`${idAtivo ? "hidden md:block" : "block"} min-h-0 overflow-y-auto border-[var(--cor-borda)] md:border-r`}>
+            <div className="sticky top-0 z-10 border-b border-[var(--cor-borda)] bg-[var(--cor-fundo)]/95 px-4 py-3 backdrop-blur md:px-5">
+              <h1 className="flex items-center gap-2 text-lg font-semibold"><ChatCircleDotsIcon size={21} />Conversas</h1>
+            </div>
             {carregando ? <p className="p-5 text-sm text-[var(--cor-texto-discreto)]">Carregando conversas...</p> : conversas.length ? conversas.map((conversa) => (
               <button
                 key={conversa.id}
@@ -201,10 +202,17 @@ export default function Mensagens() {
             )}
           </aside>
 
-          <div className={`${!idAtivo ? "hidden md:flex" : "flex"} min-h-0 flex-col`}>
+          <div className={`${idAtivo ? "flex" : "hidden md:flex"} min-h-0 min-w-0 flex-col`}>
             {conversaAtiva ? <>
-              <header className="flex items-center gap-3 border-b border-[var(--cor-borda)] p-3">
-                <Link to={`/u/${conversaAtiva.outroUsuario.username}`} aria-label="Voltar às conversas" className="md:hidden">‹</Link>
+              <header className="flex min-h-[60px] items-center gap-3 border-b border-[var(--cor-borda)] px-3 py-2 md:px-5">
+                <button
+                  type="button"
+                  onClick={() => { setTexto(""); setParams({}); }}
+                  aria-label="Voltar para a lista de conversas"
+                  className="inline-flex shrink-0 items-center gap-1 rounded-lg px-2 py-2 text-sm text-[var(--cor-destaque)] hover:bg-white/5 md:hidden"
+                >
+                  <span aria-hidden="true">‹</span><span>Conversas</span>
+                </button>
                 {conversaAtiva.outroUsuario.foto && <img src={conversaAtiva.outroUsuario.foto} alt="" className="h-10 w-10 rounded-full object-cover" />}
                 <Link to={`/u/${conversaAtiva.outroUsuario.username}`} className="min-w-0 flex-1 hover:text-[var(--cor-destaque)]">
                   <span className="block truncate font-semibold">{conversaAtiva.outroUsuario.nome}</span>
