@@ -274,9 +274,8 @@ function Hero() {
           <div className="mt-6 flex flex-wrap justify-center gap-3 sm:gap-4">
 
             <a
-              href="https://expo.dev/artifacts/eas/wQcvkroOm9-hZP7tDUywEOJQV7hRHt6_QCTF6-F2fX8.apk"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="https://expo.dev/artifacts/eas/wPvRiEwrkL8WQavRrdrPkg3_dSry2DSVhF3123FZomU.apk"
+              download="mare.apk"
               aria-label="Baixar o aplicativo Maré para Android"
               className="
                 inline-flex min-h-12 items-center justify-center rounded-xl
