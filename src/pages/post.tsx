@@ -35,11 +35,30 @@ import {
     type Comentario,
 } from "../services/comentarioService";
 
-import calcularTempo from "../calcularTempo";
 
 interface UsuarioLogado {
     id: number;
     foto?: string | null;
+}
+
+function formatarDataComentario(valor: string) {
+    const data = new Date(valor);
+    if (Number.isNaN(data.getTime())) return "";
+    const hoje = new Date();
+    const ontem = new Date(hoje);
+    ontem.setDate(hoje.getDate() - 1);
+    const mesmaData = (a: Date, b: Date) => a.getFullYear() === b.getFullYear()
+        && a.getMonth() === b.getMonth()
+        && a.getDate() === b.getDate();
+    const hora = data.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+    if (mesmaData(data, hoje)) return `Hoje às ${hora}`;
+    if (mesmaData(data, ontem)) return `Ontem às ${hora}`;
+    const dia = data.toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "short",
+        ...(data.getFullYear() !== hoje.getFullYear() ? { year: "numeric" as const } : {}),
+    });
+    return `${dia} às ${hora}`;
 }
 
 function contarArvore(comentarios: Comentario[]): number {
@@ -610,7 +629,7 @@ export default function Post() {
                                                         {comentario.usuario?.username && <Link to={`/u/${encodeURIComponent(comentario.usuario.username)}`} className="truncate text-xs text-[var(--cor-texto-discreto)] hover:text-[var(--cor-destaque)]">@{comentario.usuario.username}</Link>}
 
                                                         <span className="shrink-0 text-xs text-[var(--cor-texto-discreto)]">
-                                                            · {calcularTempo(comentario.dataCriacao) === "agora" ? "agora" : `há ${calcularTempo(comentario.dataCriacao)}`}
+                                                            · {formatarDataComentario(comentario.dataCriacao)}
                                                         </span>
 
                                                         {comentario.editado && (

@@ -222,7 +222,6 @@ export default function Explorar() {
   const [erro, setErro] = useState(false);
   const [filtrosAbertos, setFiltrosAbertos] = useState(false);
   const [generosSelecionados, setGenerosSelecionados] = useState<string[]>([]);
-  const [artistasSelecionados, setArtistasSelecionados] = useState<number[]>([]);
   const [ordemResultados, setOrdemResultados] = useState<"catalogo" | "nota" | "avaliacoes" | "titulo">("catalogo");
 
   // Carrega catálogo, artistas e preferências.
@@ -340,40 +339,31 @@ export default function Explorar() {
 
   const catalogoFiltrado = useMemo(() => {
     const generos = new Set(generosSelecionados.map(normalizarGenero));
-    const idsArtistas = new Set(artistasSelecionados);
-    const resultado = catalogo.filter((musica) => {
-      const generoCorresponde = generos.size === 0 || generos.has(normalizarGenero(musica.genero));
-      const artistaCorresponde = idsArtistas.size === 0 || idsArtistas.has(musica.artista?.id ?? musica.artistaId ?? -1);
-      return generoCorresponde && artistaCorresponde;
-    });
+    const resultado = catalogo.filter((musica) =>
+      generos.size === 0 || generos.has(normalizarGenero(musica.genero))
+    );
 
     if (ordemResultados === "nota") return resultado.sort((a, b) => (b.nota ?? 0) - (a.nota ?? 0));
     if (ordemResultados === "avaliacoes") return resultado.sort((a, b) => (b.avaliacoes ?? 0) - (a.avaliacoes ?? 0));
     if (ordemResultados === "titulo") return resultado.sort((a, b) => a.titulo.localeCompare(b.titulo, "pt-BR"));
     return resultado;
-  }, [catalogo, generosSelecionados, artistasSelecionados, ordemResultados]);
+  }, [catalogo, generosSelecionados, ordemResultados]);
 
   const artistasFiltrados = useMemo(() => {
-    const idsArtistas = new Set(artistasSelecionados);
     const generos = new Set(generosSelecionados.map(normalizarGenero));
-
-    const resultado = artistas.filter((artista) => {
-      if (idsArtistas.size > 0 && !idsArtistas.has(artista.id)) return false;
-      return true;
-    });
     const generosPreferidos = new Set(generosFavoritos.map(normalizarGenero));
     const generosParaPriorizar = new Set([...generosPreferidos, ...generos]);
     const idsArtistasDosGeneros = new Set(catalogo
       .filter((musica) => generosParaPriorizar.has(normalizarGenero(musica.genero)))
       .map((musica) => musica.artista?.id ?? musica.artistaId)
       .filter((id): id is number => id != null));
-    return resultado.sort((a, b) =>
+    return [...artistas].sort((a, b) =>
       Number(idsArtistasDosGeneros.has(b.id)) - Number(idsArtistasDosGeneros.has(a.id)) ||
       a.nome.localeCompare(b.nome, "pt-BR")
     );
-  }, [artistas, catalogo, generosSelecionados, artistasSelecionados, generosFavoritos]);
+  }, [artistas, catalogo, generosSelecionados, generosFavoritos]);
 
-  const quantidadeFiltrosAtivos = generosSelecionados.length + artistasSelecionados.length + Number(ordemResultados !== "catalogo");
+  const quantidadeFiltrosAtivos = generosSelecionados.length + Number(ordemResultados !== "catalogo");
 
   function alternarGenero(genero: string) {
     setGenerosSelecionados((selecionados) => selecionados.includes(genero)
@@ -381,15 +371,8 @@ export default function Explorar() {
       : [...selecionados, genero]);
   }
 
-  function alternarArtista(artistaId: number) {
-    setArtistasSelecionados((selecionados) => selecionados.includes(artistaId)
-      ? selecionados.filter((item) => item !== artistaId)
-      : [...selecionados, artistaId]);
-  }
-
   function limparFiltros() {
     setGenerosSelecionados([]);
-    setArtistasSelecionados([]);
     setOrdemResultados("catalogo");
   }
 
@@ -629,18 +612,6 @@ export default function Explorar() {
                 ) : <p className="text-xs text-[var(--cor-texto-discreto)]">Não há gêneros cadastrados no catálogo.</p>}
               </div>
 
-              <div>
-                <h3 className="mb-2 text-xs font-semibold text-[var(--cor-texto-secundario)]">Artistas</h3>
-                {artistas.length ? (
-                  <div className="flex max-h-36 flex-wrap gap-2 overflow-y-auto pr-1">
-                    {artistas.map((artista) => {
-                      const selecionado = artistasSelecionados.includes(artista.id);
-                      return <button key={artista.id} type="button" aria-pressed={selecionado} onClick={() => alternarArtista(artista.id)} className={`cursor-pointer rounded-full border px-3 py-1.5 text-xs transition ${selecionado ? "border-[var(--cor-destaque)] bg-[var(--cor-destaque)]/15 text-[var(--cor-texto-principal)]" : "border-[var(--cor-borda)] text-[var(--cor-texto-secundario)] hover:border-[var(--cor-borda-destaque)]"}`}>{artista.nome}</button>;
-                    })}
-                  </div>
-                ) : <p className="text-xs text-[var(--cor-texto-discreto)]">Não há artistas cadastrados no catálogo.</p>}
-              </div>
-
               <div className="flex flex-wrap items-end justify-between gap-3">
                 <label className="flex flex-col gap-1.5 text-xs text-[var(--cor-texto-secundario)]">
                   Ordenar músicas
@@ -663,7 +634,7 @@ export default function Explorar() {
           </p>
         )}
 
-        {renderizarArtistas()}
+        {generosSelecionados.length === 0 && renderizarArtistas()}
 
         {renderizarSecao(
           "Em alta",

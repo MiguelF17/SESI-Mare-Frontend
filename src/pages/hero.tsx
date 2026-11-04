@@ -4,19 +4,15 @@ import Navbar from "../components/navbar"
 import Footer from "../components/footer"
 
 import fundo from "../assets/fundoHero.jpg"
-import qrcode from "../assets/RoW2Cw.png"
+import qrcode from "../assets/uQhqvk.png"
 
 import { useNavigate } from "react-router-dom"
-
-type EventoInstalacaoPwa = Event & {
-  prompt: () => Promise<void>
-  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>
-}
+import { instalarPwaAgora, observarInstalacaoPwa } from "../services/instalacaoPwa"
 
 function Hero() {
 
   const navigate = useNavigate();
-  const [eventoInstalacao, setEventoInstalacao] = useState<EventoInstalacaoPwa | null>(null)
+  const [instalacaoDisponivel, setInstalacaoDisponivel] = useState(false)
   const [mostrarAjudaPwa, setMostrarAjudaPwa] = useState(false)
   const [ehIOS, setEhIOS] = useState(false)
 
@@ -24,27 +20,17 @@ function Hero() {
     const agente = navigator.userAgent
     setEhIOS(/iPad|iPhone|iPod/.test(agente) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1))
 
-    const guardarPrompt = (evento: Event) => {
-      evento.preventDefault()
-      setEventoInstalacao(evento as EventoInstalacaoPwa)
-    }
-    window.addEventListener("beforeinstallprompt", guardarPrompt)
-    return () => window.removeEventListener("beforeinstallprompt", guardarPrompt)
+    return observarInstalacaoPwa(setInstalacaoDisponivel)
   }, [])
 
   async function instalarPwa() {
-    if (!eventoInstalacao) {
+    if (!instalacaoDisponivel) {
       setMostrarAjudaPwa(true)
       return
     }
 
-    try {
-      await eventoInstalacao.prompt()
-      const escolha = await eventoInstalacao.userChoice
-      if (escolha.outcome === "accepted") setEventoInstalacao(null)
-    } catch {
-      setMostrarAjudaPwa(true)
-    }
+    const instalado = await instalarPwaAgora()
+    if (!instalado) setMostrarAjudaPwa(true)
   }
 
 
@@ -274,7 +260,7 @@ function Hero() {
           <div className="mt-6 flex flex-wrap justify-center gap-3 sm:gap-4">
 
             <a
-              href="https://expo.dev/artifacts/eas/wPvRiEwrkL8WQavRrdrPkg3_dSry2DSVhF3123FZomU.apk"
+              href="https://expo.dev/artifacts/eas/VkHo74tD9G0JfLHdD4yGRtvfIebIUoDOvymacq4iwYU.apk"
               download="mare.apk"
               aria-label="Baixar o aplicativo Maré para Android"
               className="

@@ -66,6 +66,8 @@ export default function Perfil() {
     url: string;
     tipo: "foto" | "capa";
   } | null>(null);
+  const [tipoImagemMenu, setTipoImagemMenu] = useState<"foto" | "capa" | null>(null);
+  const [removendoImagem, setRemovendoImagem] = useState(false);
   const [usuarioLogadoId, setUsuarioLogadoId] = useState<number | null>(
     null
   );
@@ -243,6 +245,17 @@ export default function Perfil() {
   }
 
   async function salvarPerfil() {
+    const nome = nomeEditado.trim();
+    const username = usernameEditado.trim().toLowerCase();
+    if (!nome || nome.length > 50) {
+      toast.error("O nome deve ter entre 1 e 50 caracteres.");
+      return;
+    }
+    if (!/^[a-z0-9_]{3,15}$/.test(username) && username !== usuario?.username) {
+      toast.error("O usuário deve ter de 3 a 15 letras, números ou _, sem espaços.");
+      return;
+    }
+
     try {
       setSalvando(true);
 
@@ -251,8 +264,8 @@ export default function Perfil() {
         {
           method: "PUT",
           body: JSON.stringify({
-            nome: nomeEditado.trim(),
-            username: usernameEditado.trim(),
+            nome,
+            username,
             bio: bioEditada.trim(),
           }),
         }
@@ -264,8 +277,8 @@ export default function Perfil() {
         return {
           ...atual,
           ...dados,
-          nome: dados.nome ?? nomeEditado.trim(),
-          username: dados.username ?? usernameEditado.trim(),
+          nome: dados.nome ?? nome,
+          username: dados.username ?? username,
           bio: dados.bio ?? bioEditada.trim(),
         };
       });
@@ -331,6 +344,25 @@ export default function Perfil() {
     }
   }
 
+  async function removerImagem(tipo: "foto" | "capa") {
+    if (removendoImagem) return;
+    setRemovendoImagem(true);
+    setTipoImagemMenu(null);
+    try {
+      const dados = await apiRequest<{ foto: string | null; capa: string | null }>("/usuarios/me/imagem", {
+        method: "DELETE",
+        body: JSON.stringify({ tipo }),
+      });
+      setUsuario((atual) => atual ? { ...atual, foto: dados.foto, capa: dados.capa } : atual);
+      window.dispatchEvent(new Event("usuarioAtualizado"));
+      toast.success(tipo === "foto" ? "Foto de perfil removida." : "Foto de capa removida.");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Não foi possível remover a imagem.");
+    } finally {
+      setRemovendoImagem(false);
+    }
+  }
+
   if (carregando) {
     return (
       <PageLayout>
@@ -382,6 +414,7 @@ export default function Perfil() {
 
                 <input
                   type="text"
+                  maxLength={50}
                   value={nomeEditado}
                   onChange={(e) => setNomeEditado(e.target.value)}
                   className="w-full rounded-lg border border-[var(--cor-borda-discreta)] bg-[#0b0e16] px-3 py-2 text-[14px] text-[var(--cor-texto-principal)] outline-none focus:border-blue-400"
@@ -395,10 +428,13 @@ export default function Perfil() {
 
                 <input
                   type="text"
+                  maxLength={15}
+                  pattern="[A-Za-z0-9_]{3,15}"
                   value={usernameEditado}
-                  onChange={(e) => setUsernameEditado(e.target.value)}
+                  onChange={(e) => setUsernameEditado(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, "").slice(0, 15))}
                   className="w-full rounded-lg border border-[var(--cor-borda-discreta)] bg-[#0b0e16] px-3 py-2 text-[14px] text-[var(--cor-texto-principal)] outline-none focus:border-blue-400"
                 />
+                <p className="mt-1 text-xs text-[var(--cor-texto-discreto)]">3 a 15 caracteres: letras, números e _; sem espaços.</p>
               </div>
 
               <div>
@@ -453,6 +489,56 @@ export default function Perfil() {
         />
       )}
 
+      {tipoImagemMenu && (
+        <div
+          className="fixed inset-0 z-[80] flex items-center justify-center bg-black/65 p-4 backdrop-blur-sm"
+          onClick={() => setTipoImagemMenu(null)}
+        >
+          <section
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="titulo-menu-imagem"
+            className="w-full max-w-sm rounded-2xl border border-[var(--cor-borda)] bg-[var(--cor-superficie)] p-5 text-[var(--cor-texto-principal)] shadow-2xl"
+            onClick={(evento) => evento.stopPropagation()}
+          >
+            <h2 id="titulo-menu-imagem" className="mb-4 font-serif text-lg">
+              {tipoImagemMenu === "foto" ? "Foto de perfil" : "Foto de capa"}
+            </h2>
+            <button
+              type="button"
+              disabled={removendoImagem}
+              onClick={() => {
+                const entrada = tipoImagemMenu === "foto" ? fotoInputRef : capaInputRef;
+                setTipoImagemMenu(null);
+                entrada.current?.click();
+              }}
+              className="mb-2 flex w-full cursor-pointer items-center gap-3 rounded-xl border border-[var(--cor-borda)] px-4 py-3 text-left text-sm transition hover:bg-[var(--cor-superficie-elevada)] disabled:opacity-50"
+            >
+              <CameraIcon size={19} className="text-[var(--cor-destaque)]" />
+              {tipoImagemMenu === "foto" ? "Escolher nova foto" : "Escolher nova capa"}
+            </button>
+            {((tipoImagemMenu === "foto" && usuario?.foto) || (tipoImagemMenu === "capa" && usuario?.capa)) && (
+              <button
+                type="button"
+                disabled={removendoImagem}
+                onClick={() => void removerImagem(tipoImagemMenu)}
+                className="flex w-full cursor-pointer items-center gap-3 rounded-xl border border-rose-500/30 px-4 py-3 text-left text-sm text-rose-400 transition hover:bg-rose-500/10 disabled:opacity-50"
+              >
+                <span aria-hidden="true">⌫</span>
+                Remover {tipoImagemMenu === "foto" ? "foto de perfil" : "foto de capa"}
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => setTipoImagemMenu(null)}
+              className="mt-3 w-full cursor-pointer rounded-xl px-4 py-2 text-sm text-[var(--cor-texto-discreto)] hover:bg-[var(--cor-superficie-elevada)]"
+            >
+              Cancelar
+            </button>
+          </section>
+        </div>
+      )}
+
       <PageLayout>
         <PageContent>
           <div className="grid grid-cols-1 gap-10 xl:grid-cols-[minmax(0,1fr)_340px]">
@@ -504,11 +590,11 @@ export default function Perfil() {
 
                   <button
                     type="button"
-                    onClick={() => capaInputRef.current?.click()}
+                    onClick={() => setTipoImagemMenu("capa")}
                     className="absolute right-4 top-4 z-10 flex cursor-pointer items-center gap-2 rounded-lg border border-white/10 bg-[var(--cor-fundo)]/70 px-3 py-2 text-sm text-[var(--cor-texto-cinza-200)] backdrop-blur-sm transition hover:border-[var(--cor-destaque)] hover:text-[var(--cor-destaque)]"
                   >
                     <CameraIcon size={18} />
-                    Alterar capa
+                    Editar capa
                   </button>
                 </div>
 
@@ -534,7 +620,7 @@ export default function Perfil() {
 
                         <button
                           type="button"
-                          onClick={() => fotoInputRef.current?.click()}
+                          onClick={() => setTipoImagemMenu("foto")}
                           aria-label="Alterar foto de perfil"
                           className="group relative h-full w-full cursor-pointer overflow-hidden rounded-full border-4 border-[#0C121D] bg-[#192538]"
                         >

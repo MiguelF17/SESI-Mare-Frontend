@@ -11,6 +11,8 @@ import {
   TrashIcon,
   CaretRightIcon,
   MusicNotesIcon,
+  DeviceMobileIcon,
+  DownloadSimpleIcon,
 } from "@phosphor-icons/react";
 
 import PageLayout from "../components/pageLayout";
@@ -18,6 +20,7 @@ import PageContent from "../components/pageContent";
 import RecommendedMusicList from "../components/recommendedMusicList";
 import { API_URL, apiRequest } from "../api";
 import toast from "react-hot-toast";
+import { instalarPwaAgora, observarInstalacaoPwa } from "../services/instalacaoPwa";
 
 type Tema = "sistema" | "escuro" | "claro";
 
@@ -131,6 +134,38 @@ export default function Configuracoes() {
   const [confirmarNovaSenha, setConfirmarNovaSenha] = useState("");
   const [salvandoEmail, setSalvandoEmail] = useState(false);
   const [salvandoSenha, setSalvandoSenha] = useState(false);
+  const [instalacaoDisponivel, setInstalacaoDisponivel] = useState(false);
+  const [appJaInstalado, setAppJaInstalado] = useState(false);
+  const [ehIos, setEhIos] = useState(false);
+  const [mostrarAjudaInstalacao, setMostrarAjudaInstalacao] = useState(false);
+
+  useEffect(() => {
+    const agente = navigator.userAgent;
+    setEhIos(/iPad|iPhone|iPod/.test(agente) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1));
+    setAppJaInstalado(window.matchMedia("(display-mode: standalone)").matches);
+    const pararDeObservar = observarInstalacaoPwa(setInstalacaoDisponivel);
+    const marcarComoInstalado = () => setAppJaInstalado(true);
+    window.addEventListener("appinstalled", marcarComoInstalado);
+    return () => {
+      pararDeObservar();
+      window.removeEventListener("appinstalled", marcarComoInstalado);
+    };
+  }, []);
+
+  async function solicitarInstalacao() {
+    if (!instalacaoDisponivel) {
+      setMostrarAjudaInstalacao(true);
+      return;
+    }
+
+    const instalado = await instalarPwaAgora();
+    if (instalado) {
+      setAppJaInstalado(true);
+      toast.success("Maré instalada com sucesso.");
+    } else {
+      setMostrarAjudaInstalacao(true);
+    }
+  }
 
   // Aplica e salva o tema escolhido.
   useEffect(() => {
@@ -657,6 +692,35 @@ export default function Configuracoes() {
                 </div>
               </section>
 
+              {/* ACESSO COMO APLICATIVO */}
+              <section className="mb-7">
+                <h2 className="mb-1 font-serif text-[18px] text-[var(--cor-texto-principal)]">Instalar Maré</h2>
+                <p className="mb-3 text-xs text-[var(--cor-texto-discreto)]">Acesse a Maré direto da tela inicial do seu dispositivo.</p>
+                <div className="flex flex-col gap-2 sm:flex-row">
+                  <button
+                    type="button"
+                    onClick={() => void solicitarInstalacao()}
+                    disabled={appJaInstalado}
+                    className="flex min-h-[42px] flex-1 cursor-pointer items-center gap-3 rounded-md border border-[var(--cor-borda-discreta)] bg-[var(--cor-superficie-alternativa)] px-4 text-left transition hover:border-[var(--cor-borda-destaque)] disabled:cursor-default disabled:opacity-70"
+                  >
+                    <DeviceMobileIcon size={18} className="text-[var(--cor-destaque)]" />
+                    <span className="flex-1 text-[12px] text-[var(--cor-texto-secundario)]">
+                      {appJaInstalado ? "Maré já está instalada" : "Instalar como aplicativo"}
+                    </span>
+                    {!appJaInstalado && <CaretRightIcon size={14} className="text-[#737C8E]" />}
+                  </button>
+                  <a
+                    href="https://expo.dev/artifacts/eas/VkHo74tD9G0JfLHdD4yGRtvfIebIUoDOvymacq4iwYU.apk"
+                    download="mare.apk"
+                    className="flex min-h-[42px] flex-1 items-center gap-3 rounded-md border border-[var(--cor-borda-discreta)] bg-[var(--cor-superficie-alternativa)] px-4 transition hover:border-[var(--cor-borda-destaque)]"
+                  >
+                    <DownloadSimpleIcon size={18} className="text-[var(--cor-destaque)]" />
+                    <span className="flex-1 text-[12px] text-[var(--cor-texto-secundario)]">Baixar aplicativo Android</span>
+                    <CaretRightIcon size={14} className="text-[#737C8E]" />
+                  </a>
+                </div>
+              </section>
+
               {/* SOBRE */}
               <section className="mb-7">
                 <h2 className="mb-3 font-serif text-[18px] text-[var(--cor-texto-principal)]">
@@ -738,6 +802,24 @@ export default function Configuracoes() {
         </div>
       </PageContent>
 
+      {mostrarAjudaInstalacao && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm" onClick={() => setMostrarAjudaInstalacao(false)}>
+          <section role="dialog" aria-modal="true" aria-labelledby="titulo-ajuda-instalacao" className="w-full max-w-sm rounded-2xl border border-[var(--cor-borda)] bg-[var(--cor-superficie)] p-5 shadow-2xl" onClick={(evento) => evento.stopPropagation()}>
+            <h2 id="titulo-ajuda-instalacao" className="text-base font-semibold text-[var(--cor-texto-principal)]">Adicionar Maré à tela inicial</h2>
+            {ehIos ? (
+              <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm leading-5 text-[var(--cor-texto-secundario)]">
+                <li>Abra este site no Safari.</li>
+                <li>Toque em Compartilhar.</li>
+                <li>Escolha “Adicionar à Tela de Início”.</li>
+              </ol>
+            ) : (
+              <p className="mt-3 text-sm leading-5 text-[var(--cor-texto-secundario)]">No menu do navegador, escolha “Instalar app” ou “Adicionar à tela inicial”.</p>
+            )}
+            <button type="button" onClick={() => setMostrarAjudaInstalacao(false)} className="mt-5 rounded-lg bg-[var(--cor-destaque-alternativo)] px-4 py-2 text-sm font-semibold text-[var(--cor-tinta)]">Entendi</button>
+          </section>
+        </div>
+      )}
+
             {/* Confirmação para sair da conta */}
       {mostrarConfirmacaoSaida && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
@@ -747,7 +829,7 @@ export default function Configuracoes() {
             aria-labelledby="titulo-sair"
             className="w-full max-w-sm rounded-2xl border border-[var(--cor-borda)] bg-[var(--cor-superficie)] p-5 shadow-2xl shadow-black/40"
           >
-            <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-full bg-red-500/10 text-red-400">
+            <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-full bg-[#58AAF0]/15 text-[var(--cor-texto-principal)]">
               <SignOutIcon size={22} />
             </div>
 

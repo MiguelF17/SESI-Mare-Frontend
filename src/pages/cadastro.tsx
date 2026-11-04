@@ -57,7 +57,7 @@ function Cadastro() {
     setFormData((prev) => ({
       ...prev,
       [name]: name === "username"
-        ? value.toLowerCase()
+        ? value.toLowerCase().replace(/[^a-z0-9_]/g, "").slice(0, 15)
         : value,
     }));
   };
@@ -261,6 +261,10 @@ function Cadastro() {
                 name="username"
                 type="text"
                 required
+                minLength={3}
+                maxLength={15}
+                pattern="[A-Za-z0-9_]{3,15}"
+                title="Use de 3 a 15 letras, números ou sublinhado (_), sem espaços."
                 value={formData.username}
                 onChange={handleChange}
                 placeholder="Digite seu usuário"
@@ -282,6 +286,7 @@ function Cadastro() {
                                     focus:ring-[var(--cor-destaque)]
                                 "
               />
+              <p className="mt-1 text-xs text-[var(--cor-texto-discreto)]">3 a 15 caracteres: letras, números e _; sem espaços.</p>
 
             </div>
 
