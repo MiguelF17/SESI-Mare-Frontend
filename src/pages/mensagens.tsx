@@ -73,6 +73,31 @@ export default function Mensagens() {
   const [erro, setErro] = useState("");
   const [carregando, setCarregando] = useState(true);
   const [salvandoConfiguracao, setSalvandoConfiguracao] = useState<"silenciar" | "bloquear" | null>(null);
+  const [tecladoAberto, setTecladoAberto] = useState(false);
+  const [alturaVisualViewport, setAlturaVisualViewport] = useState(0);
+
+  useEffect(() => {
+    const viewport = window.visualViewport;
+    const atualizarAltura = () => setAlturaVisualViewport(viewport?.height ?? window.innerHeight);
+    atualizarAltura();
+    viewport?.addEventListener("resize", atualizarAltura);
+    return () => viewport?.removeEventListener("resize", atualizarAltura);
+  }, []);
+
+  useEffect(() => () => {
+    document.body.classList.remove("mare-chat-teclado-aberto");
+  }, []);
+
+  function focarCampoMensagem() {
+    if (!window.matchMedia("(max-width: 767px)").matches) return;
+    document.body.classList.add("mare-chat-teclado-aberto");
+    setTecladoAberto(true);
+  }
+
+  function desfocarCampoMensagem() {
+    document.body.classList.remove("mare-chat-teclado-aberto");
+    setTecladoAberto(false);
+  }
 
   const carregarConversas = useCallback(async () => {
     try {
@@ -161,7 +186,10 @@ export default function Mensagens() {
 
   return (
     <PageLayout>
-      <section className="flex h-[calc(100dvh-124px-env(safe-area-inset-top)-env(safe-area-inset-bottom))] min-h-0 w-full flex-col text-[var(--cor-texto-principal)] md:mt-6 md:h-[calc(100dvh-4rem)]">
+      <section
+        className="flex h-[calc(100dvh-124px-env(safe-area-inset-top)-env(safe-area-inset-bottom))] min-h-0 w-full flex-col text-[var(--cor-texto-principal)] md:mt-6 md:h-[calc(100dvh-4rem)]"
+        style={tecladoAberto && alturaVisualViewport > 0 ? { height: `${alturaVisualViewport}px` } : undefined}
+      >
         {erro && (
           <p role="alert" className="mx-3 mt-2 shrink-0 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-300 md:mx-5">
             {erro}<button className="ml-3 underline" onClick={() => setErro("")}>Fechar</button>
@@ -177,7 +205,7 @@ export default function Mensagens() {
               <button
                 key={conversa.id}
                 onClick={() => { setErro(""); setParams({ id: String(conversa.id) }); }}
-                className={`flex w-full items-center gap-3 border-b border-[var(--cor-borda)] p-4 text-left hover:bg-white/5 ${conversa.id === idAtivo ? "bg-white/5" : ""}`}
+                className={`flex w-full cursor-pointer items-center gap-3 border-b border-[var(--cor-borda)] p-4 text-left hover:bg-white/5 ${conversa.id === idAtivo ? "bg-white/5" : ""}`}
               >
                 {conversa.outroUsuario.foto
                   ? <img src={conversa.outroUsuario.foto} alt="" className="h-11 w-11 rounded-full object-cover" />
@@ -209,12 +237,12 @@ export default function Mensagens() {
                   type="button"
                   onClick={() => { setTexto(""); setParams({}); }}
                   aria-label="Voltar para a lista de conversas"
-                  className="inline-flex shrink-0 items-center gap-1 rounded-lg px-2 py-2 text-sm text-[var(--cor-destaque)] hover:bg-white/5 md:hidden"
+                  className="inline-flex shrink-0 cursor-pointer items-center gap-1 rounded-lg px-2 py-2 text-sm text-[var(--cor-destaque)] hover:bg-white/5 md:hidden"
                 >
                   <span aria-hidden="true">‹</span><span>Conversas</span>
                 </button>
                 {conversaAtiva.outroUsuario.foto && <img src={conversaAtiva.outroUsuario.foto} alt="" className="h-10 w-10 rounded-full object-cover" />}
-                <Link to={`/u/${conversaAtiva.outroUsuario.username}`} className="min-w-0 flex-1 hover:text-[var(--cor-destaque)]">
+                <Link to={`/u/${conversaAtiva.outroUsuario.username}`} className="min-w-0 flex-1 cursor-pointer hover:text-[var(--cor-destaque)]">
                   <span className="block truncate font-semibold">{conversaAtiva.outroUsuario.nome}</span>
                   <span className="text-xs text-[var(--cor-texto-discreto)]">@{conversaAtiva.outroUsuario.username} · Ver perfil</span>
                 </Link>
@@ -225,7 +253,7 @@ export default function Mensagens() {
                     disabled={salvandoConfiguracao !== null}
                     aria-label={conversaAtiva.silenciadaPorMim ? "Reativar notificações desta conversa" : "Silenciar esta conversa"}
                     title={conversaAtiva.silenciadaPorMim ? "Reativar notificações" : "Silenciar conversa"}
-                    className="grid h-10 w-10 place-items-center rounded-xl text-[var(--cor-texto-secundario)] transition hover:bg-white/10 hover:text-[var(--cor-destaque)] disabled:opacity-50"
+                    className="grid h-10 w-10 cursor-pointer place-items-center rounded-xl text-[var(--cor-texto-secundario)] transition hover:bg-white/10 hover:text-[var(--cor-destaque)] disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {conversaAtiva.silenciadaPorMim ? <BellSlashIcon size={20} /> : <BellIcon size={20} />}
                   </button>
@@ -235,7 +263,7 @@ export default function Mensagens() {
                     disabled={salvandoConfiguracao !== null}
                     aria-label={conversaAtiva.bloqueadaPorMim ? "Desbloquear conversa" : "Bloquear conversa"}
                     title={conversaAtiva.bloqueadaPorMim ? "Desbloquear conversa" : "Bloquear conversa"}
-                    className={`grid h-10 w-10 place-items-center rounded-xl transition hover:bg-white/10 disabled:opacity-50 ${conversaAtiva.bloqueadaPorMim ? "text-[var(--cor-destaque)]" : "text-[var(--cor-texto-secundario)] hover:text-rose-400"}`}
+                    className={`grid h-10 w-10 cursor-pointer place-items-center rounded-xl transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50 ${conversaAtiva.bloqueadaPorMim ? "text-[var(--cor-destaque)]" : "text-[var(--cor-texto-secundario)] hover:text-rose-400"}`}
                   >
                     {conversaAtiva.bloqueadaPorMim ? <LockKeyIcon size={20} /> : <ProhibitIcon size={20} />}
                   </button>
@@ -255,11 +283,11 @@ export default function Mensagens() {
                           </span>
                         </div>
                       )}
-                      <div className={`mb-2 max-w-[82%] rounded-2xl border px-3.5 py-2.5 shadow-sm ${minha
+                      <div className={`mb-2 w-fit max-w-[min(82%,32rem)] rounded-2xl border px-3.5 py-2.5 shadow-sm ${minha
                         ? "ml-auto border-[#3678A9] bg-[#1C4770] text-white"
                         : "border-[var(--cor-borda)] bg-[var(--cor-superficie-elevada)] text-[var(--cor-texto-principal)]"}`}>
                         {mensagem.musica ? (
-                          <Link to={`/musica/${mensagem.musica.id}`} className="flex items-center gap-3">
+                          <Link to={`/musica/${mensagem.musica.id}`} className="flex cursor-pointer items-center gap-3">
                             {mensagem.musica.capa && <img src={mensagem.musica.capa} alt="" className="h-12 w-12 rounded-lg object-cover" />}
                             <span><b className="block">{mensagem.musica.titulo}</b><small className={minha ? "text-blue-100/80" : "text-[var(--cor-texto-secundario)]"}>{mensagem.musica.artista.nome}</small></span>
                           </Link>
@@ -281,11 +309,13 @@ export default function Mensagens() {
                     <input
                       value={texto}
                       onChange={(event) => setTexto(event.target.value)}
+                      onFocus={focarCampoMensagem}
+                      onBlur={desfocarCampoMensagem}
                       placeholder="Escreva uma mensagem"
                       maxLength={2000}
                       className="min-w-0 flex-1 rounded-xl border border-[var(--cor-borda)] bg-[var(--cor-fundo)] px-4 py-3 text-sm outline-none focus:border-[var(--cor-destaque)]"
                     />
-                    <button aria-label="Enviar mensagem" disabled={!texto.trim()} className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-[var(--cor-destaque)] text-white disabled:opacity-50">
+                    <button aria-label="Enviar mensagem" disabled={!texto.trim()} className="grid h-11 w-11 shrink-0 cursor-pointer place-items-center rounded-xl bg-[var(--cor-destaque)] text-white disabled:cursor-not-allowed disabled:opacity-50">
                       <PaperPlaneTiltIcon />
                     </button>
                   </form>}

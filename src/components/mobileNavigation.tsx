@@ -35,7 +35,7 @@ export default function MobileNavigation() {
 
   return (
     <>
-      <div className="fixed inset-x-0 top-0 z-40 flex h-[calc(52px+env(safe-area-inset-top))] items-end gap-2 border-b border-[var(--cor-borda)] bg-[var(--cor-fundo)]/95 px-3 pb-1 backdrop-blur-xl md:hidden">
+      <div className="mare-mobile-topbar fixed inset-x-0 top-0 z-40 flex h-[calc(52px+env(safe-area-inset-top))] items-end gap-2 border-b border-[var(--cor-borda)] bg-[var(--cor-fundo)]/95 px-3 pb-1 backdrop-blur-xl md:hidden">
         <Link to="/configuracoes" aria-label="Configurações" title="Configurações" className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--cor-borda)] bg-[var(--cor-superficie)] text-[var(--cor-texto-principal)] shadow-md ${ativo("/configuracoes") ? "text-[var(--cor-destaque)]" : ""}`}>
           <GearIcon size={21} weight={ativo("/configuracoes") ? "fill" : "regular"} />
         </Link>
@@ -52,10 +52,10 @@ export default function MobileNavigation() {
 
       <div
         aria-hidden="true"
-        className="h-[calc(52px+env(safe-area-inset-top))] md:hidden"
+        className="mare-mobile-topbar-espacador h-[calc(52px+env(safe-area-inset-top))] md:hidden"
       />
 
-      <nav aria-label="Navegação mobile" className="fixed inset-x-0 bottom-0 z-50 flex h-[calc(72px+env(safe-area-inset-bottom))] items-center justify-around border-t border-[var(--cor-borda)] bg-[var(--cor-superficie)] px-1.5 pb-[env(safe-area-inset-bottom)] text-[var(--cor-texto-principal)] shadow-[0_-8px_30px_rgba(0,0,0,0.12)] backdrop-blur-xl md:hidden">
+      <nav aria-label="Navegação mobile" className="mare-mobile-navbar fixed inset-x-0 bottom-0 z-50 flex h-[calc(72px+env(safe-area-inset-bottom))] items-center justify-around border-t border-[var(--cor-borda)] bg-[var(--cor-superficie)] px-1.5 pb-[env(safe-area-inset-bottom)] text-[var(--cor-texto-principal)] shadow-[0_-8px_30px_rgba(0,0,0,0.12)] backdrop-blur-xl md:hidden">
         <Link to="/home" aria-label="Início" title="Início" aria-current={ativo("/home") ? "page" : undefined} className={item("/home")}><HouseLineIcon size={22} weight={ativo("/home") ? "fill" : "regular"} /><span>Início</span></Link>
         <Link to="/explorar" aria-label="Explorar" title="Explorar" className={item("/explorar")}><PlaylistIcon size={22} /><span>Explorar</span></Link>
         <button onClick={() => navigate("/criarpost")} aria-label="Criar post" title="Criar post" className="flex min-w-0 flex-1 flex-col items-center justify-center gap-1 py-1.5 text-[10px] text-[var(--cor-texto-principal)]"><span className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--cor-destaque)] text-2xl leading-none text-white shadow-lg shadow-[var(--cor-destaque)]/30">+</span><span>Criar post</span></button>

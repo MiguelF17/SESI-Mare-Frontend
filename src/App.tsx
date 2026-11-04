@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useLayoutEffect, type ReactNode } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import PublicRoute from "./PublicRoute";
@@ -28,6 +28,25 @@ const Legal = lazy(() => import("./pages/legal"));
 const VerificarEmail = lazy(() => import("./pages/verificarEmail"));
 const RecuperarSenha = lazy(() => import("./pages/recuperarSenha"));
 const Mensagens = lazy(() => import("./pages/mensagens"));
+
+// As telas institucionais e de autenticação mantêm o visual padrão da Maré,
+// mesmo que a pessoa tenha escolhido o tema claro dentro da área logada.
+function PaginaTemaPadrao({ children }: { children: ReactNode }) {
+  useLayoutEffect(() => {
+    const temaAnterior = document.documentElement.dataset.tema;
+    document.documentElement.dataset.tema = "escuro";
+
+    return () => {
+      if (temaAnterior) {
+        document.documentElement.dataset.tema = temaAnterior;
+      } else {
+        delete document.documentElement.dataset.tema;
+      }
+    };
+  }, []);
+
+  return children;
+}
 
 function App() {
   return (
@@ -65,16 +84,16 @@ function App() {
         <Routes>
           {/* Inicial */}
           <Route element={<PublicRoute />}>
-            <Route path="/login" element={<Login />} />
+            <Route path="/login" element={<PaginaTemaPadrao><Login /></PaginaTemaPadrao>} />
             <Route path="/recuperar-senha" element={<RecuperarSenha />} />
-            <Route path="/cadastro" element={<Cadastro />} />
-            <Route path="/" element={<Hero />} />
-            <Route path="/sobre" element={<Sobre />} />
+            <Route path="/cadastro" element={<PaginaTemaPadrao><Cadastro /></PaginaTemaPadrao>} />
+            <Route path="/" element={<PaginaTemaPadrao><Hero /></PaginaTemaPadrao>} />
+            <Route path="/sobre" element={<PaginaTemaPadrao><Sobre /></PaginaTemaPadrao>} />
           </Route>
 
           {/* Páginas públicas */}
-          <Route path="/contato" element={<Contato />} />
-          <Route path="/faq" element={<Faq />} />
+          <Route path="/contato" element={<PaginaTemaPadrao><Contato /></PaginaTemaPadrao>} />
+          <Route path="/faq" element={<PaginaTemaPadrao><Faq /></PaginaTemaPadrao>} />
           <Route path="/termos" element={<Legal tipo="termos" />} />
           <Route path="/privacidade" element={<Legal tipo="privacidade" />} />
           <Route path="/verificar-email" element={<VerificarEmail />} />

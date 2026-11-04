@@ -444,7 +444,7 @@ export default function Musica() {
 
               <div className="flex flex-col gap-3">
                 {posts.length > 0 ? (
-                  posts.map((post) => (
+                  posts.slice(0, 2).map((post) => (
                     <PostCard
                       key={post.id}
                       postId={post.id}

@@ -41,6 +41,15 @@ interface ArtistaFavorito {
   artistaId: number;
 }
 
+// Padroniza variações como "K-pop", "K POP" e diferenças de acento.
+function normalizarGenero(genero?: string | null) {
+  return (genero ?? "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLocaleLowerCase("pt-BR")
+    .replace(/[^a-z0-9]/g, "");
+}
+
 function Carrossel({ children }: { children: ReactNode }) {
   const trilhoRef = useRef<HTMLDivElement>(null);
 
@@ -145,13 +154,13 @@ function Carrossel({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="group/carrossel relative min-w-0 overflow-x-hidden">
+    <div className="group/carrossel relative min-w-0 overflow-visible md:mr-[-24px] lg:mr-[-40px]">
       {podeVoltar && (
         <button
           type="button"
           aria-label="Voltar itens"
           onClick={() => mover(-1)}
-          className="absolute -left-4 top-1/2 z-20 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-[var(--cor-borda)] bg-[var(--cor-superficie)]/95 text-[var(--cor-texto-principal)] shadow-lg hover:bg-[var(--cor-superficie-borda)] group-hover/carrossel:flex"
+          className="absolute left-3 top-1/2 z-20 hidden h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-[var(--cor-borda)] bg-[var(--cor-superficie)]/95 text-[var(--cor-texto-principal)] shadow-lg hover:bg-[var(--cor-superficie-borda)] md:flex"
         >
           <CaretLeftIcon size={20} weight="bold" />
         </button>
@@ -169,7 +178,7 @@ function Carrossel({ children }: { children: ReactNode }) {
             e.stopPropagation();
           }
         }}
-        className={`scrollbar-oculta flex min-w-0 gap-2 overflow-x-auto px-2 py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${arrastando
+        className={`scrollbar-oculta flex min-w-0 gap-2 overflow-x-auto px-2 py-3 pr-14 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${arrastando
           ? "cursor-grabbing select-none"
           : "cursor-grab scroll-smooth"
           }`}
@@ -188,7 +197,7 @@ function Carrossel({ children }: { children: ReactNode }) {
           type="button"
           aria-label="Avançar itens"
           onClick={() => mover(1)}
-          className="absolute -right-4 top-1/2 z-20 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-[var(--cor-borda)] bg-[var(--cor-superficie)]/95 text-[var(--cor-texto-principal)] shadow-lg hover:bg-[var(--cor-superficie-borda)] group-hover/carrossel:flex"
+          className="absolute right-3 top-1/2 z-20 hidden h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-[var(--cor-borda)] bg-[var(--cor-superficie)]/95 text-[var(--cor-texto-principal)] shadow-lg hover:bg-[var(--cor-superficie-borda)] md:flex"
         >
           <CaretRightIcon size={20} weight="bold" />
         </button>
@@ -330,10 +339,10 @@ export default function Explorar() {
   );
 
   const catalogoFiltrado = useMemo(() => {
-    const generos = new Set(generosSelecionados.map((genero) => genero.toLocaleLowerCase("pt-BR")));
+    const generos = new Set(generosSelecionados.map(normalizarGenero));
     const idsArtistas = new Set(artistasSelecionados);
     const resultado = catalogo.filter((musica) => {
-      const generoCorresponde = generos.size === 0 || generos.has(musica.genero?.trim().toLocaleLowerCase("pt-BR") ?? "");
+      const generoCorresponde = generos.size === 0 || generos.has(normalizarGenero(musica.genero));
       const artistaCorresponde = idsArtistas.size === 0 || idsArtistas.has(musica.artista?.id ?? musica.artistaId ?? -1);
       return generoCorresponde && artistaCorresponde;
     });
@@ -346,22 +355,22 @@ export default function Explorar() {
 
   const artistasFiltrados = useMemo(() => {
     const idsArtistas = new Set(artistasSelecionados);
-    const generos = new Set(generosSelecionados.map((genero) => genero.toLocaleLowerCase("pt-BR")));
+    const generos = new Set(generosSelecionados.map(normalizarGenero));
 
     const resultado = artistas.filter((artista) => {
       if (idsArtistas.size > 0 && !idsArtistas.has(artista.id)) return false;
-      const musicasDoArtista = catalogo.filter((musica) => (musica.artista?.id ?? musica.artistaId) === artista.id);
-      if (generos.size === 0) return true;
-      return musicasDoArtista.some((musica) =>
-        generos.has(musica.genero?.trim().toLocaleLowerCase("pt-BR") ?? "")
-      );
+      return true;
     });
-    const generosPreferidos = new Set(generosFavoritos.map((genero) => genero.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("pt-BR")));
+    const generosPreferidos = new Set(generosFavoritos.map(normalizarGenero));
+    const generosParaPriorizar = new Set([...generosPreferidos, ...generos]);
     const idsArtistasDosGeneros = new Set(catalogo
-      .filter((musica) => generosPreferidos.has((musica.genero ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("pt-BR")))
+      .filter((musica) => generosParaPriorizar.has(normalizarGenero(musica.genero)))
       .map((musica) => musica.artista?.id ?? musica.artistaId)
       .filter((id): id is number => id != null));
-    return resultado.sort((a, b) => Number(idsArtistasDosGeneros.has(b.id)) - Number(idsArtistasDosGeneros.has(a.id)));
+    return resultado.sort((a, b) =>
+      Number(idsArtistasDosGeneros.has(b.id)) - Number(idsArtistasDosGeneros.has(a.id)) ||
+      a.nome.localeCompare(b.nome, "pt-BR")
+    );
   }, [artistas, catalogo, generosSelecionados, artistasSelecionados, generosFavoritos]);
 
   const quantidadeFiltrosAtivos = generosSelecionados.length + artistasSelecionados.length + Number(ordemResultados !== "catalogo");
@@ -626,8 +635,7 @@ export default function Explorar() {
                   <div className="flex max-h-36 flex-wrap gap-2 overflow-y-auto pr-1">
                     {artistas.map((artista) => {
                       const selecionado = artistasSelecionados.includes(artista.id);
-                      const indisponivelPorGenero = generosSelecionados.length > 0 && !artistasFiltrados.some((item) => item.id === artista.id);
-                      return <button key={artista.id} type="button" aria-pressed={selecionado} disabled={indisponivelPorGenero} onClick={() => alternarArtista(artista.id)} className={`cursor-pointer rounded-full border px-3 py-1.5 text-xs transition disabled:hidden ${selecionado ? "border-[var(--cor-destaque)] bg-[var(--cor-destaque)]/15 text-[var(--cor-texto-principal)]" : "border-[var(--cor-borda)] text-[var(--cor-texto-secundario)] hover:border-[var(--cor-borda-destaque)]"}`}>{artista.nome}</button>;
+                      return <button key={artista.id} type="button" aria-pressed={selecionado} onClick={() => alternarArtista(artista.id)} className={`cursor-pointer rounded-full border px-3 py-1.5 text-xs transition ${selecionado ? "border-[var(--cor-destaque)] bg-[var(--cor-destaque)]/15 text-[var(--cor-texto-principal)]" : "border-[var(--cor-borda)] text-[var(--cor-texto-secundario)] hover:border-[var(--cor-borda-destaque)]"}`}>{artista.nome}</button>;
                     })}
                   </div>
                 ) : <p className="text-xs text-[var(--cor-texto-discreto)]">Não há artistas cadastrados no catálogo.</p>}

@@ -47,6 +47,15 @@ body {
   }
 }
 
+/* Libera a área visível para o campo de mensagem enquanto o teclado mobile está aberto. */
+@media (max-width: 767px) {
+  body.mare-chat-teclado-aberto .mare-mobile-topbar,
+  body.mare-chat-teclado-aberto .mare-mobile-topbar-espacador,
+  body.mare-chat-teclado-aberto .mare-mobile-navbar {
+    display: none;
+  }
+}
+
 /* Barra de rolagem da Maré */
 .scrollbar-mare {
   scrollbar-width: thin;
