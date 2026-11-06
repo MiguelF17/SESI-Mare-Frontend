@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
-import { Star } from "lucide-react"
+import { Heart, MessageCircle, Star } from "lucide-react"
 import { buscarPosts, type Post } from "../services/postService"
 
 export default function LandingReview() {
@@ -33,7 +33,7 @@ export default function LandingReview() {
 
   return (
     <section className="px-5 py-16 sm:px-8 sm:py-20 lg:px-24">
-      <div data-reveal className="mx-auto max-w-7xl">
+      <div data-reveal className="ml-auto max-w-5xl">
         <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">Avaliações da comunidade</h2>
         <p className="mt-3 text-slate-300">Uma opinião publicada por quem ouve.</p>
 
@@ -42,20 +42,21 @@ export default function LandingReview() {
         ) : erro ? (
           <p role="status" className="py-8 text-slate-400">Não foi possível carregar a avaliação agora.</p>
         ) : avaliacao ? (
-          <article className="mt-8 max-w-3xl border-l-2 border-[#58aaf0] py-2 pl-6 sm:pl-8">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <Link to={avaliacao.usuario?.username ? `/u/${avaliacao.usuario.username}` : "/explorar"} className="font-semibold transition-colors hover:text-[#79bff5]">
-                {avaliacao.usuario?.nome ?? "Ouvinte da Maré"}
-              </Link>
-              <span className="inline-flex items-center gap-1.5 text-sm text-[#79bff5]">
-                <Star size={16} fill="currentColor" /> {avaliacao.nota.toFixed(1)} / 5
-              </span>
+          <article className="mt-8 max-w-3xl rounded-xl border border-white/10 bg-[linear-gradient(145deg,rgba(29,54,83,0.3),rgba(8,10,16,0.72))] p-5 sm:p-7">
+            <div className="flex items-center gap-3">
+              {avaliacao.usuario?.foto ? <img src={avaliacao.usuario.foto} alt="" className="size-11 rounded-full object-cover" /> : <span aria-hidden="true" className="grid size-11 place-items-center rounded-full border border-white/15 bg-white/5 font-semibold text-[#9dcfff]">{(avaliacao.usuario?.nome ?? "M").slice(0, 1).toUpperCase()}</span>}
+              <div className="min-w-0 flex-1">
+                <Link to={avaliacao.usuario?.username ? `/u/${avaliacao.usuario.username}` : "/explorar"} className="block truncate font-semibold transition-colors hover:text-[#79bff5]">{avaliacao.usuario?.nome ?? "Ouvinte da Maré"}</Link>
+                <span className="text-xs text-slate-400">Compartilhou uma avaliação</span>
+              </div>
+              <span className="inline-flex items-center gap-1.5 text-sm text-[#79bff5]"><Star size={16} fill="currentColor" />{avaliacao.nota.toFixed(1)}</span>
             </div>
-            <p className="mt-5 text-lg leading-8 text-slate-200">“{avaliacao.texto}”</p>
-            <p className="mt-4 text-sm text-slate-400">
-              {avaliacao.musica?.titulo}
-              {avaliacao.musica?.artista?.nome ? ` · ${avaliacao.musica.artista.nome}` : ""}
-            </p>
+            <p className="mt-5 leading-7 text-slate-200">{avaliacao.texto}</p>
+            {avaliacao.musica && <Link to={`/musica/${avaliacao.musica.id}`} className="mt-5 flex items-center gap-3 rounded-lg border border-white/10 bg-black/15 p-3 transition-colors hover:border-[#79bff5]/40">
+              {avaliacao.musica.capa && <img src={avaliacao.musica.capa} alt="" className="size-12 rounded-md object-cover" />}
+              <span className="min-w-0"><strong className="block truncate text-sm">{avaliacao.musica.titulo}</strong><span className="block truncate text-xs text-slate-400">{avaliacao.musica.artista?.nome}</span></span>
+            </Link>}
+            <div className="mt-5 flex items-center gap-5 border-t border-white/10 pt-4 text-sm text-slate-400"><span className="inline-flex items-center gap-1.5"><Heart size={16} />{avaliacao._count?.curtidas ?? 0}</span><span className="inline-flex items-center gap-1.5"><MessageCircle size={16} />{avaliacao._count?.comentarios ?? 0}</span></div>
           </article>
         ) : (
           <p className="py-8 text-slate-400">Ainda não há avaliações com texto para exibir.</p>

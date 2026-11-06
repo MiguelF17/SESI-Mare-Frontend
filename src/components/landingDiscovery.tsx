@@ -37,7 +37,7 @@ export default function LandingDiscovery() {
 
   return (
     <section className="px-5 py-16 sm:px-8 sm:py-20 lg:px-24">
-      <div data-reveal className="mx-auto max-w-7xl">
+      <div data-reveal className="ml-auto max-w-6xl bg-[linear-gradient(270deg,rgba(29,54,83,0.42),rgba(8,10,16,0.08)_72%,transparent)] py-6 pl-5 sm:py-8 sm:pl-10">
         <div className="flex items-end justify-between gap-4">
           <div>
             <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">Explore a Maré</h2>
