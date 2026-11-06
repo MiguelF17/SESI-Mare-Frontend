@@ -197,12 +197,11 @@ function Cadastro() {
         <div
           className="
   w-full
-  bg-[var(--cor-superficie)]
-  backdrop-blur-md
-  border
-  border-[var(--cor-borda)]
+  border border-[#79bff5]/15
+  bg-[radial-gradient(ellipse_at_top,rgba(88,170,240,0.07),rgba(8,10,16,0.32)_72%)]
+  backdrop-blur-xl
+  shadow-[0_0_40px_rgba(88,170,240,0.05)]
   rounded-2xl
-  shadow-2xl
   px-5
   py-4
   sm:px-7

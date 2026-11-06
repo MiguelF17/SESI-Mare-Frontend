@@ -1,8 +1,8 @@
 
-import { UserIcon } from "@phosphor-icons/react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import logo from "../assets/logo.png";
+import { UserIcon } from "@phosphor-icons/react";
 
 interface Usuario {
   nome: string;
@@ -91,7 +91,7 @@ function Navbar() {
   }
 
   const navLinkClass = ({ isActive }: { isActive: boolean }) =>
-    `relative inline-flex min-h-10 items-center text-sm transition duration-300 sm:text-base
+    `relative inline-flex min-h-10 cursor-pointer items-center text-xs transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--cor-destaque)] sm:text-base
     ${
       isActive
         ? "text-[var(--cor-destaque)]"
@@ -120,28 +120,24 @@ function Navbar() {
         w-full
         z-20
         min-h-[76px]
-        h-auto
-        bg-[var(--cor-fundo)]
-        px-3
+        bg-[#080a10]/65
         py-2
-        flex
-        items-center
-        justify-between
-        gap-3
+        backdrop-blur-md
         transition-transform
         duration-300
         ${showNavbar ? "translate-y-0" : "-translate-y-full"}
       `}
     >
-      <Link to="/">
-        <img
-          src={logo}
-          alt="Logo Maré"
-          className="h-14 w-16 shrink-0 object-contain sm:h-[80px] sm:w-[100px]"
-        />
-      </Link>
+      <div className="mx-auto flex min-h-[60px] w-full max-w-[1472px] items-center justify-between gap-3 px-5 sm:px-10 lg:px-24">
+        <Link to="/" className="shrink-0">
+          <img
+            src={logo}
+            alt="Logo Maré"
+            className="h-12 w-12 shrink-0 object-contain sm:h-[68px] sm:w-[84px]"
+          />
+        </Link>
 
-      <nav className="flex flex-wrap items-center justify-end gap-x-2 gap-y-2 sm:gap-x-5 lg:gap-x-16">
+      <nav className="flex flex-wrap items-center justify-end gap-x-2 gap-y-2 sm:gap-x-5 lg:gap-x-10">
         <NavLink to="/" end className={navLinkClass}>
           Início
         </NavLink>
@@ -159,21 +155,15 @@ function Navbar() {
         </NavLink>
 
         <NavLink
-          to="/perfil"
+          to={usuario ? "/perfil" : "/login"}
           onClick={abrirPerfil}
-          className={({ isActive }) =>
-            `flex min-h-10 items-center gap-2 transition duration-300 sm:gap-4 ${
-              isActive
-                ? "text-[var(--cor-destaque)]"
-                : "text-[var(--cor-texto-secundario)] hover:text-[var(--cor-destaque)]"
-            }`
-          }
+          className="inline-flex gap-2 min-h-10 cursor-pointer items-center justify-center whitespace-nowrap rounded-full bg-[var(--cor-destaque)] px-3 py-2 text-xs font-semibold text-[#080a10] transition-colors duration-200 hover:bg-[#83c4fa] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--cor-destaque)]  sm:px-5 sm:text-sm"
         >
-          {usuario && <p className="hidden sm:block">Olá, {usuario.username}</p>}
-
-          <UserIcon size={24} weight="regular" />
+          {usuario ? "Meu perfil" : "Entrar"}
+                    <UserIcon size={20} />
         </NavLink>
       </nav>
+      </div>
     </header>
   );
 }

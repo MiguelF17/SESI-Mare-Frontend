@@ -140,3 +140,6 @@ body {
 .animate-heart-pop {
   animation: heart-pop 350ms ease-out;
 }
+
+/* Animações usadas pelas utilidades Tailwind das páginas públicas. */
+@keyframes mare-record-turn { to { transform: rotate(360deg); } }

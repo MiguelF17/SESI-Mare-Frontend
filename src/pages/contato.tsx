@@ -1,269 +1,54 @@
+import { usePublicReveal } from "../hooks/usePublicReveal"
+import type { FormEvent } from "react"
 import Navbar from "../components/navbar"
 import Footer from "../components/footer"
+import { ArrowUpRight, Clock3, Mail, ShieldCheck } from "lucide-react"
 import { Link } from "react-router-dom"
 
-import { FaPhone, FaEnvelope, FaClock } from "react-icons/fa"
-
-import fundo from "../assets/fundoHero.jpg"
-
+const emailContato = "contato@mare.com"
 
 function Contato() {
-
-    return (
-        <>
-
-            <Navbar />
-
-            <main
-                className="
-            relative
-            min-h-[100svh]
-            flex
-            items-center
-            justify-center
-            px-6
-            md:px-12
-            lg:px-24
-            pt-24
-            pb-8
-            sm:py-16
-            overflow-hidden
-             bg-[var(--cor-fundo)]
-             "
-            >
-
-                {/* IMAGEM DE FUNDO */}
-
-                <div
-                    className="
-                        absolute
-                        inset-0
-                        bg-cover
-                        bg-center
-                        bg-no-repeat
-                    "
-                    style={{
-                        backgroundImage: `url(${fundo})`
-                    }}
-                />
-
-                {/* CONTEÚDO */}
-
-                <div className="relative z-10 flex justify-center w-full">
-
-                    <section
-                        className="
-    w-full
-    max-w-xl
-    bg-[#111A25]
-    shadow-xl
-    rounded-2xl
-    p-4
-    sm:p-8
-    my-12
-"
-                    >
-
-                        {/* TÍTULO */}
-
-                        <h1 className="mb-2 text-2xl font-bold text-[var(--cor-destaque)] sm:text-3xl">
-
-                            Fale conosco
-
-                        </h1>
-
-
-                        <p className="text-[var(--cor-texto-destaque)] mb-6">
-
-                            Tem alguma dúvida, sugestão ou quer saber mais sobre a Maré?
-                            Nossa equipe está pronta para te atender.
-
-                        </p>
-
-
-                        {/* FORMULÁRIO */}
-
-                        <form className="flex flex-col gap-4">
-
-                            <input
-                                type="text"
-                                name="nome"
-                                placeholder="Seu nome"
-                                required
-                                className="
-                                    bg-[var(--cor-fundo-alternativo)]
-                                    border
-                                    border-[#445264]
-                                    text-[var(--cor-texto-principal)]
-                                    placeholder-[#445264]
-                                    p-3
-                                    rounded-lg
-                                    focus:outline-none
-                                    focus:ring-1
-                                    focus:ring-[var(--cor-destaque)]
-                                "
-                            />
-
-
-                            <input
-                                type="email"
-                                name="email"
-                                placeholder="Seu e-mail"
-                                required
-                                className="
-                                    bg-[var(--cor-fundo-alternativo)]
-                                    border
-                                    border-[#445264]
-                                    text-[var(--cor-texto-principal)]
-                                    placeholder-[#445264]
-                                    p-3
-                                    rounded-lg
-                                    focus:outline-none
-                                    focus:ring-1
-                                    focus:ring-[var(--cor-destaque)]
-                                "
-                            />
-
-
-                            <input
-                                type="tel"
-                                name="telefone"
-                                placeholder="Seu telefone"
-                                required
-                                className="
-                                    bg-[var(--cor-fundo-alternativo)]
-                                    border
-                                    border-[#445264]
-                                    text-[var(--cor-texto-principal)]
-                                    placeholder-[#445264]
-                                    p-3
-                                    rounded-lg
-                                    focus:outline-none
-                                    focus:ring-1
-                                    focus:ring-[var(--cor-destaque)]
-                                "
-                            />
-
-
-                            <textarea
-                                name="mensagem"
-                                placeholder="Sua mensagem..."
-                                required
-                                className="
-                                    bg-[var(--cor-fundo-alternativo)]
-                                    border
-                                    border-[#445264]
-                                    text-[var(--cor-texto-principal)]
-                                    placeholder-[#445264]
-                                    p-3
-                                    rounded-lg
-                                    h-32
-                                    resize-none
-                                    focus:outline-none
-                                    focus:ring-1
-                                    focus:ring-[var(--cor-destaque)]
-                                "
-                            />
-
-
-                            <p className="text-xs text-[#B8C7D9]">
-
-                                Ao enviar, você concorda com nossa{" "}
-                                <Link to="/privacidade" className="text-[var(--cor-destaque)] hover:underline">
-                                    política de privacidade
-                                </Link>.
-
-                            </p>
-
-
-                            <button
-                                type="submit"
-                                className="
-                                    mt-2
-                                    bg-[var(--cor-destaque)]
-                                    text-[#0E192A]
-                                    py-3
-                                    rounded-lg
-                                    font-semibold
-                                    hover:bg-[var(--cor-destaque-forte)]
-                                    hover:text-[var(--cor-texto-principal)]
-                                    hover:scale-105
-                                    transition
-                                    duration-300
-                                    shadow-md
-                                    cursor-pointer
-                                "
-                            >
-
-                                Enviar mensagem
-
-                            </button>
-
-                        </form>
-
-
-                        {/* ATENDIMENTO */}
-
-                        <div className="text-center mt-8">
-
-                            <h2 className="text-2xl font-bold text-[var(--cor-destaque)] mb-2">
-
-                                Atendimento
-
-                            </h2>
-
-
-                            <p className="text-[var(--cor-texto-destaque)] mb-4">
-
-                                Você pode falar com a gente pelos canais abaixo:
-
-                            </p>
-
-
-                            <div className="space-y-3 text-[var(--cor-texto-destaque)]">
-
-                                <p className="flex items-center justify-center gap-2">
-
-                                    <FaPhone className="text-[var(--cor-destaque)]" />
-
-                                    (11) 99999-9999
-
-                                </p>
-
-
-                                <p className="flex items-center justify-center gap-2">
-
-                                    <FaEnvelope className="text-[var(--cor-destaque)]" />
-
-                                    contato@mare.com
-
-                                </p>
-
-
-                                <p className="flex items-center justify-center gap-2">
-
-                                    <FaClock className="text-[var(--cor-destaque)]" />
-
-                                    Segunda a sexta, 9h às 18h
-
-                                </p>
-
-                            </div>
-
-                        </div>
-
-                    </section>
-
-                </div>
-
-            </main>
-
-
-            <Footer />
-
-        </>
-    )
+  const revealRef = usePublicReveal()
+  function enviarMensagem(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    const dados = new FormData(event.currentTarget)
+    const nome = String(dados.get("nome") ?? "")
+    const email = String(dados.get("email") ?? "")
+    const mensagem = String(dados.get("mensagem") ?? "")
+    const assunto = encodeURIComponent(`Contato pelo site — ${nome}`)
+    const corpo = encodeURIComponent(`Nome: ${nome}\nE-mail: ${email}\n\n${mensagem}`)
+    window.location.href = `mailto:${emailContato}?subject=${assunto}&body=${corpo}`
+  }
+
+  return <>
+    <Navbar />
+    <main ref={revealRef} className="relative isolate min-h-[80vh] overflow-hidden px-5 pb-20 pt-28 sm:px-10 sm:pt-36 lg:px-24 bg-[#080a10] text-white [&_button:not(:disabled)]:cursor-pointer [&_a]:cursor-pointer [&_button:focus-visible]:outline-2 [&_button:focus-visible]:outline-offset-4 [&_button:focus-visible]:outline-[#83c4fa] [&_a:focus-visible]:outline-2 [&_a:focus-visible]:outline-offset-4 [&_a:focus-visible]:outline-[#83c4fa]">
+      <div className="pointer-events-none absolute -left-32 top-[10%] -z-10 size-[35rem] rounded-full bg-[#58aaf015] blur-3xl" />
+      <div className="relative mx-auto grid w-full max-w-6xl gap-8 lg:grid-cols-[.8fr_1.2fr] lg:items-start">
+        <section data-reveal className="pt-3 lg:pt-10 ">
+          <h1 className="mt-5 text-4xl font-bold leading-tight sm:text-5xl">Vamos falar de <span className="text-[var(--cor-destaque)]">música?</span></h1>
+          <p className="mt-5 max-w-lg text-base leading-7 text-[var(--cor-texto-secundario)]">Tem uma dúvida, sugestão ou encontrou algo que podemos melhorar? Manda uma mensagem. A gente quer ouvir você.</p>
+          <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+            <a href={`mailto:${emailContato}`} className="flex items-center gap-3 rounded-lg border border-white/10 p-4 transition-colors hover:border-[#58aaf066] [&_small]:block [&_small]:text-xs [&_small]:text-slate-400 [&_strong]:mt-1 [&_strong]:block [&_strong]:text-sm [&_strong]:font-medium"><span className="flex size-11 shrink-0 items-center justify-center rounded-xl border border-[#58aaf033] text-[#83c4fa]"><Mail size={19} /></span><span><small>E-mail</small><strong>{emailContato}</strong></span><ArrowUpRight size={17} className="ml-auto text-white/35" /></a>
+            <div className="flex items-center gap-3 rounded-lg border border-white/10 p-4 transition-colors hover:border-[#58aaf066] [&_small]:block [&_small]:text-xs [&_small]:text-slate-400 [&_strong]:mt-1 [&_strong]:block [&_strong]:text-sm [&_strong]:font-medium"><span className="flex size-11 shrink-0 items-center justify-center rounded-xl border border-[#58aaf033] text-[#83c4fa]"><Clock3 size={19} /></span><span><small>Tempo de resposta</small><strong>Até 3 dias úteis</strong></span></div>
+          </div>
+          <p className="mt-6 flex items-start gap-2 text-sm leading-6 text-[var(--cor-texto-discreto)]"><ShieldCheck size={17} className="mt-1 shrink-0 text-[var(--cor-destaque)]" /> <span>Suas informações serão usadas apenas para responder sua mensagem. Leia nossa <Link to="/privacidade" className="text-[var(--cor-destaque)] underline underline-offset-4">política de privacidade</Link>.</span></p>
+        </section>
+
+        <section className="rounded-2xl border border-white/20 bg-[#080a10] p-6 sm:p-9 ">
+          <div className="mb-7"><h2 className="mt-2 text-2xl font-bold text-[var(--cor-texto-principal)]">Como podemos ajudar?</h2><p className="mt-2 text-sm text-[var(--cor-texto-secundario)]">Preencha os campos e prepare sua mensagem.</p></div>
+          <form className="flex flex-col gap-5" onSubmit={enviarMensagem}>
+            <label className="flex flex-col gap-2 text-sm font-medium text-slate-200">Seu nome<input name="nome" autoComplete="name" placeholder="Como podemos te chamar?" required className="min-h-12 w-full rounded-lg border border-white/20 bg-[#05080c] px-4 py-3 text-white outline-none transition-colors duration-200 placeholder:text-[#495564] hover:border-[#a9c9e4] focus:border-[#83c4fa] focus:ring-2 focus:ring-[#83c4fa]/50" /></label>
+            <label className="flex flex-col gap-2 text-sm font-medium text-slate-200">Seu e-mail<input name="email" type="email" autoComplete="email" placeholder="voce@exemplo.com" required className="min-h-12 w-full rounded-lg border border-white/20 bg-[#05080c] px-4 py-3  text-white outline-none transition-colors duration-200 placeholder:text-[#495564] hover:border-[#a9c9e4] focus:border-[#83c4fa] focus:ring-2 focus:ring-[#83c4fa]/50" /></label>
+            <label className="flex flex-col gap-2 text-sm font-medium text-slate-200">Sua mensagem<textarea name="mensagem" placeholder="Escreva sua dúvida, ideia ou sugestão..." required rows={5} className="min-h-12 w-full rounded-lg border border-white/20 bg-[#05080c] px-4 py-3  text-white outline-none transition-colors duration-200 placeholder:text-[#495564] hover:border-[#a9c9e4] focus:border-[#83c4fa] focus:ring-2 focus:ring-[#83c4fa]/50 resize-y" /></label>
+            <p className="text-xs leading-5 text-slate-300">Ao continuar, seu aplicativo de e-mail será aberto com a mensagem preenchida para você revisar e enviar.</p>
+            <button type="submit" className="inline-flex min-h-12 cursor-pointer items-center justify-center gap-2.5 rounded-full bg-[var(--cor-destaque)] px-6 py-3 text-[.94rem] font-semibold text-[#08111b] transition-colors duration-200 hover:bg-[#9bd2ff]   focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#83c4fa] w-full">Preparar mensagem <ArrowUpRight size={18} /></button>
+          </form>
+        </section>
+      </div>
+    </main>
+    <Footer />
+  </>
 }
-
 
 export default Contato
