@@ -35,8 +35,8 @@ export default function LandingReview() {
     <section className="px-5 py-16 sm:px-8 sm:py-20 lg:px-24">
       <div data-reveal className="mx-auto grid max-w-7xl items-center gap-8 lg:grid-cols-[minmax(220px,.65fr)_minmax(0,1.35fr)] lg:gap-14">
         <div className="max-w-sm">
-          <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">Avaliações da comunidade</h2>
-          <p className="mt-4 leading-7 text-slate-300">Uma opinião publicada por quem ouve.</p>
+          <h2 className="text-3xl font-bold tracking-tight text-[#dceeff] sm:text-4xl">Avaliações da <span className="text-[var(--cor-destaque)]">comunidade</span></h2>
+          <p className="mt-4 leading-7 text-slate-300">Cada publicação reúne uma nota e uma opinião pessoal sobre uma música. Veja o que outro ouvinte destacou, conheça a faixa avaliada e explore diferentes perspectivas da comunidade Maré.</p>
         </div>
 
         {carregando ? (
