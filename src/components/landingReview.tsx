@@ -33,16 +33,18 @@ export default function LandingReview() {
 
   return (
     <section className="px-5 py-16 sm:px-8 sm:py-20 lg:px-24">
-      <div data-reveal className="ml-auto max-w-5xl">
-        <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">Avaliações da comunidade</h2>
-        <p className="mt-3 text-slate-300">Uma opinião publicada por quem ouve.</p>
+      <div data-reveal className="mx-auto grid max-w-7xl items-center gap-8 lg:grid-cols-[minmax(220px,.65fr)_minmax(0,1.35fr)] lg:gap-14">
+        <div className="max-w-sm">
+          <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">Avaliações da comunidade</h2>
+          <p className="mt-4 leading-7 text-slate-300">Uma opinião publicada por quem ouve.</p>
+        </div>
 
         {carregando ? (
           <p role="status" className="py-8 text-slate-400">Carregando avaliação…</p>
         ) : erro ? (
           <p role="status" className="py-8 text-slate-400">Não foi possível carregar a avaliação agora.</p>
         ) : avaliacao ? (
-          <article className="mt-8 max-w-3xl rounded-xl border border-white/10 bg-[linear-gradient(145deg,rgba(29,54,83,0.3),rgba(8,10,16,0.72))] p-5 sm:p-7">
+          <article className="w-full max-w-2xl rounded-xl border border-white/10 bg-[linear-gradient(145deg,rgba(29,54,83,0.3),rgba(8,10,16,0.72))] p-5 sm:p-7">
             <div className="flex items-center gap-3">
               {avaliacao.usuario?.foto ? <img src={avaliacao.usuario.foto} alt="" className="size-11 rounded-full object-cover" /> : <span aria-hidden="true" className="grid size-11 place-items-center rounded-full border border-white/15 bg-white/5 font-semibold text-[#9dcfff]">{(avaliacao.usuario?.nome ?? "M").slice(0, 1).toUpperCase()}</span>}
               <div className="min-w-0 flex-1">

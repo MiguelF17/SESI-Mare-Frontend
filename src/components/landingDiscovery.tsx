@@ -37,45 +37,28 @@ export default function LandingDiscovery() {
 
   return (
     <section className="px-5 py-16 sm:px-8 sm:py-20 lg:px-24">
-      <div data-reveal className="ml-auto max-w-6xl bg-[linear-gradient(270deg,rgba(29,54,83,0.42),rgba(8,10,16,0.08)_72%,transparent)] py-6 pl-5 sm:py-8 sm:pl-10">
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">Explore a Maré</h2>
-            <p className="mt-3 max-w-2xl leading-7 text-slate-300">Um recorte do catálogo de músicas da comunidade.</p>
-          </div>
-          {musicas.length > 1 && (
-            <div className="hidden gap-2 sm:flex">
-              <button type="button" aria-label="Ver músicas anteriores" onClick={() => moverCarrossel(-1)} className="grid size-10 cursor-pointer place-items-center rounded-full border border-white/20 transition-colors hover:border-[#79bff5]">
-                <ChevronLeft size={19} />
-              </button>
-              <button type="button" aria-label="Ver próximas músicas" onClick={() => moverCarrossel(1)} className="grid size-10 cursor-pointer place-items-center rounded-full border border-white/20 transition-colors hover:border-[#79bff5]">
-                <ChevronRight size={19} />
-              </button>
-            </div>
-          )}
+      <div data-reveal className="mx-auto grid max-w-7xl items-center gap-8 lg:grid-cols-[minmax(220px,.65fr)_minmax(0,1.35fr)] lg:gap-14">
+        <div className="max-w-sm">
+          <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">Explore a Maré</h2>
+          <p className="mt-4 leading-7 text-slate-300">Um recorte do catálogo de músicas da comunidade. Deslize para descobrir mais.</p>
+          {musicas.length > 1 && <div className="mt-6 hidden gap-2 lg:flex">
+            <button type="button" aria-label="Ver músicas anteriores" onClick={() => moverCarrossel(-1)} className="grid size-10 cursor-pointer place-items-center rounded-full border border-white/20 transition-colors hover:border-[#79bff5]"><ChevronLeft size={19} /></button>
+            <button type="button" aria-label="Ver próximas músicas" onClick={() => moverCarrossel(1)} className="grid size-10 cursor-pointer place-items-center rounded-full border border-white/20 transition-colors hover:border-[#79bff5]"><ChevronRight size={19} /></button>
+          </div>}
         </div>
 
-        {carregando ? (
-          <p role="status" className="py-10 text-slate-400">Carregando catálogo…</p>
-        ) : erro ? (
-          <p role="status" className="py-10 text-slate-400">Não foi possível carregar o catálogo agora.</p>
-        ) : musicas.length ? (
-          <div ref={carrosselRef} className="mt-8 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth pb-4" aria-label="Catálogo de músicas">
-            {musicas.map((musica) => (
-              <Link key={musica.id} to={`/musica/${musica.id}`} className="group w-[42vw] max-w-56 shrink-0 snap-start cursor-pointer sm:w-[28vw] md:w-[22vw] lg:w-[18vw]">
-                {musica.capa ? (
-                  <img src={musica.capa} alt={`Capa de ${musica.titulo}`} loading="lazy" className="aspect-square w-full rounded-lg border border-white/10 object-cover transition-transform duration-300 group-hover:scale-[1.02]" />
-                ) : (
-                  <div className="grid aspect-square place-items-center rounded-lg border border-white/10 bg-[var(--cor-secao-aplicativo)]"><Music2 className="size-10 text-[#79bff5]" /></div>
-                )}
-                <h3 className="mt-3 truncate font-semibold">{musica.titulo}</h3>
-                <p className="truncate text-sm text-slate-400">{musica.artista?.nome ?? "Artista"}{musica.genero ? ` · ${musica.genero}` : ""}</p>
-              </Link>
-            ))}
+        {carregando ? <p role="status" className="py-10 text-slate-400">Carregando catálogo…</p> : erro ? <p role="status" className="py-10 text-slate-400">Não foi possível carregar o catálogo agora.</p> : musicas.length ? (
+          <div className="relative min-w-0">
+            <div ref={carrosselRef} className="flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth pb-3 pr-10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" aria-label="Catálogo de músicas">
+              {musicas.map((musica) => <Link key={musica.id} to={`/musica/${musica.id}`} className="group w-32 shrink-0 snap-start cursor-pointer sm:w-36">
+                {musica.capa ? <img src={musica.capa} alt={`Capa de ${musica.titulo}`} loading="lazy" className="aspect-square w-full rounded-lg border border-white/10 object-cover transition-transform duration-300 group-hover:scale-[1.02]" /> : <div className="grid aspect-square place-items-center rounded-lg border border-white/10 bg-[var(--cor-secao-aplicativo)]"><Music2 className="size-9 text-[#79bff5]" /></div>}
+                <h3 className="mt-2 truncate text-sm font-semibold">{musica.titulo}</h3>
+                <p className="truncate text-xs text-slate-400">{musica.artista?.nome ?? "Artista"}</p>
+              </Link>)}
+            </div>
+            <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 right-0 w-14 bg-gradient-to-l from-[var(--cor-fundo)] to-transparent" />
           </div>
-        ) : (
-          <p className="py-10 text-slate-400">Ainda não há músicas no catálogo.</p>
-        )}
+        ) : <p className="py-10 text-slate-400">Ainda não há músicas no catálogo.</p>}
       </div>
     </section>
   )
