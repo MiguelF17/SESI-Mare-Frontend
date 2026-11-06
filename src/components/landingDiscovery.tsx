@@ -49,14 +49,13 @@ export default function LandingDiscovery() {
 
         {carregando ? <p role="status" className="py-10 text-slate-400">Carregando catálogo…</p> : erro ? <p role="status" className="py-10 text-slate-400">Não foi possível carregar o catálogo agora.</p> : musicas.length ? (
           <div className="relative min-w-0">
-            <div ref={carrosselRef} className="scrollbar-oculta flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth pb-3 pr-10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" aria-label="Catálogo de músicas">
+            <div ref={carrosselRef} className="scrollbar-oculta flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth pb-3 pr-10 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [mask-image:linear-gradient(to_right,#000_0%,#000_calc(100%_-_4.2rem),transparent_100%)] [-webkit-mask-image:linear-gradient(to_right,#000_0%,#000_calc(100%_-_4.2rem),transparent_100%)]" aria-label="Catálogo de músicas">
               {musicas.map((musica) => <Link key={musica.id} to={`/musica/${musica.id}`} className="group w-32 shrink-0 snap-start cursor-pointer sm:w-36">
                 {musica.capa ? <img src={musica.capa} alt={`Capa de ${musica.titulo}`} loading="lazy" className="aspect-square w-full rounded-lg border border-white/10 object-cover transition-transform duration-300 group-hover:scale-[1.02]" /> : <div className="grid aspect-square place-items-center rounded-lg border border-white/10 bg-[var(--cor-secao-aplicativo)]"><Music2 className="size-9 text-[#79bff5]" /></div>}
                 <h3 className="mt-2 truncate text-sm font-semibold">{musica.titulo}</h3>
                 <p className="truncate text-xs text-slate-400">{musica.artista?.nome ?? "Artista"}</p>
               </Link>)}
             </div>
-            <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 right-0 w-[4.2rem] bg-gradient-to-l from-[#1a3854] to-transparent" />
           </div>
         ) : <p className="py-10 text-slate-400">Ainda não há músicas no catálogo.</p>}
       </div>
