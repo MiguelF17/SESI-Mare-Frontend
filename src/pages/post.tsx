@@ -603,8 +603,8 @@ export default function Post() {
                                     return (
                                         <article
                                             key={comentario.id}
-                                            className={`border-b border-[#242b3a] px-1 py-4 transition hover:bg-white/5 ${comentario.respostaAId ? "border-l border-l-[var(--cor-borda)] pl-4" : ""}`}
-                                            style={{ marginLeft: comentario.respostaAId ? `${Math.min(comentario.profundidade, 3) * 12}px` : undefined }}
+                                            className={`box-border min-w-0 border-b border-[#242b3a] px-1 py-4 transition hover:bg-white/5 ${comentario.respostaAId ? "border-l border-l-[var(--cor-borda)] pl-4" : ""}`}
+                                            style={comentario.respostaAId ? { marginLeft: `${Math.min(comentario.profundidade, 3) * 12}px`, width: `calc(100% - ${Math.min(comentario.profundidade, 3) * 12}px)` } : undefined}
                                         >
                                             <div className="flex items-start gap-3">
                                                 {/* Avatar do comentário */}

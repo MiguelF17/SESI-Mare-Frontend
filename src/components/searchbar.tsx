@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ClockCounterClockwiseIcon, MagnifyingGlassIcon, UserCircleIcon, XIcon } from "@phosphor-icons/react";
 import { useBusca } from "../hooks/useBusca";
@@ -16,11 +16,7 @@ function SearchBar({ variant }: { variant: "mobile" | "desktop" }) {
 
   const [termo, setTermo] = useState("");
   const [aberta, setAberta] = useState(false);
-  const [historico, setHistorico] = useState<string[]>([]);
-
-  useEffect(() => {
-    setHistorico(buscarHistoricoPesquisa());
-  }, []);
+  const [historico, setHistorico] = useState<string[]>(buscarHistoricoPesquisa);
 
   const {
     musicasEncontradas,

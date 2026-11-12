@@ -23,11 +23,9 @@ function Hero() {
   const navigate = useNavigate()
   const [instalacaoDisponivel, setInstalacaoDisponivel] = useState(false)
   const [mostrarAjudaPwa, setMostrarAjudaPwa] = useState(false)
-  const [ehIOS, setEhIOS] = useState(false)
+  const [ehIOS] = useState(() => /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1))
 
   useEffect(() => {
-    const agente = navigator.userAgent
-    setEhIOS(/iPad|iPhone|iPod/.test(agente) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1))
     return observarInstalacaoPwa(setInstalacaoDisponivel)
   }, [])
 

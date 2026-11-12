@@ -135,14 +135,11 @@ export default function Configuracoes() {
   const [salvandoEmail, setSalvandoEmail] = useState(false);
   const [salvandoSenha, setSalvandoSenha] = useState(false);
   const [instalacaoDisponivel, setInstalacaoDisponivel] = useState(false);
-  const [appJaInstalado, setAppJaInstalado] = useState(false);
-  const [ehIos, setEhIos] = useState(false);
+  const [appJaInstalado, setAppJaInstalado] = useState(() => window.matchMedia("(display-mode: standalone)").matches);
+  const [ehIos] = useState(() => /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1));
   const [mostrarAjudaInstalacao, setMostrarAjudaInstalacao] = useState(false);
 
   useEffect(() => {
-    const agente = navigator.userAgent;
-    setEhIos(/iPad|iPhone|iPod/.test(agente) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1));
-    setAppJaInstalado(window.matchMedia("(display-mode: standalone)").matches);
     const pararDeObservar = observarInstalacaoPwa(setInstalacaoDisponivel);
     const marcarComoInstalado = () => setAppJaInstalado(true);
     window.addEventListener("appinstalled", marcarComoInstalado);

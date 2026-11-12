@@ -65,11 +65,16 @@ export function useHomeFeed(rota = "/posts", ativo = true) {
   }, [ativo, rota]);
 
   useEffect(() => {
-    if (ativo) void carregarPagina("inicial");
-    else {
-      identificadorRequisicao.current += 1;
-      setCarregando(false);
-    }
+    let cancelado = false;
+    queueMicrotask(() => {
+      if (cancelado) return;
+      if (ativo) void carregarPagina("inicial");
+      else {
+        identificadorRequisicao.current += 1;
+        setCarregando(false);
+      }
+    });
+    return () => { cancelado = true; };
   }, [ativo, carregarPagina]);
 
   return {
