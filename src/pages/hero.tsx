@@ -7,9 +7,11 @@ import MusicArtwork from "../components/musicArtwork"
 import Navbar from "../components/navbar"
 import Footer from "../components/footer"
 import fundo from "../assets/fundoHero.jpg"
-import qrcode from "../assets/uQhqvk.png"
+import qrcode from "../assets/Sem título.jpeg"
 import { Link, useNavigate } from "react-router-dom"
 import { instalarPwaAgora, observarInstalacaoPwa } from "../services/instalacaoPwa"
+
+const URL_APK_ANDROID = "https://expo.dev/artifacts/eas/t_lDR3rJMB2HwlMzG4bInad6SVrDU5gyb6A0d4hq7BA.apk"
 
 const passos = [
   { icone: Compass, titulo: "Descubra artistas", texto: "Explore músicas e conheça os artistas por trás das suas próximas descobertas." },
@@ -83,7 +85,7 @@ function Hero() {
         <div className="mx-auto grid max-w-7xl items-center gap-8 lg:grid-cols-[1fr_auto]">
           <div><h2 className="text-3xl font-bold sm:text-4xl">Baixe o aplicativo da Maré.</h2><p className="mt-3 max-w-xl text-base leading-7 text-[var(--cor-texto-secundario)]">Acesse pelo celular e continue descobrindo, avaliando e compartilhando de onde estiver.</p>
             <div className="mt-6 flex flex-wrap gap-3">
-              <a href="https://expo.dev/artifacts/eas/VkHo74tD9G0JfLHdD4yGRtvfIebIUoDOvymacq4iwYU.apk" download="mare.apk" className="inline-flex min-h-12 cursor-pointer items-center justify-center gap-2.5 rounded-full bg-[#71b9f4] px-6 py-3 text-[.94rem] font-semibold text-[#08111b] transition-colors duration-200 hover:bg-[#9bd2ff]   focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#83c4fa]">Baixar para Android <ArrowRight size={17} /></a>
+              <a href={URL_APK_ANDROID} download="Mare.apk" className="inline-flex min-h-12 cursor-pointer items-center justify-center gap-2.5 rounded-full bg-[#71b9f4] px-6 py-3 text-[.94rem] font-semibold text-[#08111b] transition-colors duration-200 hover:bg-[#9bd2ff]   focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#83c4fa]">Baixar para Android <ArrowRight size={17} /></a>
               <button type="button" onClick={() => void instalarPwa()} className="inline-flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-full border border-white/40 px-6 py-3 font-semibold text-white transition-colors duration-200  hover:border-[#83c4fa] hover:bg-white/5">{ehIOS ? "Adicionar ao iPhone" : "Instalar Maré"}</button>
             </div>
           </div>
