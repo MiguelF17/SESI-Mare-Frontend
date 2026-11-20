@@ -29,7 +29,7 @@ export default function Salvos() {
   const [musicas, setMusicas] = useState<MusicaSalva[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [pesquisa, setPesquisa] = useState("");
-  
+
 
   useEffect(() => {
     async function buscarDados() {

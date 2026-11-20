@@ -1,6 +1,6 @@
 
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
@@ -12,6 +12,7 @@ import {
 } from "@phosphor-icons/react";
 
 import { API_URL } from "../api";
+import { lerDestinoAposLogin } from "../services/destinoAposLogin";
 import logo from "../assets/logo.png";
 
 type Artista = {
@@ -48,6 +49,8 @@ async function lerResposta(response: Response) {
 
 export default function EscolherMusica() {
   const navigate = useNavigate();
+  const { state } = useLocation();
+  const destinoAposLogin = lerDestinoAposLogin(state);
 
   const [etapa, setEtapa] = useState<1 | 2>(1);
   const [generos, setGeneros] = useState<string[]>([]);
@@ -74,7 +77,7 @@ export default function EscolherMusica() {
 
 
       if (!token) {
-        navigate("/login", { replace: true });
+        navigate("/login", { replace: true, state: { destinoAposLogin } });
         return;
       }
 
@@ -91,19 +94,21 @@ export default function EscolherMusica() {
           headers,
         });
 
+        if (!ativo) return;
         if (respostaUsuario.status === 401 || respostaUsuario.status === 403) {
           localStorage.removeItem("token");
           localStorage.removeItem("usuario");
-          navigate("/login", { replace: true });
+          navigate("/login", { replace: true, state: { destinoAposLogin } });
           return;
         }
 
         const dadosUsuario = await lerResposta(respostaUsuario);
+        if (!ativo) return;
 
         const usuario = dadosUsuario.usuario ?? dadosUsuario;
 
         if (usuario.preferenciasConcluidas === true) {
-          navigate("/home", { replace: true });
+          navigate(destinoAposLogin ?? "/home", { replace: true });
           return;
         }
 
@@ -151,7 +156,7 @@ export default function EscolherMusica() {
         if (error instanceof Error && /401|403|sessão|token/i.test(error.message)) {
           localStorage.removeItem("token");
           localStorage.removeItem("usuario");
-          navigate("/login", { replace: true });
+          navigate("/login", { replace: true, state: { destinoAposLogin } });
           return;
         }
 
@@ -171,7 +176,7 @@ export default function EscolherMusica() {
     return () => {
       ativo = false;
     };
-  }, [navigate]);
+  }, [destinoAposLogin, navigate]);
 
   const generosFiltrados = useMemo(
     () =>
@@ -226,7 +231,7 @@ export default function EscolherMusica() {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      navigate("/login", { replace: true });
+      navigate("/login", { replace: true, state: { destinoAposLogin } });
       return;
     }
 
@@ -266,7 +271,7 @@ export default function EscolherMusica() {
 
       await lerResposta(respostaGeneros);
 
-      navigate("/home", { replace: true });
+      navigate(destinoAposLogin ?? "/home", { replace: true });
     } catch (error) {
       console.error("Erro ao salvar preferências:", error);
 
@@ -276,7 +281,7 @@ export default function EscolherMusica() {
       ) {
         localStorage.removeItem("token");
         localStorage.removeItem("usuario");
-        navigate("/login", { replace: true });
+        navigate("/login", { replace: true, state: { destinoAposLogin } });
         return;
       }
 

@@ -34,7 +34,7 @@ export default function Resultados() {
   const [usuarioLogadoId, setUsuarioLogadoId] = useState<number | null>(
     null
   );
-  
+
   useEffect(() => {
     let ativo = true;
 

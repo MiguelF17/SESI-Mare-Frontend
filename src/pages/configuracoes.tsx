@@ -905,7 +905,7 @@ export default function Configuracoes() {
           </div>
         </div>
       )}
-      
+
     </PageLayout>
   );
 }

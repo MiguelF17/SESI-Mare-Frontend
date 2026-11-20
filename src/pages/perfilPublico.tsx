@@ -8,7 +8,6 @@ import {
     ShareNetworkIcon,
     ChatCircleIcon,
 } from "@phosphor-icons/react";
-import { Settings } from "lucide-react";
 import toast from "react-hot-toast";
 
 import PageLayout from "../components/pageLayout";
@@ -26,10 +25,6 @@ import {
 
 import { apiRequest } from "../api";
 
-import {
-    buscarMusicas,
-    type Musica,
-} from "../services/musicaService";
 import ComentarioPerfilCard, {
     type ComentarioPerfil,
 } from "../components/comentarioPerfilCard";
@@ -37,10 +32,13 @@ import RecommendedMusicList from "../components/recommendedMusicList";
 
 export default function PerfilPublico() {
     const { username } = useParams<{ username: string }>();
+    return <PerfilPorUsername key={username} username={username} />;
+}
+
+function PerfilPorUsername({ username }: { username?: string }) {
     const navigate = useNavigate();
 
     const [usuario, setUsuario] = useState<PerfilPublicoTipo | null>(null);
-    const [, setMusicas] = useState<Musica[]>([]);
     const [meuId, setMeuId] = useState<number | null>(null);
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState("");
@@ -49,11 +47,9 @@ export default function PerfilPublico() {
     const [aba, setAba] = useState<"avaliacoes" | "comentarios">("avaliacoes");
 
 
-    const ehMeuPerfil = usuario !== null && usuario.id === meuId;
-
-
     useEffect(() => {
         let ativo = true;
+        let redirecionando = false;
 
         async function carregarPerfil() {
             if (!username) {
@@ -62,16 +58,21 @@ export default function PerfilPublico() {
                 return;
             }
 
-            setCarregando(true);
-            setErro("");
-            setUsuario(null);
-            setComentarios([]);
-
             try {
-                const perfil = await buscarPerfilPublico(username);
+                const [perfil, meuPerfil] = await Promise.all([
+                    buscarPerfilPublico(username),
+                    buscarMeuPerfil(),
+                ]);
 
                 if (!ativo) return;
 
+                if (perfil.id === meuPerfil.id) {
+                    redirecionando = true;
+                    navigate("/perfil", { replace: true });
+                    return;
+                }
+
+                setMeuId(meuPerfil.id);
                 setUsuario(perfil);
 
                 // Busca os comentários da pessoa cujo perfil foi aberto.
@@ -101,7 +102,7 @@ export default function PerfilPublico() {
                     );
                 }
             } finally {
-                if (ativo) {
+                if (ativo && !redirecionando) {
                     setCarregando(false);
                 }
             }
@@ -112,79 +113,7 @@ export default function PerfilPublico() {
         return () => {
             ativo = false;
         };
-    }, [username]);
-
-    const usuarioId = usuario?.id;
-
-    useEffect(() => {
-        if (usuarioId == null) return;
-
-        let ativo = true;
-
-        async function carregarComentarios() {
-            try {
-                const dados = await apiRequest<ComentarioPerfil[]>(
-                    `/usuarios/${usuarioId}/comentarios`
-                );
-
-                if (ativo) setComentarios(dados);
-            } catch (error) {
-                console.error("Erro ao buscar comentários do perfil:", error);
-
-                if (ativo) {
-                    toast.error("Não foi possível carregar os comentários.");
-                }
-            }
-        }
-
-        void carregarComentarios();
-
-        return () => {
-            ativo = false;
-        };
-    }, [usuarioId]);
-
-
-    useEffect(() => {
-        let ativo = true;
-
-        async function carregarDadosAdicionais() {
-            try {
-                const listaMusicas = await buscarMusicas();
-
-                if (ativo) {
-                    setMusicas(listaMusicas);
-                }
-            } catch (error) {
-                console.error("Erro ao carregar músicas:", error);
-            }
-
-            if (!localStorage.getItem("token")) {
-                if (ativo) setMeuId(null);
-                return;
-            }
-
-            try {
-                const perfil = await buscarMeuPerfil();
-
-                if (ativo) {
-                    setMeuId(perfil.id);
-                }
-            } catch (error) {
-                console.error("Erro ao identificar usuário logado:", error);
-
-                if (ativo) {
-                    setMeuId(null);
-                }
-            }
-        }
-
-        carregarDadosAdicionais();
-
-        return () => {
-            ativo = false;
-        };
-    }, []);
+    }, [navigate, username]);
 
     async function alternarSeguir() {
         if (!usuario || processando) return;
@@ -401,38 +330,27 @@ export default function PerfilPublico() {
                                             <span>Compartilhar</span>
                                         </button>
 
-                                        {ehMeuPerfil ? (
-                                            <button
-                                                type="button"
-                                                onClick={() => navigate("/perfil")}
-                                                className="flex cursor-pointer items-center gap-2 rounded-lg bg-[var(--cor-destaque)] px-3 py-2 text-sm text-[var(--cor-tinta)] transition hover:bg-[#80c0fa]"
-                                            >
-                                                <Settings size={17} />
-                                                Editar perfil
-                                            </button>
-                                        ) : (
-                                            <button
-                                                type="button"
-                                                onClick={alternarSeguir}
-                                                disabled={processando}
-                                                className={`flex cursor-pointer items-center gap-2 rounded-lg px-4 py-2 text-sm transition disabled:cursor-not-allowed disabled:opacity-50 ${usuario.seguindoPorMim
-                                                    ? "border border-[var(--cor-borda)] text-[var(--cor-texto-cinza-300)] hover:border-red-400 hover:text-red-400"
-                                                    : "bg-[var(--cor-destaque)] text-[var(--cor-tinta)] hover:bg-[#80c0fa]"
-                                                    }`}
-                                            >
-                                                {usuario.seguindoPorMim ? (
-                                                    <UserCheck size={18} />
-                                                ) : (
-                                                    <UserPlus size={18} />
-                                                )}
+                                        <button
+                                            type="button"
+                                            onClick={alternarSeguir}
+                                            disabled={processando}
+                                            className={`flex cursor-pointer items-center gap-2 rounded-lg px-4 py-2 text-sm transition disabled:cursor-not-allowed disabled:opacity-50 ${usuario.seguindoPorMim
+                                                ? "border border-[var(--cor-borda)] text-[var(--cor-texto-cinza-300)] hover:border-red-400 hover:text-red-400"
+                                                : "bg-[var(--cor-destaque)] text-[var(--cor-tinta)] hover:bg-[#80c0fa]"
+                                                }`}
+                                        >
+                                            {usuario.seguindoPorMim ? (
+                                                <UserCheck size={18} />
+                                            ) : (
+                                                <UserPlus size={18} />
+                                            )}
 
-                                                {processando
-                                                    ? "Aguarde..."
-                                                    : usuario.seguindoPorMim
-                                                        ? "Seguindo"
-                                                        : "Seguir"}
-                                            </button>
-                                        )}
+                                            {processando
+                                                ? "Aguarde..."
+                                                : usuario.seguindoPorMim
+                                                    ? "Seguindo"
+                                                    : "Seguir"}
+                                        </button>
                                     </div>
                                 </div>
 

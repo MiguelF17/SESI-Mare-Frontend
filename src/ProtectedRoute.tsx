@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { apiRequest } from "./api";
 
 export default function ProtectedRoute() {
+  const { pathname, search, hash } = useLocation();
   const [autorizado, setAutorizado] = useState<boolean | null>(null);
 
   useEffect(() => {
@@ -35,7 +36,7 @@ export default function ProtectedRoute() {
   }
 
   if (!autorizado) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" replace state={{ destinoAposLogin: pathname + search + hash }} />;
   }
 
   return <Outlet />;

@@ -105,7 +105,7 @@ export default function ComentarioPerfilCard({
             ativo = false;
         };
     }, [token]);
-    
+
     return (
         <article className="border-b border-[var(--cor-borda-suave)] pb-6">
             {/* Publicação original */}

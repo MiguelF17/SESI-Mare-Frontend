@@ -331,7 +331,7 @@ export default function Notificacoes() {
 
                             <div className="min-w-0 flex-1">
                                 <h1 className="font-serif text-[26px] text-[var(--cor-texto-cinza-100)]">
-                                   Notificações
+                                    Notificações
                                 </h1>
 
                                 <p className="mt-1 font-serif text-[13px] text-[var(--cor-texto-discreto)]">

@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import { useAuth } from "../hooks/useAuth";
 import { ApiError } from "../api";
 import { reenviarVerificacao } from "../services/authService";
+import { lerDestinoAposLogin } from "../services/destinoAposLogin";
 
 function Login() {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ function Login() {
   const [senha, setSenha] = useState("");
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const location = useLocation();
+  const destinoAposLogin = lerDestinoAposLogin(location.state);
   const mensagemCadastro = location.state?.mensagem;
   const [emailReenvio, setEmailReenvio] = useState<string>(location.state?.email ?? "");
   const [reenviando, setReenviando] = useState(false);
@@ -31,9 +33,11 @@ function Login() {
 
       toast.success("Login realizado com sucesso!");
 
-      navigate(
-        usuario.preferenciasConcluidas ? "/home" : "/filtrar"
-      );
+      if (usuario.preferenciasConcluidas) {
+        navigate(destinoAposLogin ?? "/home", { replace: true });
+      } else {
+        navigate("/filtrar", { replace: true, state: { destinoAposLogin } });
+      }
     } catch (error) {
       console.error("Erro ao fazer login:", error);
 
