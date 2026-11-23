@@ -22,8 +22,8 @@ export default function MobileNavigation() {
   useEffect(() => {
     async function buscarNotificacoes() {
       try {
-        const notificacoes = await apiRequest<{ lida: boolean }[]>("/notificacoes");
-        setNaoLidas(notificacoes.filter((notificacao) => !notificacao.lida).length);
+        const { quantidade } = await apiRequest<{ quantidade: number }>("/notificacoes/nao-lidas/quantidade");
+        setNaoLidas(quantidade);
       } catch (error) {
         console.error("Erro ao buscar notificações:", error);
       }

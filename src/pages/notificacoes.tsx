@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
     BellIcon,
@@ -109,40 +109,52 @@ export default function Notificacoes() {
     const [filtro, setFiltro] = useState<Filtro>("todas");
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState("");
-    const [tentativa, setTentativa] = useState(0);
+    const [proximoCursor, setProximoCursor] = useState<number | null>(null);
+    const [naoLidas, setNaoLidas] = useState(0);
+    const [carregandoMais, setCarregandoMais] = useState(false);
+    const buscando = useRef(false);
     const [atualizando, setAtualizando] = useState<number | null>(null);
     const [marcandoTodas, setMarcandoTodas] = useState(false);
     const [limpando, setLimpando] = useState(false);
     const [seguindoIds, setSeguindoIds] = useState<number[]>([]);
     const [seguindoId, setSeguindoId] = useState<number | null>(null);
 
-    const carregarNotificacoes = useCallback(async () => {
-        await Promise.resolve();
+    const carregarNotificacoes = useCallback(async (filtroAtual: Filtro, cursor?: number) => {
+        if (buscando.current) return;
+        buscando.current = true;
+        setErro("");
+        if (cursor === undefined) {
+            setCarregando(true);
+            setNotificacoes([]);
+            setProximoCursor(null);
+        } else {
+            setCarregandoMais(true);
+        }
 
         try {
-            const dados = await apiRequest<Notificacao[]>("/notificacoes");
-
-            if (!Array.isArray(dados)) {
-                throw new Error("A API retornou uma lista inválida.");
-            }
-
-            setNotificacoes(dados);
+            const params = new URLSearchParams({ pagina: "true", naoLidas: String(filtroAtual === "naoLidas") });
+            if (cursor !== undefined) params.set("antes", String(cursor));
+            const dados = await apiRequest<{
+                itens: Notificacao[];
+                proximoCursor: number | null;
+                quantidadeNaoLidas: number;
+            }>(`/notificacoes?${params}`);
+            if (!Array.isArray(dados.itens)) throw new Error("A API retornou uma lista inválida.");
+            setNotificacoes((lista) => cursor === undefined ? dados.itens : [...lista, ...dados.itens]);
+            setProximoCursor(dados.proximoCursor);
+            setNaoLidas(dados.quantidadeNaoLidas);
         } catch (error) {
-            console.error("Erro ao carregar notificações:", error);
-
-            setErro(
-                error instanceof Error
-                    ? error.message
-                    : "Não foi possível carregar as notificações."
-            );
+            setErro(error instanceof Error ? error.message : "Não foi possível carregar as notificações.");
         } finally {
+            buscando.current = false;
             setCarregando(false);
+            setCarregandoMais(false);
         }
     }, []);
 
     useEffect(() => {
-        void Promise.resolve().then(carregarNotificacoes);
-    }, [carregarNotificacoes, tentativa]);
+        void Promise.resolve().then(() => carregarNotificacoes("todas"));
+    }, [carregarNotificacoes]);
 
     useEffect(() => {
         let ativo = true;
@@ -166,19 +178,16 @@ export default function Notificacoes() {
         return () => { ativo = false; };
     }, []);
 
-    const naoLidas = notificacoes.filter(
-        (notificacao) => !notificacao.lida
-    ).length;
+    const notificacoesFiltradas = filtro === "naoLidas"
+        ? notificacoes.filter((notificacao) => !notificacao.lida)
+        : notificacoes;
+    const alterandoHistorico = limpando || marcandoTodas || atualizando !== null;
+    const ocupado = carregando || carregandoMais || alterandoHistorico;
 
-    const notificacoesFiltradas = notificacoes.filter(
-        (notificacao) =>
-            filtro === "todas" || !notificacao.lida
-    );
-
-    function tentarNovamente() {
-        setCarregando(true);
-        setErro("");
-        setTentativa((valor) => valor + 1);
+    function trocarFiltro(novoFiltro: Filtro) {
+        if (ocupado || buscando.current || novoFiltro === filtro) return;
+        setFiltro(novoFiltro);
+        void carregarNotificacoes(novoFiltro);
     }
 
     function iconeNotificacao(tipo: string) {
@@ -205,7 +214,7 @@ export default function Notificacoes() {
     }
 
     async function marcarComoLida(id: number) {
-        if (atualizando !== null) return;
+        if (ocupado || buscando.current) throw new Error("Aguarde a atualização das notificações.");
 
         setAtualizando(id);
         setErro("");
@@ -222,6 +231,7 @@ export default function Notificacoes() {
                         : notificacao
                 )
             );
+            setNaoLidas((quantidade) => Math.max(0, quantidade - 1));
             window.dispatchEvent(new Event("mare:notificacoes-atualizadas"));
         } catch (error) {
             console.error("Erro ao marcar notificação como lida:", error);
@@ -233,7 +243,7 @@ export default function Notificacoes() {
     }
 
     async function marcarTodasComoLidas() {
-        if (naoLidas === 0 || marcandoTodas) return;
+        if (naoLidas === 0 || ocupado || buscando.current) return;
 
         setMarcandoTodas(true);
         setErro("");
@@ -249,6 +259,8 @@ export default function Notificacoes() {
                     lida: true,
                 }))
             );
+            if (filtro === "naoLidas") setProximoCursor(null);
+            setNaoLidas(0);
             window.dispatchEvent(new Event("mare:notificacoes-atualizadas"));
         } catch (error) {
             console.error("Erro ao atualizar notificações:", error);
@@ -259,7 +271,7 @@ export default function Notificacoes() {
     }
 
     async function limparHistorico() {
-        if (limpando || notificacoes.length === 0) return;
+        if (ocupado || buscando.current || (filtro === "todas" && notificacoes.length === 0)) return;
         if (!window.confirm("Remover todas as notificações da sua conta?")) return;
 
         setLimpando(true);
@@ -267,6 +279,8 @@ export default function Notificacoes() {
         try {
             await apiRequest("/notificacoes", { method: "DELETE" });
             setNotificacoes([]);
+            setProximoCursor(null);
+            setNaoLidas(0);
             window.dispatchEvent(new Event("mare:notificacoes-atualizadas"));
         } catch (error) {
             console.error("Erro ao limpar notificações:", error);
@@ -352,7 +366,9 @@ export default function Notificacoes() {
                                 <div className="flex items-center gap-2">
                                     <button
                                         type="button"
-                                        onClick={() => setFiltro("todas")}
+                                        onClick={() => trocarFiltro("todas")}
+                                        disabled={ocupado}
+                                        aria-pressed={filtro === "todas"}
                                         className={`cursor-pointer rounded-lg px-4 py-2 text-xs transition ${filtro === "todas"
                                                 ? "bg-[var(--cor-superficie-elevada)] text-[var(--cor-destaque)]"
                                                 : "text-[#718096] hover:bg-[var(--cor-superficie-elevada)] hover:text-[var(--cor-texto-destaque)]"
@@ -363,7 +379,9 @@ export default function Notificacoes() {
 
                                     <button
                                         type="button"
-                                        onClick={() => setFiltro("naoLidas")}
+                                        onClick={() => trocarFiltro("naoLidas")}
+                                        disabled={ocupado}
+                                        aria-pressed={filtro === "naoLidas"}
                                         className={`cursor-pointer rounded-lg px-4 py-2 text-xs transition ${filtro === "naoLidas"
                                                 ? "bg-[var(--cor-superficie-elevada)] text-[var(--cor-destaque)]"
                                                 : "text-[#718096] hover:bg-[var(--cor-superficie-elevada)] hover:text-[var(--cor-texto-destaque)]"
@@ -377,7 +395,7 @@ export default function Notificacoes() {
                                 <button
                                     type="button"
                                     onClick={marcarTodasComoLidas}
-                                    disabled={naoLidas === 0 || marcandoTodas}
+                                    disabled={naoLidas === 0 || ocupado}
                                     className="inline-flex text-[12px] cursor-pointer items-center gap-2 rounded-lg px-2 py-2 text-xs text-[var(--cor-destaque)] transition hover:bg-[var(--cor-superficie-elevada)] disabled:cursor-not-allowed disabled:opacity-40"
                                 >
                                     <CheckIcon size={20} />
@@ -390,7 +408,7 @@ export default function Notificacoes() {
                                     <button
                                         type="button"
                                         onClick={() => void limparHistorico()}
-                                        disabled={limpando || marcandoTodas}
+                                        disabled={ocupado}
                                         className="inline-flex cursor-pointer items-center gap-2 rounded-lg px-2 py-2 text-xs text-red-400 transition hover:bg-red-500/10 disabled:cursor-not-allowed disabled:opacity-40"
                                     >
                                         <TrashIcon size={17} />
@@ -417,7 +435,7 @@ export default function Notificacoes() {
                                         </div>
                                     ))}
                                 </div>
-                            ) : erro && notificacoes.length === 0 ? (
+                            ) : erro && notificacoes.length === 0 && proximoCursor === null ? (
                                 /* Erro ao carregar */
                                 <div className="flex flex-col items-center px-6 py-12 text-center">
                                     <p className="text-sm text-red-400">
@@ -426,14 +444,14 @@ export default function Notificacoes() {
 
                                     <button
                                         type="button"
-                                        onClick={tentarNovamente}
+                                        onClick={() => void carregarNotificacoes(filtro)}
                                         className="mt-4 inline-flex cursor-pointer items-center gap-2 rounded-lg border border-[var(--cor-borda)] px-4 py-2 text-xs text-[var(--cor-destaque)] transition hover:bg-[var(--cor-superficie-elevada)]"
                                     >
                                         <ArrowClockwiseIcon size={16} />
                                         Tentar novamente
                                     </button>
                                 </div>
-                            ) : notificacoesFiltradas.length === 0 ? (
+                            ) : notificacoesFiltradas.length === 0 && proximoCursor === null ? (
                                 /* Lista vazia */
                                 <div className="flex flex-col items-center px-6 py-14 text-center">
                                     <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-[var(--cor-borda)] bg-[var(--cor-superficie-elevada)]">
@@ -466,74 +484,70 @@ export default function Notificacoes() {
                                                     : ""
                                                 }`}
                                         >
-                                            <div
-                                                role="button"
-                                                tabIndex={0}
-                                                onKeyDown={(event) => {
-                                                    if (event.key === "Enter" || event.key === " ") {
-                                                        event.preventDefault();
-                                                        void abrirNotificacao(notificacao);
-                                                    }
-                                                }}
-                                                onClick={() =>
-                                                    abrirNotificacao(notificacao)
-                                                }
-                                                aria-label="Abrir notificação"
-                                                className="flex min-w-0 flex-1 cursor-pointer items-start gap-3 text-left sm:gap-4"
-                                            >
-                                                {/* Foto ou ícone */}
-                                                {notificacao.usuario?.foto ? (
-                                                    <img
-                                                        src={notificacao.usuario.foto}
-                                                        alt=""
-                                                        className="h-11 w-11 shrink-0 rounded-full border border-[var(--cor-borda)] object-cover"
-                                                    />
-                                                ) : (
-                                                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[var(--cor-borda)] bg-[var(--cor-superficie-elevada)] text-[var(--cor-destaque)]">
-                                                        {iconeNotificacao(notificacao.tipo)}
-                                                    </div>
-                                                )}
-
-                                                <div className="min-w-0 flex-1">
-                                                    {/* Nome e ação */}
-                                                    <p className="break-words text-[14px] leading-5 text-[#d1d5db]">
-                                                        <span className="font-semibold text-[var(--cor-texto-destaque)]">
-                                                            {notificacao.usuario?.nome ?? "Alguém"}
-                                                        </span>{" "}
-                                                        {notificacao.mensagem}
-                                                    </p>
-
-                                                    {notificacao.usuario?.username && (
-                                                        <p className="mt-0.5 text-[12px] text-[#718096]">
-                                                            @{notificacao.usuario.username}
-                                                        </p>
+                                            <div className="min-w-0 flex-1">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => void abrirNotificacao(notificacao)}
+                                                    disabled={!notificacao.lida && ocupado}
+                                                    className="flex w-full cursor-pointer items-start gap-3 rounded-md text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--cor-destaque)] sm:gap-4"
+                                                >
+                                                    {/* Foto ou ícone */}
+                                                    {notificacao.usuario?.foto ? (
+                                                        <img
+                                                            src={notificacao.usuario.foto}
+                                                            alt=""
+                                                            className="h-11 w-11 shrink-0 rounded-full border border-[var(--cor-borda)] object-cover"
+                                                        />
+                                                    ) : (
+                                                        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[var(--cor-borda)] bg-[var(--cor-superficie-elevada)] text-[var(--cor-destaque)]">
+                                                            {iconeNotificacao(notificacao.tipo)}
+                                                        </span>
                                                     )}
 
+                                                    <span className="min-w-0 flex-1">
+                                                        {/* Nome e ação */}
+                                                        <span className="block break-words text-[14px] leading-5 text-[#d1d5db]">
+                                                            <span className="font-semibold text-[var(--cor-texto-destaque)]">
+                                                                {notificacao.usuario?.nome ?? "Alguém"}
+                                                            </span>{" "}
+                                                            {notificacao.mensagem}
+                                                        </span>
+
+                                                        {notificacao.usuario?.username && (
+                                                            <span className="block mt-0.5 text-[12px] text-[#718096]">
+                                                                @{notificacao.usuario.username}
+                                                            </span>
+                                                        )}
+
+                                                        {/* Texto do comentário */}
+                                                        {notificacao.tipo === "comentario" &&
+                                                            notificacao.textoComentario && (
+                                                                <span className="block mt-2 break-words text-sm leading-6 text-[#9ca8ba]">
+                                                                    “{notificacao.textoComentario}”
+                                                                </span>
+                                                            )}
+
+                                                        {/* Data */}
+                                                        <span className="block mt-2 text-[11px] text-[#718096]">
+                                                            {tempoNotificacao(notificacao.criadaEm)}
+                                                        </span>
+                                                    </span>
+                                                </button>
+                                                <div className="ml-14 sm:ml-[60px]">
                                                     {(notificacao.tipo === "seguir" || notificacao.tipo === "seguidor") && notificacao.usuario?.id && (
                                                         <button
                                                             type="button"
                                                             disabled={seguindoId === notificacao.usuario.id || seguindoIds.includes(notificacao.usuario.id)}
-                                                            onClick={(event) => { event.stopPropagation(); void seguirDeVolta(notificacao.usuario!.id); }}
+                                                            onClick={() => void seguirDeVolta(notificacao.usuario!.id)}
                                                             className="mt-2 rounded-full bg-[var(--cor-destaque)] px-3 py-1.5 text-xs font-semibold text-white transition hover:brightness-110 disabled:opacity-60"
                                                         >
                                                             {seguindoIds.includes(notificacao.usuario.id) ? "Seguindo" : seguindoId === notificacao.usuario.id ? "Seguindo..." : "Seguir de volta"}
                                                         </button>
                                                     )}
 
-                                                    {/* Texto do comentário */}
-                                                    {notificacao.tipo === "comentario" &&
-                                                        notificacao.textoComentario && (
-                                                            <p className="mt-2 break-words text-sm leading-6 text-[#9ca8ba]">
-                                                                “{notificacao.textoComentario}”
-                                                            </p>
-                                                        )}
-
                                                     {/* Publicação relacionada */}
                                                     {notificacao.post && (
-                                                        <div
-                                                            className="mt-3"
-                                                            onClick={(event) => event.stopPropagation()}
-                                                        >
+                                                        <div className="mt-3">
                                                             <PostCard
                                                                 postId={notificacao.post.id}
                                                                 name={notificacao.post.usuario?.nome ?? "Usuário"}
@@ -556,10 +570,6 @@ export default function Notificacoes() {
                                                         </div>
                                                     )}
 
-                                                    {/* Data */}
-                                                    <p className="mt-2 text-[11px] text-[#718096]">
-                                                        {tempoNotificacao(notificacao.criadaEm)}
-                                                    </p>
                                                 </div>
                                             </div>
 
@@ -578,7 +588,7 @@ export default function Notificacoes() {
                                                         onClick={() => {
                                                             marcarComoLida(notificacao.id).catch(() => { });
                                                         }}
-                                                        disabled={atualizando !== null}
+                                                        disabled={ocupado}
                                                         title="Marcar como lida"
                                                         aria-label="Marcar como lida"
                                                         className="cursor-pointer rounded-lg p-2 text-[#718096] transition hover:bg-[var(--cor-superficie-elevada)] hover:text-[var(--cor-destaque)] disabled:cursor-not-allowed disabled:opacity-40"
@@ -591,9 +601,21 @@ export default function Notificacoes() {
                                     ))}
                                 </div>
                             )}
+                            {proximoCursor !== null && (
+                                <div className="border-t border-[var(--cor-borda)] p-4 text-center">
+                                    <button
+                                        type="button"
+                                        disabled={ocupado}
+                                        onClick={() => void carregarNotificacoes(filtro, proximoCursor)}
+                                        className="rounded-lg border border-[var(--cor-borda)] px-4 py-2 text-sm text-[var(--cor-destaque)] disabled:opacity-50"
+                                    >
+                                        {carregandoMais ? "Carregando…" : "Carregar mais"}
+                                    </button>
+                                </div>
+                            )}
                         </section>
 
-                        {erro && notificacoes.length > 0 && (
+                        {erro && (notificacoes.length > 0 || proximoCursor !== null) && (
                             <p className="mt-3 text-sm text-red-400">
                                 {erro}
                             </p>

@@ -1,10 +1,17 @@
 import { useEffect, useRef, useState } from "react"
 import { Link } from "react-router-dom"
 import { ChevronLeft, ChevronRight, Music2 } from "lucide-react"
-import { buscarMusicas, type Musica } from "../services/musicaService"
+import { apiRequest } from "../api"
+
+type MusicaVitrine = {
+  id: number
+  titulo: string
+  capa: string | null
+  artista: { nome: string } | null
+}
 
 export default function LandingDiscovery() {
-  const [musicas, setMusicas] = useState<Musica[]>([])
+  const [musicas, setMusicas] = useState<MusicaVitrine[]>([])
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState(false)
   const carrosselRef = useRef<HTMLDivElement>(null)
@@ -14,8 +21,8 @@ export default function LandingDiscovery() {
 
     async function carregarCatalogo() {
       try {
-        const catalogo = await buscarMusicas()
-        if (ativo) setMusicas(catalogo.slice(0, 10))
+        const catalogo = await apiRequest<MusicaVitrine[]>("/musicas/vitrine")
+        if (ativo) setMusicas(catalogo)
       } catch (error) {
         console.error("Erro ao carregar catálogo público:", error)
         if (ativo) setErro(true)
