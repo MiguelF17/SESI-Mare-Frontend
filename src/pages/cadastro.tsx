@@ -5,7 +5,7 @@ import { toast } from "react-hot-toast";
 import { useAuth } from "../hooks/useAuth";
 
 import fundoCadastro from "../assets/fundoLogin.jpg";
-import logo from "../assets/logomare.png";
+import logo from "../assets/logo.png";
 
 function Cadastro() {
   const navigate = useNavigate();
@@ -163,7 +163,7 @@ function Cadastro() {
         className="
                     absolute
                     top-6
-                    left-0
+                    left-4
                     z-20
                 "
       >
@@ -175,6 +175,7 @@ function Cadastro() {
                             w-[120px]
                             h-[60px]
                             object-contain
+                            object-left
                         "
           />
         </Link>

@@ -11,7 +11,6 @@ import { buscarArtistaPorId, type Artista as ArtistaDados } from "../services/ar
 import { buscarMusicas, type Musica } from "../services/musicaService";
 import { buscarPosts, type Post } from "../services/postService";
 
-import logo from "../assets/logo.png";
 
 type MusicaArtista = Musica & {
   artistaId?: number;
@@ -137,14 +136,14 @@ export default function Artista() {
             {/* CAPA DO ARTISTA */}
             <section className="relative mt-6 mb-8 h-[240px] w-full overflow-hidden rounded-xl border border-[var(--cor-borda-suave)] bg-[var(--cor-superficie-cartao)] sm:h-[300px]">
               <img
-                src={artista.fotoURL || logo}
+                src={artista.fotoURL || "/logo.png"}
                 alt=""
                 aria-hidden="true"
                 className="absolute inset-0 h-full w-full scale-110 object-cover opacity-40 blur-2xl"
               />
 
               <img
-                src={artista.fotoURL || logo}
+                src={artista.fotoURL || "/logo.png"}
                 alt={artista.nome}
                 className="absolute inset-0 h-full w-full object-contain"
               />

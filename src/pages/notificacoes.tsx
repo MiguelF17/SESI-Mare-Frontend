@@ -482,9 +482,9 @@ export default function Notificacoes() {
                                                 className="flex min-w-0 flex-1 cursor-pointer items-start gap-3 text-left sm:gap-4"
                                             >
                                                 {/* Foto ou ícone */}
-                                                {(notificacao.post?.usuario?.foto ?? notificacao.usuario?.foto) ? (
+                                                {notificacao.usuario?.foto ? (
                                                     <img
-                                                        src={notificacao.post?.usuario?.foto ?? notificacao.usuario?.foto ?? ""}
+                                                        src={notificacao.usuario.foto}
                                                         alt=""
                                                         className="h-11 w-11 shrink-0 rounded-full border border-[var(--cor-borda)] object-cover"
                                                     />
@@ -536,9 +536,9 @@ export default function Notificacoes() {
                                                         >
                                                             <PostCard
                                                                 postId={notificacao.post.id}
-                                                                name={notificacao.usuario?.nome ?? "Usuário"}
-                                                                username={notificacao.usuario?.username ?? null}
-                                                                foto={notificacao.usuario?.foto ?? null}
+                                                                name={notificacao.post.usuario?.nome ?? "Usuário"}
+                                                                username={notificacao.post.usuario?.username ?? null}
+                                                                foto={notificacao.post.usuario?.foto ?? null}
                                                                 time={notificacao.criadaEm}
                                                                 content={notificacao.post.texto}
                                                                 nota={notificacao.post.nota}

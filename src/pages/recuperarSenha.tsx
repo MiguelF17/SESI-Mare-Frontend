@@ -2,7 +2,7 @@ import { useState, type FormEvent } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowLeft, LoaderCircle, Mail, ShieldCheck } from "lucide-react";
 import toast from "react-hot-toast";
-import logo from "../assets/logomare.png";
+import logo from "../assets/logo.png";
 import { redefinirSenha, solicitarRedefinicaoSenha } from "../services/authService";
 
 export default function RecuperarSenha() {
@@ -39,7 +39,7 @@ export default function RecuperarSenha() {
   return <main className="min-h-screen flex items-center justify-center bg-[var(--cor-fundo)] px-4 py-8">
     <section className="w-full max-w-md rounded-2xl border border-[var(--cor-borda)] bg-[var(--cor-superficie)] p-6 sm:p-8">
       <Link to="/login" className="inline-flex items-center gap-2 text-sm text-[#9aa6ba] hover:text-white"><ArrowLeft size={17} /> Voltar ao login</Link>
-      <img src={logo} alt="Maré" className="mx-auto my-7 h-auto w-36" />
+      <img src={logo} alt="Maré" className="mx-auto my-7 h-20 w-36 object-contain" />
       <div className="mb-6 text-center"><div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-[#58AAF0]/10 text-[var(--cor-destaque)]">{token ? <ShieldCheck /> : <Mail />}</div>
         <h1 className="text-xl font-semibold text-[var(--cor-texto-principal)]">{token ? "Crie uma nova senha" : "Redefinir senha"}</h1>
         <p className="mt-2 text-sm text-[#9aa6ba]">{token ? "Escolha uma senha segura para sua conta." : enviado ? "Enviamos o link de redefinição para o e-mail cadastrado." : "Enviaremos um link de redefinição para o e-mail da sua conta."}</p>

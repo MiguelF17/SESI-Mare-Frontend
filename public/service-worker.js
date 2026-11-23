@@ -1,4 +1,4 @@
-const CACHE_ATUAL = "mare-shell-v1";
+const CACHE_ATUAL = "mare-shell-v2";
 const RECURSOS_INICIAIS = ["/", "/manifest.webmanifest", "/icon-192.png", "/icon-512.png"];
 
 self.addEventListener("install", (evento) => {

@@ -15,7 +15,6 @@ import type { MouseEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
-import logo from "../assets/logo.png";
 import {
   verificarMusicaSalva,
   alternarMusicaSalva,
@@ -175,7 +174,7 @@ export default function MusicCard({
       >
         <div className="relative h-full w-full">
           <img
-            src={capa || logo}
+            src={capa || "/logo.png"}
             alt={titulo}
             loading="lazy"
             className="absolute inset-0 h-full w-full object-cover"
@@ -238,7 +237,7 @@ export default function MusicCard({
         }`}
       >
         <img
-          src={capa || logo}
+          src={capa || "/logo.png"}
           alt={titulo}
           loading="lazy"
           className="mx-auto aspect-square w-full rounded-xl object-cover"
@@ -282,7 +281,7 @@ export default function MusicCard({
     >
       <div className="flex w-full items-center">
         <img
-          src={capa || logo}
+          src={capa || "/logo.png"}
           alt={titulo}
           loading="lazy"
           className="h-16 w-16 shrink-0 rounded-xl object-cover"

@@ -304,7 +304,7 @@ export default function EscolherMusica() {
         {/* Cabeçalho */}
         <header className="flex flex-col items-center">
           <div className="m-4 flex h-12 items-center justify-center">
-            <img src={logo} alt="Maré" className="h-20 w-auto" />
+            <img src={logo} alt="Maré" className="h-20 w-36 object-contain" />
           </div>
 
           <h1 className="mt-4 text-center font-serif text-2xl font-normal tracking-tight sm:text-3xl">

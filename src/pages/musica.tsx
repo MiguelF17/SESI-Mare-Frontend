@@ -30,7 +30,6 @@ import {
   BookmarkSimpleIcon,
 } from "@phosphor-icons/react";
 
-import logo from "../assets/logo.png";
 import BotaoVoltar from "../components/botaoVoltar";
 
 export default function Musica() {
@@ -285,13 +284,13 @@ export default function Musica() {
             {/* CAPA DA MÚSICA */}
             <div className="relative mt-6 mb-4 h-[280px] w-full overflow-hidden rounded-xl border border-[var(--cor-borda-suave)] bg-[var(--cor-superficie-cartao)]">
               <img
-                src={musica.capa || logo}
+                src={musica.capa || "/logo.png"}
                 alt=""
                 className="absolute inset-0 h-full w-full scale-110 object-cover opacity-50 blur-2xl"
               />
 
               <img
-                src={musica.capa || logo}
+                src={musica.capa || "/logo.png"}
                 alt={musica.titulo}
                 className="absolute inset-0 h-full w-full object-contain"
               />

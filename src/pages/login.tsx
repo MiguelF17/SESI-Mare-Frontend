@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import fundoLogin from "../assets/fundoLogin.jpg";
-import logo from "../assets/logomare.png";
+import logo from "../assets/logo.png";
 import toast from "react-hot-toast";
 import { useAuth } from "../hooks/useAuth";
 import { ApiError } from "../api";
@@ -119,7 +119,7 @@ function Login() {
         className="
                     absolute
                     top-6
-                    left-0
+                    left-4
                     z-20
                 "
       >
@@ -131,6 +131,7 @@ function Login() {
                             w-[120px]
                             h-[60px]
                             object-contain
+                            object-left
                         "
           />
         </Link>

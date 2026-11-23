@@ -21,7 +21,7 @@ export default function Sidebar() {
   return (
     <aside className="fixed inset-y-0 left-0 z-50 hidden h-dvh w-[clamp(220px,30vw,340px)] flex-col border-r border-[var(--cor-borda)] bg-[var(--cor-superficie)] text-[var(--cor-texto-principal)] md:flex" style={{ fontFamily: "Inter, sans-serif", fontWeight: 300 }}>
       <div className="flex items-center px-6 py-4">
-        <Link to="/"><img src={logo} alt="Maré" className="h-12 w-auto object-contain" /></Link>
+        <Link to="/"><img src={logo} alt="Maré" className="h-12 w-28 object-contain object-left" /></Link>
       </div>
       <div className="mb-6 flex items-center gap-3 px-6">
         <div draggable={false} className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#1a2130]">
