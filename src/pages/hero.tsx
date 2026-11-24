@@ -7,11 +7,10 @@ import MusicArtwork from "../components/musicArtwork"
 import Navbar from "../components/navbar"
 import Footer from "../components/footer"
 import fundo from "../assets/fundoHero.jpg"
-import qrcode from "../assets/Sem título.jpeg"
+import qrcode from "../assets/Maré APK.png"
 import { Link, useNavigate } from "react-router-dom"
 import { instalarPwaAgora, observarInstalacaoPwa } from "../services/instalacaoPwa"
-
-const URL_APK_ANDROID = "https://expo.dev/artifacts/eas/t_lDR3rJMB2HwlMzG4bInad6SVrDU5gyb6A0d4hq7BA.apk"
+import { URL_APK_ANDROID } from "../services/downloadAndroid"
 
 const passos = [
   { icone: Compass, titulo: "Descubra artistas", texto: "Explore músicas e conheça os artistas por trás das suas próximas descobertas." },
@@ -89,7 +88,7 @@ function Hero() {
               <button type="button" onClick={() => void instalarPwa()} className="inline-flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-full border border-white/40 px-6 py-3 font-semibold text-white transition-colors duration-200  hover:border-[#83c4fa] hover:bg-white/5">{ehIOS ? "Adicionar ao iPhone" : "Instalar Maré"}</button>
             </div>
           </div>
-          <div className="flex flex-col items-center gap-3 text-center [&_p]:font-medium [&_span]:text-sm [&_span]:text-slate-300 [&_img]:rounded-lg"><p>Ou acesse pelo QR Code</p><img src={qrcode} alt="QR Code para acessar a Maré" className="w-36 sm:w-40" /><span>Aponte a câmera do celular</span></div>
+          <div className="flex flex-col items-center gap-3 text-center [&_p]:font-medium [&_span]:text-sm [&_span]:text-slate-300"><p>Ou acesse pelo QR Code</p><img src={qrcode} alt="QR Code para acessar a Maré" className="w-36 rounded-lg bg-white sm:w-40" /><span>Aponte a câmera do celular</span></div>
         </div>
       </section>
     </main>

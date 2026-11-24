@@ -21,6 +21,7 @@ import RecommendedMusicList from "../components/recommendedMusicList";
 import { API_URL, apiRequest } from "../api";
 import toast from "react-hot-toast";
 import { instalarPwaAgora, observarInstalacaoPwa } from "../services/instalacaoPwa";
+import { URL_APK_ANDROID } from "../services/downloadAndroid";
 
 type Tema = "sistema" | "escuro" | "claro";
 
@@ -707,7 +708,7 @@ export default function Configuracoes() {
                     {!appJaInstalado && <CaretRightIcon size={14} className="text-[#737C8E]" />}
                   </button>
                   <a
-                    href="https://expo.dev/artifacts/eas/t_lDR3rJMB2HwlMzG4bInad6SVrDU5gyb6A0d4hq7BA.apk"
+                    href={URL_APK_ANDROID}
                     download="Mare.apk"
                     className="flex min-h-[42px] flex-1 items-center gap-3 rounded-md border border-[var(--cor-borda-discreta)] bg-[var(--cor-superficie-alternativa)] px-4 transition hover:border-[var(--cor-borda-destaque)]"
                   >
