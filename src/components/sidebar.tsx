@@ -9,8 +9,9 @@ import {
 } from "@phosphor-icons/react";
 import logo from "../assets/logoSidebar.png";
 import { useMeuPerfil } from "../hooks/useMeuPerfil";
+import ContadorNavegacao, { type ContadoresNavegacao } from "./contadorNavegacao";
 
-export default function Sidebar() {
+export default function Sidebar({ notificacoes, mensagens }: ContadoresNavegacao) {
   const { usuario } = useMeuPerfil();
   const navigate = useNavigate();
   const location = useLocation();
@@ -20,28 +21,42 @@ export default function Sidebar() {
 
   return (
     <aside className="fixed inset-y-0 left-0 z-50 hidden h-dvh w-[clamp(220px,30vw,340px)] flex-col border-r border-[var(--cor-borda)] bg-[var(--cor-superficie)] text-[var(--cor-texto-principal)] md:flex" style={{ fontFamily: "Inter, sans-serif", fontWeight: 300 }}>
-      <div className="flex items-center px-6 py-4">
-        <Link to="/"><img src={logo} alt="Maré" className="h-12 w-28 object-contain object-left" /></Link>
-      </div>
-      <div className="mb-6 flex items-center gap-3 px-6">
-        <div draggable={false} className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#1a2130]">
-          {usuario?.foto ? <img src={usuario.foto} alt={usuario.nome} className="h-full w-full object-cover" /> : <UserIcon size={30} className="text-[var(--cor-texto-cinza-400)]" />}
+      <div className="scrollbar-mare min-h-0 flex-1 overflow-y-auto overscroll-y-contain">
+        <div className="flex items-center px-6 py-4">
+          <Link to="/"><img src={logo} alt="Maré" className="h-12 w-28 object-contain object-left" /></Link>
         </div>
-        <div className="min-w-0 cursor-default flex-1">
-          <p className="truncate text-[15px]">{usuario?.nome || "Usuário"}</p>
-          <p className="truncate text-[12px] text-[var(--cor-texto-discreto)]">@{usuario?.username || ""}</p>
+        <div className="mb-6 flex items-center gap-3 px-6">
+          <div draggable={false} className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#1a2130]">
+            {usuario?.foto ? <img src={usuario.foto} alt={usuario.nome} className="h-full w-full object-cover" /> : <UserIcon size={30} className="text-[var(--cor-texto-cinza-400)]" />}
+          </div>
+          <div className="min-w-0 cursor-default flex-1">
+            <p className="truncate text-[15px]">{usuario?.nome || "Usuário"}</p>
+            <p className="truncate text-[12px] text-[var(--cor-texto-discreto)]">@{usuario?.username || ""}</p>
+          </div>
         </div>
+        <hr className="border-[var(--cor-borda)]" />
+        <nav className="flex flex-col py-2">
+          <Link to="/home" aria-label="Início" aria-current={ativo("/home") ? "page" : undefined} className={item("/home")}><HouseLineIcon size={22} weight={ativo("/home") ? "fill" : "regular"} />Início</Link>
+          <Link to="/explorar" aria-label="Explorar" className={item("/explorar")}><PlaylistIcon size={22} />Explorar</Link>
+          <Link to="/notificacoes" aria-label={notificacoes > 0 ? `Notificações (${notificacoes} não lidas)` : "Notificações"} className={item("/notificacoes")}>
+            <span className="relative shrink-0">
+              <BellIcon size={22} weight={ativo("/notificacoes") ? "fill" : "regular"} />
+              <ContadorNavegacao quantidade={notificacoes} />
+            </span>
+            Notificações
+          </Link>
+          <Link to="/mensagens" aria-label={mensagens > 0 ? `Conversas (${mensagens} mensagens não lidas)` : "Conversas"} className={item("/mensagens")}>
+            <span className="relative shrink-0">
+              <ChatCircleDotsIcon size={22} weight={ativo("/mensagens") ? "fill" : "regular"} />
+              <ContadorNavegacao quantidade={mensagens} />
+            </span>
+            Conversas
+          </Link>
+          <Link to="/perfil" aria-label="Perfil" className={item("/perfil")}><UserIcon size={22} weight={ativo("/perfil") ? "fill" : "regular"} />Perfil</Link>
+          <button onClick={() => navigate("/criarpost")} aria-label="Criar publicação" className="mx-6 my-4 cursor-pointer rounded-lg bg-[var(--cor-destaque)] py-3 text-sm text-white transition hover:bg-[var(--cor-destaque-forte)]">Criar post</button>
+        </nav>
       </div>
-      <hr className="border-[var(--cor-borda)]" />
-      <nav className="flex flex-1 flex-col py-2">
-        <Link to="/home" aria-label="Início" aria-current={ativo("/home") ? "page" : undefined} className={item("/home")}><HouseLineIcon size={22} weight={ativo("/home") ? "fill" : "regular"} />Início</Link>
-        <Link to="/explorar" aria-label="Explorar" className={item("/explorar")}><PlaylistIcon size={22} />Explorar</Link>
-        <Link to="/notificacoes" aria-label="Notificações" className={item("/notificacoes")}><BellIcon size={22} weight={ativo("/notificacoes") ? "fill" : "regular"} />Notificações</Link>
-        <Link to="/mensagens" aria-label="Conversas" className={item("/mensagens")}><ChatCircleDotsIcon size={22} weight={ativo("/mensagens") ? "fill" : "regular"} />Conversas</Link>
-        <Link to="/perfil" aria-label="Perfil" className={item("/perfil")}><UserIcon size={22} weight={ativo("/perfil") ? "fill" : "regular"} />Perfil</Link>
-        <button onClick={() => navigate("/criarpost")} aria-label="Criar publicação" className="mx-6 my-4 cursor-pointer rounded-lg bg-[var(--cor-destaque)] py-3 text-sm text-white transition hover:bg-[var(--cor-destaque-forte)]">Criar post</button>
-      </nav>
-      <div className="border-t border-[var(--cor-borda)]"><Link to="/configuracoes" aria-label="Configurações" className={`${item("/configuracoes")} w-full`}><GearIcon size={22} weight={ativo("/configuracoes") ? "fill" : "regular"} />Configurações</Link></div>
+      <div className="shrink-0 border-t border-[var(--cor-borda)]"><Link to="/configuracoes" aria-label="Configurações" className={`${item("/configuracoes")} w-full`}><GearIcon size={22} weight={ativo("/configuracoes") ? "fill" : "regular"} />Configurações</Link></div>
     </aside>
   );
 }
